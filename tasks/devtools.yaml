@@ -62,3 +62,13 @@
     src: /opt/vcpkg/vcpkg
     dest: /usr/local/bin/vcpkg
     state: link
+
+- name: Clone git semantic commits
+  ansible.builtin.git:
+    repo: https://github.com/fteem/git-semantic-commits
+    dest: "{{ lookup('env', 'HOME') }}/.config/git-semantic-commits"
+
+- name: Build git semantic commits
+  ansible.builtin.shell:
+    chdir: "{{ lookup('env', 'HOME') }}/.config/git-semantic-commits"
+    cmd: ./install.sh
