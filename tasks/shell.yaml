@@ -1,0 +1,32 @@
+---
+- name: Install zsh
+  ansible.builtin.apt:
+    name: zsh
+    state: present
+
+- name: Change login shell for user
+  ansible.builtin.user:
+    name: rune
+    shell: /usr/bin/zsh
+
+- name: Set ZDOTDIR globally
+  ansible.builtin.lineinfile:
+    path: /etc/zsh/zshenv
+    line: export $ZDOTDIR="$HOME/.config/zsh"
+  become: true
+
+- name: Get oh-my-zsh install script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    dest: /tmp/ohmyzsh.sh
+    mode: u=rx
+
+- name: Execute oh-my-zsh install script
+  ansible.builtin.shell:
+    chdir: /tmp
+    cmd: ZSH=$HOME/.config/zsh/ohmyzsh sh /tmp/ohmyzsh.sh
+
+#- name: Configure global zshenv
+#  ansible.builtin.blockinfile:
+#    block: "{{ lookup('ansible.builtin.file', 'zshenv') }}"
+#    path: /etc/zsh/zshenv

@@ -1,0 +1,27 @@
+# gfx-driver.yaml
+---
+- name: Install dependency package
+  ansible.builtin.apt:
+    name: linux-headers-amd64
+    state: present
+  become: true
+
+- name: Add non-free-firmware component to deb repository
+  ansible.builtin.shell:
+    cmd: sudo sed -i '/^deb http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware contrib/ s/$/ non-free-firmware/' /etc/apt/sources.list
+  become: true
+
+- name: Install NVIDIA driver and tools
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items:
+    - nvidia-driver
+    - firmware-misc-nonfree
+    - nvidia-xconfig
+
+- name: Enable kernel modesetting with the NVIDIA driver
+  ansible.builtin.shell:
+    cmd: echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINX nvidia-drm.modeset=1"' > /etc/default/grub.d/nvidia-modeset.cfg && update-grub
+  become: true

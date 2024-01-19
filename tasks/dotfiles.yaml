@@ -1,0 +1,32 @@
+---
+- name: Remove default created files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /home/rune/.zshenv
+    - /home/rune/.zshrc
+    - /home/rune/.zprofile
+    - /home/rune/.zlogin
+    - /home/rune/.zlogout
+    - /home/rune/.bashrc
+    - /home/rune/.profile
+    - /home/rune/.nvidia-settings-rc
+    - /home/rune/.selected_editor
+    - /home/rune/.sudo_as_admin_successful
+    - /home/rune/.Xauthority
+    - /home/rune/.xsession-errors
+    - /home/rune/zcompdump
+  become: true
+
+- name: Clone dotfiles repository
+  ansible.builtin.git:
+    repo: https://github.com/rslangl/dotfiles
+    dest: "{{ lookup('env', 'DOTFILES') }}"
+
+- name: Run dotbot to create symlinks
+  ansible.builtin.shell:
+    chdir: "{{ lookup('env', 'DOTFILES') }}"
+    cmd: ./install
+  delegate_to: localhost
+

@@ -1,0 +1,6 @@
+---
+- name: Install i3
+  ansible.builtin.apt:
+    name: i3
+    state: present
+  become: true
