@@ -13,6 +13,7 @@
   ansible.builtin.lineinfile:
     path: /etc/zsh/zshenv
     line: export $ZDOTDIR="$HOME/.config/zsh"
+    state: present
   become: true
 
 - name: Get oh-my-zsh install script
@@ -25,6 +26,26 @@
   ansible.builtin.shell:
     chdir: /tmp
     cmd: ZSH=$HOME/.config/zsh/ohmyzsh sh /tmp/ohmyzsh.sh
+
+- name: Glone zsh plugins
+  ansible.builtin.git:
+    repo: "{{ item }}"
+    dest: ZSH/custom/plugins
+  with_items:
+    - https://github.com/zsh-users/zsh-autosuggestions
+    - https://github.com/zsh-users/zsh-syntax-highlighting
+
+- name: Install rofi packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - rofi
+    - ddgr
+    - libjson-glib-dev
+    - libcairo2-dev
+    - rofi-dev
+  become: true
 
 #- name: Configure global zshenv
 #  ansible.builtin.blockinfile:

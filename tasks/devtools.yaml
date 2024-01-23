@@ -12,6 +12,9 @@
     - ripgrep
     - unzip
     - luajit
+    - build-essential
+    - autoconf
+    - libtool
   become: true
 
 - name: Download cmake archive
