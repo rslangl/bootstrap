@@ -1,0 +1,61 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - gcc
+    - g++
+    - valgrind
+    - gdb
+    - clangd
+    - build-essential
+    - autoconf
+    - libtool
+    - python3-pip
+  become: true
+
+- name: Download cmake archive
+  ansible.builtin.unarchive:
+    src: https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1.tar.gz
+    dest: /home/rune/sources/cmake
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+
+- name: Build cmake
+  ansible.builtin.shell:
+    chdir: /home/rune/sources/cmake
+    cmd: ./bootstrap && make && sudo make install
+  become: true
+  delegate_to: localhost
+
+- name: Install cmake-init
+  ansible.builtin.pip:
+    name: cmake-init
+    state: present
+
+- name: Clone vcpkg repository
+  ansible.builtin.git:
+    repo: https://github.com/Microsoft/vcpkg.git
+    dest: /opt/vcpkg
+    owner: rune
+    group: rune
+  become: true
+
+#- name: Chmod vcpkg directory
+#  ansible.builtin.file:
+#    path: /opt/vcpkg
+#    owner: rune
+#    group: rune
+#    recurse: true
+
+- name: Build vcpkg
+  ansible.builtin.shell:
+    cmd: /opt/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+- name: Create vcpkg symlink to make it executable from PATH
+  ansible.builtin.file:
+    src: /opt/vcpkg/vcpkg
+    dest: /usr/local/bin/vcpkg
+    state: link

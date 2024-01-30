@@ -1,0 +1,21 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - luajit
+    - ripgrep
+    - unzip
+
+- name: Clone neovim repository
+  ansible.builtin.git:
+    repo: https://github.com/neovim/neovim
+    dest: /home/rune/sources/neovim
+
+- name: Build neovim
+  ansible.builtin.shell:
+    chdir: /home/rune/sources/neovim
+    cmd: make CMAKE_BUILD_TYPE=Release && sudo make install
+  become: true
+

@@ -1,0 +1,10 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - openjdk-17-jdk
+    - maven
+      
+# TODO: install IntelliJ community

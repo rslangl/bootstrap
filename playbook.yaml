@@ -3,28 +3,20 @@
   gather_facts: true
 
   tasks:
-    #- name: Install display display server
-    #  include_tasks: tasks/x-display-server.yaml
+    - name: Install display display server
+      include_tasks: tasks/x-display-server.yaml
     
-    - name: Install Xorg
-      ansible.builtin.apt:
-        name: xorg
-        state: present
-    
-    #- name: Install window manager
-    #  include_tasks: tasks/window-manager.yaml 
-
-    - name: Install i3
-      ansible.builtin.apt:
-        name: i3
-        state: present
-      become: true
+    - name: Install window manager
+      include_tasks: tasks/window-manager.yaml 
 
     - name: Install shell
       include_tasks: tasks/shell.yaml
 
     - name: Install graphics driver
       include_tasks: tasks/gfx-driver.yaml
+
+    - name: Install editor
+      include_tasks: tasks/editor.yaml
 
     - name: Install development tools
       include_tasks: tasks/devtools.yaml

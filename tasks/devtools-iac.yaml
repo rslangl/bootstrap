@@ -1,0 +1,12 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ansible
+    - vagrant
+
+# TODO: install terraform
+
+# TODO: install kvm (or other virtualization SW)
