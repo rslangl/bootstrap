@@ -40,5 +40,43 @@
         chdir: /opt/rofi-blocks
         cmd: autoreconf -i && mkdir build && cd build/ && ../configure && make && make install && libtool 
 
+- name: Install custom i3lock
+  become: true
+  block:
+    - name: Remove current i3lock
+      ansible.builtin.apt:
+        name: i3lock
+        state: absent
 
+    - name: Download i3lock-color source
+      ansible.builtin.git:
+        repo: https://github.com/Raymo111/i3lock-color
+        dest: $HOME/src/github.com/i3lock-color
+
+    - name: Install i3lock-color dependencies
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - autoconf 
+        - gcc 
+        - make 
+        - pkg-config 
+        - libpam0g-dev 
+        - libcairo2-dev 
+        - libfontconfig1-dev 
+        - libxcb-composite0-dev 
+        - libev-dev libx11-xcb-dev 
+        - libxcb-xkb-dev 
+        - libxcb-xinerama0-dev 
+        - libxcb-randr0-dev 
+        - libxcb-image0-dev 
+        - libxcb-util0-dev 
+        - libxcb-xrm-dev 
+        - libxkbcommon-dev 
+        - libxkbcommon-x11-dev 
+        - libjpeg-dev
     
+    - name: Build and install i3lock-color
+      ansible.builtin.shell:
+        cmd: ./install-i3lock-color.sh
