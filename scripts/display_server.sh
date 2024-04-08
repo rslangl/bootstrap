@@ -1,3 +1,3 @@
 #!/bin/sh
 
-echo "Installing display server"
+apt install -y xorg
