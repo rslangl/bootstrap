@@ -1,17 +1,16 @@
 #!/bin/sh
 
-start_spinner() {
-  spinner='/|\\-/|\\-'
-  while :; do
-    for i in $(seq 0 7); do
-      printf "\r${spinner:$i:1}"
-      sleep 0.1
-    done
-  done
-}
+spinner() {
+	local pid=$1
+	local delay=0.1
+	local spinstr='|/-\'
 
-stop_spinner() {
-  kill "$1" > /dev/null 2>&1
-  wait "$1" 2>/dev/null
-  printf "\r%s" " "
+	while [ "$(ps a | awk '{print $1}' | grep -w $pid)" ]; do
+		local temp=${spinstr#?}
+		printf " [%c] " "$spinstr"
+		local spinstr=$temp${spinstr%"$temp"}
+		sleep $delay
+		printf "\r"
+	done
+	printf "\t\r"
 }

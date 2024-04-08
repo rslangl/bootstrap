@@ -1,12 +1,16 @@
 #!/bin/sh
 
-SCRIPTS_DIR="scripts"
+SCRIPTS_DIR="$(dirname "$0")/scripts"
+CONFIG_DIR="$(dirname "$0")/configs"
 OUTPUT_DIR="$(dirname "$0")/output"
 OUTPUT_FILE="$OUTPUT_DIR/output.txt"
-CONFIG_DIR="$(dirname "$0")/configs"
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NOCOLOR='\033[0m'
 
 clean() {
-	rm $OUTPUT_FILE
+	rm -rf $OUTPUT_DIR
 	kill "$script_pid"
 	exit
 }
@@ -30,23 +34,40 @@ fi
 # Iterate and execute all tasks
 for script in "$SCRIPTS_DIR"/*.sh; do
 	if [ -x "$script" ]; then
+
 		# Get base name of script being executed
 		script_name=$(basename "$script")
 
-		printf "Running script: %s... " "$script_name"
+		printf "Running script: %s... \n" "$script_name"
 
-		start_spinner &
+		# Store script output
+		tmpfile=$(mktemp)
+
+		# Start script in the background
+		"$script" >"$tmpfile" 2>&1 &
+		PID=$!
+
+		# Start spinner
+		spinner $PID &
 		SPINNER_PID=$!
 
-		printf "OK"
+		# Wait for script to finish
+		wait $PID
+		SCRIPT_EXIT_CODE=$?
 
-		# Execute script and capture its output
-		output=$("$script" 2>&1)
+		# Stop spinner
+		kill $SPINNER_PID
+		wait $SPINNER_PID 2>/dev/null
 
-		stop_spinner $SPINNER_PID
+		# Display script output
+		cat "$tmpfile"
+		rm "$tmpfile"
 
-		echo "$output" | tail -n 5
+		if [ $SCRIPT_EXIT_CODE -eq 0 ]; then
+			echo "${GREEN}OK${NOCOLOR}"
+		else
+			echo "${RED}$script_name execution failed with exit code $SCRIPT_EXIT_CODE${NOCOLOR}"
+		fi
 
-		#echo "OK"
 	fi
 done
