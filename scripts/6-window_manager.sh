@@ -49,3 +49,7 @@ apt install -y \
 apt purge i3lock
 git clone https://github.com/Raymo111/i3lock-color /home/user/src/i3lock-color && cd /home/user/src/i3lock-color
 ./install-i3lock-color.sh
+
+# Install polybar
+curl -sSL https://github.com/polybar/polybar/releases/download/3.7.1/polybar-3.7.1.tar.gz | tar -xz --strip-components=1 -C /home/user/src/polybar && cd /home/user/src/polybar
+./build.sh

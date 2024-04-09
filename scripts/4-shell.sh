@@ -3,6 +3,9 @@
 # Install zsh
 apt install -y zsh
 
+# Install fonts
+curl -OL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Inconsolata.tar.xz | tar -xf Inconsolata.tar.xz -C /home/user/.local/share/fonts
+
 # Change login shell
 chsh -s /usr/bin/zsh user
 
