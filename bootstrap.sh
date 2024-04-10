@@ -32,7 +32,8 @@ if [ ! -d "$OUTPUT_DIR" ]; then
 fi
 
 # Iterate and execute all tasks
-for script in "$SCRIPTS_DIR"/*.sh; do
+# for script in "$SCRIPTS_DIR"/*.sh; do
+for script in $(ls -v "$SCRIPTS_DIR"/*.sh); do
 	if [ -x "$script" ]; then
 
 		# Get base name of script being executed
@@ -68,6 +69,8 @@ for script in "$SCRIPTS_DIR"/*.sh; do
 		else
 			echo "${RED}$script_name execution failed with exit code $SCRIPT_EXIT_CODE${NOCOLOR}"
 		fi
+
+		echo "===================="
 
 	fi
 done

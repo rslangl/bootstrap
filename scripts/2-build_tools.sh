@@ -1,14 +1,11 @@
 #!/bin/sh
 
-# Create directory where sources will be stored to
-mkdir /home/user/src
-chown -R user:user /home/user/src
-
 # Install base tools
 apt install -y \
 	make \
 	autoconf \
-	python3-pip
+	python3-pip \
+	libssl-dev
 
 # Install CMake
 mkdir /home/user/src/cmake
