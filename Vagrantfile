@@ -20,6 +20,6 @@ Vagrant.configure("2") do |config|
     cp -r /upload/* /home/user/Downloads
     chown -R user:user /home/user/Downloads
 
-    sudo -u user -i /home/user/Downloads/bootstrap.sh
+    sudo -i /home/user/Downloads/bootstrap.sh
   SHELL
 end
