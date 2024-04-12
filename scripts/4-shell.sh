@@ -1,5 +1,8 @@
 #!/bin/sh
 
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+. "$SCRIPT_DIR/../configs/fonts.sh"
+
 # Install zsh
 apt install -y zsh fzf
 
@@ -34,7 +37,22 @@ fi
 EOF
 
 # Install fonts
-curl -OL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Inconsolata.tar.xz | tar -xf Inconsolata.tar.xz -C /home/user/.local/share/fonts
+oldIFS="$IFS"
+IFS=":"
+for font in $fonts; do
+	case "$font" in
+	*tar.xz)
+		curl -OL https://github.com/ryanoasis/nerd-fonts/releases/download/$font | tar -xf $font -C /home/user/.local/share/fonts
+		;;
+	*zip)
+		curl -OL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/$font -o /home/user/Downloads/$font
+		unzip /home/user/Downloads/$font -d /home/user/.local/share/fonts
+		rm /home/user/Downloads/$font
+		;;
+	esac
+done
+#curl -OL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Inconsolata.tar.xz | tar -xf Inconsolata.tar.xz -C /home/user/.local/share/fonts
+IFS="$oldIFS"
 
 # Change login shell
 chsh -s /usr/bin/zsh user
