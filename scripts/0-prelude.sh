@@ -9,7 +9,3 @@ apt install -y \
 # Create required directories
 mkdir /home/user/src
 chown -R user:user /home/user/src
-
-# Clone and setup dotfiles
-#git clone https://github.com/rslangl/dotfiles /home/user/.dotfiles && cd /home/user/.dotfiles
-#./install

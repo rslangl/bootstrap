@@ -15,9 +15,7 @@ apt install -y \
 echo "#!/bin/sh \
   export DDG_ARGS='["-n", 5]' \
   export ROFI_SEARCH='ddgr' \
-  rofi -modi blocks -blocks-wrap $HOME/.local/bin/rofi-search -show blocks -lines 4 -eh 4 -kb-custom-1 'Control+y'" |
-	tee /home/user/.local/bin/rofi-search-box >/dev/null &&
-	chmod +x /home/user/.local/bin/rofi-search-box
+  rofi -modi blocks -blocks-wrap $HOME/.local/bin/rofi-search -show blocks -lines 4 -eh 4 -kb-custom-1 'Control+y'" | tee /home/user/.local/bin/rofi-search-box >/dev/null && chmod +x /home/user/.local/bin/rofi-search-box
 
 # Install rofi-blocks
 git clone https://github.com/OmarCastro/rofi-blocks /home/user/src/rofi-blocks && cd /home/user/src/rofi-blocks
