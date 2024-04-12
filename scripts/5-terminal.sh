@@ -470,7 +470,9 @@ static char ascii_printable[] = " !\"#$%&'()*+,-./0123456789:;<=>?"
                                 "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
                                 "`abcdefghijklmnopqrstuvwxyz{|}~";
 EOF
+
 make clean install
+mv /usr/local/bin/st /usr/bin/st
 
 # Change terminal
 update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/st 10
