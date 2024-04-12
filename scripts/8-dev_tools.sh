@@ -58,3 +58,8 @@ apt install -y \
 # Install neovim from source
 git clone https://github.com/neovim/neovim /home/user/src/neovim && cd /home/user/src/neovim
 make CMAKE_BUILD_TYPE=Release && make install
+
+# Install LazyVim
+git clone https://github.com/LazyVim/starter /home/user/.config/nvim
+rm -rf /home/user/.config/nvim/.git
+cd /home/user/.dotfiles && ./install
