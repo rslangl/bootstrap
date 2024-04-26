@@ -26,6 +26,11 @@ export XDG_CONFIG_DIRS=${XDG_CONFIG_DIRS:="/etc/xdg"}
 # zsh
 export ZDOTDIR="$XDG_CONFIG_HOME"/zsh
 export HISTFILE="$XDG_STATE_HOME"/zsh/history
+
+# Xorg
+export XINITRC="$XDG_CONFIG_HOME"/X11/xinitrc
+export XSERVERRC="$XDG_CONFIG_HOME"/X11/xserverrc
+export XAUTHORITY="$XDG_RUNTIME_DIR"/X11/xauthority
 EOF
 
 # Ensure X starts properly from global zprofile using the picom X compositor (used for st)
