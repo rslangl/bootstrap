@@ -83,3 +83,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting $ZSH/custom/plugi
 
 # Install zoxide
 curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+
+# Install tmux
+apt install -y tmux
+git clone https://github.com/tmux-plugins/tpm /home/user/.config/tmux/plugins/tpm
