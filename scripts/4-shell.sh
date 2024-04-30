@@ -10,7 +10,7 @@ apt install -y zsh fzf
 cat <<EOF >/etc/zsh/zshenv
 if [[ -z "$PATH" || "$PATH" == "/bin:/usr/bin" ]]
 then
-  export PATH="/usr/local/bin:/usr/bin:/bin:/usr/games"
+  export PATH="/usr/local/bin:/usr/bin:/bin:/usr/games
 fi
 
 # XDG paths
@@ -27,19 +27,22 @@ export XDG_CONFIG_DIRS=${XDG_CONFIG_DIRS:="/etc/xdg"}
 export ZDOTDIR="$XDG_CONFIG_HOME"/zsh
 export HISTFILE="$XDG_STATE_HOME"/zsh/history
 
+# Xorg-auth
+#export XAUTHORITY="$XDG_RUNTIME_DIR"/Xauthority
+
 # Xorg
-export XINITRC="$XDG_CONFIG_HOME"/X11/xinitrc
-export XSERVERRC="$XDG_CONFIG_HOME"/X11/xserverrc
-export XAUTHORITY="$XDG_RUNTIME_DIR"/X11/xauthority
+#export XINITRC="$XDG_CONFIG_HOME"/X11/xinitrc
+#export XSERVERRC="$XDG_CONFIG_HOME"/X11/xserverrc
+#export XAUTHORITY="$XDG_RUNTIME_DIR"/X11/xauthority
 EOF
 
 # Ensure X starts properly from global zprofile using the picom X compositor (used for st)
-cat <<EOF >/etc/zsh/zprofile
-if [[ -z "$DISPLAY" ]] && [[ &(tty) = /dev/tty1 ]]; then
-  picom -b &
-  startx
-fi
-EOF
+#cat <<EOF >/etc/zsh/zprofile
+# if [[ -z "$DISPLAY" ]] && [[ &(tty) = /dev/tty1 ]]; then
+#   picom -b &
+#   startx
+# fi
+# EOF
 
 # Install fonts
 oldIFS="$IFS"
