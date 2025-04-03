@@ -1,0 +1,3 @@
+# security/tasks/peripherals.yaml
+---
+# TODO: disable data transfer/communication peripherals not in use (e.g. USB)

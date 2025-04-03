@@ -1,0 +1,4 @@
+# dns/tasks/main.yaml
+---
+- name: Setup host-level DNS
+  include_tasks: dns.yaml

@@ -1,0 +1,70 @@
+# security/tasks/firewall.yaml
+---
+- name: Disable rpcbind (using port 111)
+  ansible.builtin.service:
+    name: rpcbind
+    state: stopped
+    enabled: false
+
+- name: Disable squid-http (using port 3128)
+  ansible.builtin.service:
+    name: squid-http
+    state: stopped
+    enabled: false
+
+- name: Flush iptables filter
+  ansible.builtin.iptables:
+    chain: "{{ item }}"
+    flush: true
+  with_items:
+    - INPUT
+    - FORWARD
+    - OUTPUT
+
+- name: Flush iptables NAT
+  ansible.builtin.iptables:
+    table: nat
+    chain: "{{ item }}"
+    flush: true
+  with_items:
+    - INPUT
+    - OUTPUT
+    - PREROUTING
+    - POSTROUTING
+
+- name: Set default INPUT chain policy to DROP
+  ansible.builtin.iptables:
+    chain: INPUT
+    policy: DROP
+
+- name: Allow localhost traffic
+  ansible.builtin.iptables:
+    chain: INPUT
+    source: 127.0.0.1
+    jump: ACCEPT
+  ignore_errors: true
+
+- name: Open port for WebUI
+  ansible.builtin.iptables:
+    chain: INPUT
+    destination_port: 8006
+    jump: ACCEPT
+    state: present
+  ignore_errors: true
+
+- name: Open port for SSH
+  ansible.builtin.iptables:
+    chain: INPUT
+    destination_port: 22
+    jump: ACCEPT
+    state: present
+  ignore_errors: true
+
+- name: Save iptables rules to /etc/iptables/rules.v4
+  ansible.builtin.command:
+    cmd: iptables-save > /etc/iptables/rules.v4
+
+- name: Apply iptables rules
+  ansible.builtin.command:
+    cmd: iptables-restore < /etc/iptables/rules.v4
+

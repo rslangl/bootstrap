@@ -1,0 +1,30 @@
+# dns/tasks/unbound.yaml
+---
+# TODO: requires:
+# Docker API >= 1.25
+# pyOpenSSL
+# requests
+- name: Prepare build environment
+  ansible.builtin.pip:
+    virtualenv: "{{ lookup('pipe', 'pwd) }}/.venv"
+
+- name: Create containerized build server
+  community.general.docker:
+    name: builder
+    image: gcc:14.2.0
+    state: started
+  delegate_to: localhost
+
+- name: Build unbound in container
+  community.general.docker_exec:
+    # TODO: launch with volume mount where the built binary will be placed
+    # download latest tarball
+    # extract to volume mount path
+    # configure build
+    # build
+  delegate_to: localhost
+
+- name: Install unbound binary
+
+
+
