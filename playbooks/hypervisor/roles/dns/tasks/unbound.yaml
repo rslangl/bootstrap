@@ -8,6 +8,7 @@
   ansible.builtin.pip:
     virtualenv: "{{ lookup('pipe', 'pwd) }}/.venv"
 
+    # TODO: either use custom image extending this one, or make this image install libssl-dev, libexpet1-dev, bison, flex
 - name: Create containerized build server
   community.general.docker:
     name: builder
@@ -15,6 +16,11 @@
     state: started
   delegate_to: localhost
 
+
+  # HOWTO: https://unbound.docs.nlnetlabs.nl/en/latest/getting-started/installation.html#building-from-source-compiling
+  # ./configure -h for list of configurables
+  # ./configure
+  # make
 - name: Build unbound in container
   community.general.docker_exec:
     # TODO: launch with volume mount where the built binary will be placed
