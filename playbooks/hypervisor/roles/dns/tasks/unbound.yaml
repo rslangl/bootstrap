@@ -1,36 +1,38 @@
 # dns/tasks/unbound.yaml
 ---
-# TODO: requires:
-# Docker API >= 1.25
-# pyOpenSSL
-# requests
-- name: Prepare build environment
-  ansible.builtin.pip:
-    virtualenv: "{{ lookup('pipe', 'pwd) }}/.venv"
+# - name: Build unbound-builder image
+#   community.docker.docker_image_build:
+#     name: unbound-builder
+#     path: /tmp/docker-build/
+#     dockerfile: Dockerfile
+#   delegate_to: localhost
+#
+# - name: Create containerized build server
+#   community.docker.docker_container:
+#     name: unbound-builder 
+#     image: unbound-builder
+#     state: started
+#     volumes:
+#       - "{{ role_path }}/files/unbound:/src"
+#   delegate_to: localhost
 
-    # TODO: either use custom image extending this one, or make this image install libssl-dev, libexpet1-dev, bison, flex
-- name: Create containerized build server
-  community.general.docker:
-    name: builder
-    image: gcc:14.2.0
-    state: started
-  delegate_to: localhost
+- name: Install unbound
+  ansible.builtin.apt:
+    name: ["unbound", "unbound-anchor"]
+    state: present
+    update_cache: true
 
+- name: Setup trust anchor
+  ansible.builtin.command: unbound-anchor -a /var/lib/unbound/root.key
 
-  # HOWTO: https://unbound.docs.nlnetlabs.nl/en/latest/getting-started/installation.html#building-from-source-compiling
-  # ./configure -h for list of configurables
-  # ./configure
-  # make
-- name: Build unbound in container
-  community.general.docker_exec:
-    # TODO: launch with volume mount where the built binary will be placed
-    # download latest tarball
-    # extract to volume mount path
-    # configure build
-    # build
-  delegate_to: localhost
+- name: Configure unbound
+  ansible.builtin.template:
+    src: "{{ lookup('template', unbound.conf.j2) }}"
+    dest: /etc/unbound/unbound.conf
 
-- name: Install unbound binary
-
-
-
+- name: Configure interface resolver
+  ansible.builtin.lineinfile:
+    path: /etc/network/interfaces
+    line: ' dns-nameservers 127.0.0.1'
+    insertafter: '^iface vmbr0 inet static'
+    state: present

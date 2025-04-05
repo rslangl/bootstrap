@@ -1,0 +1,12 @@
+config setup
+  charondebug="ike 2, knl 2, net 2, dmn 2,  mgr 2"
+
+conn dns-secure-connection
+  left=127.0.0.1
+  right={{ dns.upstream_dns }}
+  leftsubnet=0.0.0.0/0
+  rightsubnet=0.0.0.0/0
+  ike=aes256-sha256-modp1024
+  esp=aes256-sha256
+  keyexchange=ikev2
+  auto=start
