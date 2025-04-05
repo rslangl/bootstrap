@@ -1,0 +1,3 @@
+# host_vars/host.yaml
+---
+hostname: "{{ lookup('env', 'TARGET_HOSTNAME') }}"

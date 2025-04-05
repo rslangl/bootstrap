@@ -1,0 +1,12 @@
+---
+ap_redzone:
+  hosts:
+    ap.nekrohaven.local: 192.168.88.1
+
+router:
+  hosts:
+    gw.nekrohaven.local: 192.168.88.3
+
+app_server:
+  hosts:
+    appsrv.nekrohaven.local: 192.168.88.2
