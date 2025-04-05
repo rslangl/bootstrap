@@ -16,6 +16,8 @@
 #       - "{{ role_path }}/files/unbound:/src"
 #   delegate_to: localhost
 
+# TODO: configure apparmor to let unbound create, read and write to logfile
+
 - name: Install unbound
   ansible.builtin.apt:
     name: ["unbound", "unbound-anchor"]

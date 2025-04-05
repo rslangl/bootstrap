@@ -6,12 +6,12 @@
     state: present
     update_cache: true
 
-- name: Configure strongswan
+- name: Configure IPSec
   ansible.builtin.template:
     src: "{{ lookup('template', 'ipsec.conf.j2') }}"
     dest: /etc/ipsec.conf
 
-- name: Configure authentication and encryption keys
+- name: Configure IPSec authentication and encryption keys
   ansible.builtin.template:
     src: "{{ lookup('template', 'ipsec.secrets.j2') }}"
     dest: /etc/ipsec.secrets
