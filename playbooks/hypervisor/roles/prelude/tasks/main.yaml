@@ -1,0 +1,7 @@
+# prelude/tasks/main.yaml
+---
+- name: Disable IPv6
+  include_tasks: disable_ipv6.yaml
+
+- name: Configure NTP
+  include_tasks: ntp.yaml
