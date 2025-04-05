@@ -1,0 +1,8 @@
+# dns/vars/main.yaml
+---
+dns:
+  root_domain: "{{ lookup('env', 'ROOT_DOMAIN') }}"
+  intermediary_domain: "{{ lookup('env', 'INTERMEDIARY_DOMAIN') }}"
+  upstream_dns: "{{ lookup('env', 'UPSTREAM_DNS') }}"
+  public_dns_1: "{{ lookup('env', 'PUBLIC_DNS_1') }}"
+  public_dns_2: "{{ lookup('env', 'PUBLIC_DNS_2') }}"

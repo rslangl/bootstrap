@@ -1,0 +1,20 @@
+# dns/handlers/main.yaml
+---
+- name: Restart networking service
+  ansible.builtin.service:
+    name: networking
+    state: restarted
+    enabled: true
+
+- name: Restart IPSec service
+  ansible.builtin.service:
+    name: strongswan-starter
+    state: restarted
+    enabled: true
+
+- name: Restart unbound service
+  ansible.builtin.service:
+    name: unbound
+    state: restarted
+    enabled: true
+

@@ -1,0 +1,18 @@
+# dns/tasks/ipsec.yaml
+---
+- name: Install strongswan
+  ansible.builtint.apt:
+    name: strongswan
+    state: present
+    update_cache: true
+
+- name: Configure IPSec
+  ansible.builtin.template:
+    src: "{{ lookup('template', 'ipsec.conf.j2') }}"
+    dest: /etc/ipsec.conf
+
+- name: Configure IPSec authentication and encryption keys
+  ansible.builtin.template:
+    src: "{{ lookup('template', 'ipsec.secrets.j2') }}"
+    dest: /etc/ipsec.secrets
+    mode: 0600
