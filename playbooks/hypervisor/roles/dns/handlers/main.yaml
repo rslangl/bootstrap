@@ -17,5 +17,4 @@
     name: unbound
     state: restarted
     enabled: true
-    # TODO: depends on strongswan ?
 
