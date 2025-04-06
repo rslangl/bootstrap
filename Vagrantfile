@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
     qemu.disk_size = 64_000
   end
 
-  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".vagrant/"
+  #config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".vagrant/"
   config.vm.boot_timeout = 400
   #config.vm.network "forwarded_port", guest: 22, host: 5555
 
