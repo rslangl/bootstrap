@@ -17,7 +17,7 @@ function shutdown_docker() {
   fi
 
   if [ ! -z "$DOCKER_PID" ]; then
-    if [ "$(ps -p "$DOCKER_PID" >/dev/null 2>&1)" ]; then
+    if ps -p $DOCKER_PID ] &>/dev/null; then
       # terminate docker service
       kill $DOCKER_PID
     fi
@@ -28,10 +28,14 @@ function shutdown_docker() {
 
 function start_docker() {
 
-  echo "Starting docker daemon..."
+  if ps -p $DOCKER_PID &>/dev/null; then
+    echo "Docker already running"
+  else
+    echo "Starting docker daemon..."
 
-  sudo nohup dockerd >/tmp/dockerd.log 2>&1 &
-  DOCKER_PID=$(echo $! | awk '{$1=$1};1')
+    sudo nohup dockerd >/tmp/dockerd.log &>/dev/null &
+    DOCKER_PID=$(echo $! | awk '{$1=$1};1')
 
-  echo "Done!"
+    echo "Done!"
+  fi
 }
