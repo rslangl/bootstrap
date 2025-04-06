@@ -1,3 +1,4 @@
 # host_vars/host.yaml
 ---
-hostname: "{{ lookup('env', 'TARGET_HOSTNAME') }}"
+dns_domain: "{{ lookup('env', 'DOMAIN') }}"
+host_fqdn: "{{ ansible_hostname }}.{{ dns_domain }}"

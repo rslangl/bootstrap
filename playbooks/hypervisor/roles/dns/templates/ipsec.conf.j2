@@ -2,7 +2,7 @@
 
 conn dns-secure-connection
   left=127.0.0.1
-  right={{ dns.upstream_dns }}
+  right={{ dns.authoritative }}
   leftsubnet=0.0.0.0/0
   rightsubnet=0.0.0.0/0
   ike=aes256-sha256-modp1024

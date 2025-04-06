@@ -39,7 +39,7 @@
 
 - name: Configure unbound
   ansible.builtin.template:
-    src: "{{ lookup('template', unbound.conf.j2) }}"
+    src: "{{ lookup('template', 'unbound.conf.j2') }}"
     dest: /etc/unbound/unbound.conf
 
 - name: Configure interface resolver
@@ -48,3 +48,9 @@
     line: ' dns-nameservers 127.0.0.1'
     insertafter: '^iface vmbr0 inet static'
     state: present
+
+- name: Configure resolv.conf
+  ansible.builtin.template:
+    src: "{{ lookup('template', 'resolv.conf.j2') }}"
+    dest: /etc/resolv.conf
+    backup: true

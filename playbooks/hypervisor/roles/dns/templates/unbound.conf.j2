@@ -11,9 +11,9 @@ server:
     cache-min-ttl: 3600
 
     auto-trust-anchor-file: "/var/lib/unbound/root.key"
-    local-zone: "{{ dns.upstream_dns }}" transparent
-    local-zone: "{{ dns.intermediary_domain }}" static
-    local-data: "{{ dns.intermediary_domain }} A {{ ansible_default_ipv4.address }}"
+    local-zone: "{{ dns.authoritative }}" transparent
+    local-zone: "{{ host_fqdn }}" static
+    local-data: "{{ host_fqdn }} A {{ ansible_default_ipv4.address }}"
 
     # Localhost/VM DNS resolution for internal names
     #local-data: "myvm.local. IN A 192.168.1.10"
@@ -21,6 +21,6 @@ server:
 
     forward-zone:
         name: "."
-        forward-addr: {{ dns.upstream_dns }}
+        forward-addr: {{ dns.authoritative }}
         forward-addr: {{ dns.public_dns_1 }}
         forward-addr: {{ dns.public_dns_2 }}
