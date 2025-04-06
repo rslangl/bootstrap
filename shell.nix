@@ -3,6 +3,8 @@
   let tools = with pkgs; [
     docker
     ansible
+    vagrant
+    terraform
     python3
   ];
 
