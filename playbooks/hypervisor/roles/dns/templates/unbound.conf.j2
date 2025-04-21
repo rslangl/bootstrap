@@ -6,6 +6,7 @@ server:
     #interface: ::0 # not used, ipv6 is disabled
     access-control: 127.0.0.0/8 allow 
     #access-control: ::1 allow  # not used, ipv6 is disabled
+    logfile: /var/log/unbound.log
 
     cache-max-ttl: 86400
     cache-min-ttl: 3600
