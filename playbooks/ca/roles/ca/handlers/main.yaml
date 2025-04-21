@@ -1,0 +1,12 @@
+# ca/handlers/main.yaml
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start step-ca
+  ansible.builtin.systemd:
+    name: step-ca
+    enabled: true
+    state: started
+

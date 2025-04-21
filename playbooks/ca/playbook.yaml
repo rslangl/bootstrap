@@ -1,0 +1,5 @@
+# ca/playbook.yaml
+---
+- hosts: ca
+  roles:
+    - ca

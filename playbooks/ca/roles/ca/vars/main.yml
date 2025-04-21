@@ -1,0 +1,13 @@
+# ca/vars/main.yaml
+---
+dns:
+  port: "{{ lookup('env', 'DNS_PORT') }}"
+  authoritative: "{{ lookup('env', 'AUTHORITATIVE_DNS') }}"
+
+ca:
+  name: "Nekrohaven Root CA"
+  provisioner_name: "provisioner1"
+  data_dir: "/opt/step-ca"
+  backup_dir: "/root/ca-backup"
+  port: 443
+  password: "{{ lookup('pipe', 'openssl rand -base64 32') }}"

@@ -1,0 +1,7 @@
+# ca/tasks/main.yaml
+---
+- name: Configure firewall
+  include_tasks: firewall.yaml
+
+- name: Setup CA
+  include_tasks: ca.yaml

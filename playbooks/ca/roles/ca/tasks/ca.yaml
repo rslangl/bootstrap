@@ -1,0 +1,38 @@
+# ca/tasks/ca.yaml
+---
+- name: Install step-ca
+  community.general.apk:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items:
+    - step-cli
+    - step-certificates
+
+- name: Create data directory
+  ansible.builtin.file:
+    path: "{{ ca.data_dir }}"
+    state: directory
+    mode: 0700
+
+- name: Initialize CA
+  ansible.builtin.command: >
+    step ca init
+      --name "{{ ca.name }}"
+      --dns "{{ host_fqdn }}"
+      --address "{{ ca.port }}"
+      --provisioner "{{ ca.provisioner }}"
+      --password-file "{{ ca.data_dir }}/password"
+  args:
+    chdir: "{{ ca.data_dir }}"
+    creates: "{{ ca.data_dir }}/config/ca.json"
+  environment:
+    STEPPATH: "{{ ca.data_dir }}"
+  register: ca_init
+
+- name: Save provisioner password
+  ansible.builtin.copy:
+    content: "{{ ca.password }}"
+    dest: /etc/systemd/system/step-ca.service
+    mode: 0644
+
