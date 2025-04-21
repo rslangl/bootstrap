@@ -3,6 +3,7 @@
 server:
     verbosity: 1
     interface: 0.0.0.0
+    port: {{ dns.port }}
     #interface: ::0 # not used, ipv6 is disabled
     access-control: 127.0.0.0/8 allow 
     #access-control: ::1 allow  # not used, ipv6 is disabled
@@ -22,6 +23,6 @@ server:
 
     forward-zone:
         name: "."
-        forward-addr: {{ dns.authoritative }}
-        forward-addr: {{ dns.public_dns_1 }}
-        forward-addr: {{ dns.public_dns_2 }}
+        forward-addr: {{ dns.authoritative }}@{{ dns.port }}
+        #forward-addr: {{ dns.public_dns_1 }}
+        #forward-addr: {{ dns.public_dns_2 }}

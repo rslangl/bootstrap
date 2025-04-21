@@ -9,3 +9,5 @@ conn dns-secure-connection
   esp=aes256-sha256
   keyexchange=ikev2
   auto=start
+  leftprotoport=udp/{{ dns.port }}
+  rightprotoport=udp/{{ dns.port }}
