@@ -60,6 +60,15 @@
     state: present
   ignore_errors: true
 
+- name: Open port for DNS
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: udp
+    jump: ACCEPT
+    destination_port: "{{ dns_port }}"
+    state: present
+  ignore_errors: true
+
 - name: Save iptables rules to /etc/iptables/rules.v4
   ansible.builtin.command:
     cmd: iptables-save > /etc/iptables/rules.v4
