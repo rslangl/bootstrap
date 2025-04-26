@@ -30,3 +30,16 @@ terraform workspace select dev
 terraform apply -var-file=dev.tfvars
 ```
 
+## TODO
+
+### Disks on appsrv
+
+* 2 disks, ext4, RAID1, for OS
+* RAIDZ2 on remaining disks for workloads
+
+### SDN
+
+* VXLAN `vnet-k8s-workers` for k8s worker nodes
+* VXLAN `vnet-k8s-control` for k8s control plane nodes
+* Bridge or NAT `vnet-ingress` for exposing the k8s cluster
+* VXLAN `vnet-admin` for jump hosts/monitoring
