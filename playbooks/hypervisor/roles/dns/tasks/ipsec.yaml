@@ -1,7 +1,7 @@
 # dns/tasks/ipsec.yaml
 ---
 - name: Install strongswan
-  ansible.builtint.apt:
+  ansible.builtin.apt:
     name: strongswan
     state: present
     update_cache: true
