@@ -10,7 +10,7 @@ IMAGES=(
   [pve]="$PVE_URL"
 )
 
-for image in "${IMAGES[@]}"; do
+for image in "${!IMAGES[@]}"; do
   url="${IMAGES[$image]}"
   echo "Downloading from $url..."
   curl -s -o "$image.iso" "$url"
