@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -17,7 +17,7 @@ IMAGES=(
 for image in "${!IMAGES[@]}"; do
   IFS="|" read -r url checksum <<<"${IMAGES[$image]}"
   dest_file="${DOWNLOAD_DIR}/${image}.iso"
-  # url="${IMAGES[$image]}"
+
   echo "Downloading from $url..."
   curl -s -o "$dest_file" "$url"
 
