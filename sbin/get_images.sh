@@ -14,5 +14,13 @@ for image in "${IMAGES[@]}"; do
   url="${IMAGES[$image]}"
   echo "Downloading from $url..."
   curl -s -o "$image.iso" "$url"
-  qemu-img convert -f raw -O raw "$image.iso" "$image.img"
+
+  if [[ $? -eq 0 ]]; then
+    echo "Saved image as $image.iso"
+    echo "Converting to img..."
+    qemu-img convert -f raw -O raw "$image.iso" "$image.img"
+    echo "Done!"
+  else
+    echo "Failed to download from $url"
+  fi
 done
