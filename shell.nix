@@ -6,6 +6,8 @@
     vagrant
     terraform
     python3
+    proxmox-auto-install-assistant
+    xorriso
   ];
 
   in pkgs.mkShell {
