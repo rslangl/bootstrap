@@ -31,9 +31,14 @@ for image in "${!IMAGES[@]}"; do
 
     if [[ $actual_checksum == $checksum ]]; then
       echo "Checksum verified"
-      echo "Converting to img..."
-      qemu-img convert -f raw -O raw "$dest_file" "${DOWNLOAD_DIR}/${image}.img"
-      echo "Done!"
+      # echo "Converting to img..."
+      # qemu-img convert -f raw -O raw "$dest_file" "${DOWNLOAD_DIR}/${image}.img"
+      # echo "Done!"
+
+      if [[ $image == "pve" ]]; then
+        echo "Creating auto-installer for PVE"
+        proxmox-auto-install-assistant prepare-iso "${image}.iso" --fetch-from iso --answer-file "${HOSTCONFIGS_DIR}/test/answer.toml"
+      fi
     fi
   else
     echo "Failed to download from $url"
