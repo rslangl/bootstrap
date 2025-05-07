@@ -10,17 +10,22 @@ root-ssh-keys = [
 ]
 
 [network]
-source = "from-dhcp"
+source = "from-answer"
+cidr="192.168.1.20/24"
+dns="192.168.1.10"
+gateway="192.168.1.10"
 
 [disk-setup]
-filesystem = "zfs"
-zfs.raid = "raid1"
-disk-list = ["sda", "sdb"]
+filesystem = "ext4"
+disk_list = ["sda"]
+#filesystem = "zfs"
+#zfs.raid = "raidz-2"
+#disk-list = ["sda", "sdb"]
 
-[post-installation-webhook]
-url = "https://my.endpoint.local/postinst"
-cert-fingerprint = "AA:E8:CB:95:B1:..."
-
+# [post-installation-webhook]
+# url = "https://my.endpoint.local/postinst"
+# cert-fingerprint = "AA:E8:CB:95:B1:..."
+#
 [first-boot]
 source = "from-iso"
 ordering = "before-network"
