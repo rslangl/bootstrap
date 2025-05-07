@@ -15,19 +15,20 @@ HOSTS=(
 )
 
 # checks whether the test network is running
-if virsh net-info "$NETWORK_NAME" &> /dev/null; then
+if virsh net-info "$NETWORK_NAME" &>/dev/null; then
   echo "Test network $NETWORK_NAME exists"
   if virsh net-info "$NETWORK_NAME" | grep -q '^Active:\s*yes'; then
     echo "Test network $NETWORK_NAME is running"
   else
     echo "Test network $NETWORK_NAME not running, starting..."
     virsh net-start "$NETWORK_NAME"
-  end
+  fi
 else
+  echo "Test network $NETWORK_NAME does not exist, creating..."
   virsh net-define "${SCRIPT_DIR}/testnet.xml"
   virsh net-autostart testnet
   virsh net-start testnet
-end
+fi
 
 # iterates list of VMs and ensures they are in a started state
 for host in "${!HOSTS[@]}"; do
