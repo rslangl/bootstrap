@@ -5,47 +5,52 @@ set -ex
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 IMAGES_DIR="${ROOT_DIR}/images"
+DISKS_DIR="${ROOT_DIR}/test/vm_disks"
 
 NETWORK_NAME="testnet"
 
 declare -A HOSTS
 
+# structure: osinfo, RAM, CPU, disk size, static IP, MAC, ISO-file
 HOSTS=(
-  [pve]="2048|2|192.168.100.10|52:54:00:aa:bb:01|${IMAGES_DIR}/pve-auto.iso"
+  [pve]="debian12|2048|2|10|192.168.100.10|52:54:00:aa:bb:01|${IMAGES_DIR}/pve-auto.iso"
 )
 
+# start per-user session socket
+virsh --connect qemu:///session list
+
 # checks whether the test network is running
-if virsh net-info "$NETWORK_NAME" &>/dev/null; then
-  echo "Test network $NETWORK_NAME exists"
-  if virsh net-info "$NETWORK_NAME" | grep -q '^Active:\s*yes'; then
-    echo "Test network $NETWORK_NAME is running"
-  else
-    echo "Test network $NETWORK_NAME not running, starting..."
-    virsh net-start "$NETWORK_NAME"
-  fi
-else
-  echo "Test network $NETWORK_NAME does not exist, creating..."
-  virsh net-define "${SCRIPT_DIR}/testnet.xml"
-  virsh net-autostart testnet
-  virsh net-start testnet
-fi
+# if virsh --connect qemu:///session net-info "$NETWORK_NAME" &>/dev/null; then
+#   echo "Test network $NETWORK_NAME exists"
+#   if virsh --connect qemu:///session net-info "$NETWORK_NAME" | grep -q '^Active:\s*yes'; then
+#     echo "Test network $NETWORK_NAME is running"
+#   else
+#     echo "Test network $NETWORK_NAME not running, starting..."
+#     virsh --connect qemu:///session net-start "$NETWORK_NAME"
+#   fi
+# else
+#   echo "Test network $NETWORK_NAME does not exist, creating..."
+#   virsh --connect qemu:///session net-define "${ROOT_DIR}/test/testnet.xml"
+#   virsh --connect qemu:///session net-autostart testnet
+#   virsh --connect qemu:///session net-start testnet
+# fi
 
 # iterates list of VMs and ensures they are in a started state
 for host in "${!HOSTS[@]}"; do
-  IFS="|" read -r ram vcpu ip mac iso <<<"${HOSTS[$host]}"
+  IFS="|" read -r osinfo ram vcpu disk ip mac iso <<<"${HOSTS[$host]}"
 
-  #qemu-img create -f qcow2 $host.qcow2 10G
+  echo "Spinning up $host..."
 
   virt-install \
-    --osinfo debian12 \
+    --connect qemu:///session \
+    --osinfo "$osinfo" \
     --name "${host}-local" \
     --ram "$ram" \
     --vcpus "$vcpu" \
-    --disk path="$host".qcow2 \
     --cdrom "$iso" \
+    --disk path="${DISKS_DIR}/$host".qcow2,format=qcow2,size="$disk" \
     --graphics none \
-    --network network=testnet,mac=$mac \
+    --network user,model=virtio \
     --console pty,target_type=serial
-  #--extra-args 'console=ttyS0,115200n8 serial'
 
 done
