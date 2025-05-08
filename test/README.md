@@ -9,6 +9,8 @@ Spins up a local sandbox for testing the IaC contained in the parent directory u
 
 ## Usage 
 
+### Build PVE
+
 Build PVE autoinstaller image with Docker:
 ```shell
 docker build -t proxmox-iso-builder -f Dockerfile.pve-autoinstaller-builder .
@@ -28,6 +30,30 @@ Where:
 * `pve.iso` is the ISO fetched from Proxmox
 * `answer.toml` is the configuration file seeded to the PVE autoinstaller
 * `output/` is the path to which the autoinstaller image will be placed
+
+### Run VMs
+
+Run:
+```shell
+./spinup.sh
+```
+
+Once running, get the VNC display number, and connect:
+```shell
+# lists running VMs
+$ virsh --connect qemu:///session list
+ Id   Name         State
+--------------------------------
+ 1    pve-local    running
+
+# get the VNC display number
+$ virsh --connect qemu:///session vncdisplay pve-local 
+127.0.0.1:0
+
+# connect
+$ vncviewer :0
+```
+
 
 ## Troubleshooting
 
