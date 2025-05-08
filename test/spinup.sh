@@ -49,8 +49,10 @@ for host in "${!HOSTS[@]}"; do
     --vcpus "$vcpu" \
     --cdrom "$iso" \
     --disk path="${DISKS_DIR}/$host".qcow2,format=qcow2,size="$disk" \
-    --graphics none \
+    --graphics vnc \
     --network user,model=virtio \
-    --console pty,target_type=serial
+    --wait 0 \
+    --noautoconsole
+  #--console pty,target_type=serial
 
 done
