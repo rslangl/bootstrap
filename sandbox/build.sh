@@ -5,6 +5,7 @@ set -ex
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 IMAGES_DIR="${ROOT_DIR}/images"
+SOURCES_DIR="${ROOT_DIR}/sandbox"
 
 if docker image inspect proxmox-iso-builder >/dev/null 2>&1; then
   echo "Image already present"
@@ -15,8 +16,9 @@ fi
 
 docker run --rm \
   -v "${IMAGES_DIR}/pve.iso:/build/pve.iso:ro" \
-  -v "$(pwd)/answer.toml:/build/answer.toml:ro" \
-  -v "$(pwd)/output:/build/output" \
+  -v "${SOURCES_DIR}/answer.toml:/build/answer.toml:ro" \
+  -v "${SOURCES_DIR}/output:/build/output" \
+  -v "${SOURCES_DIR}/first_boot.sh:/build/first_boot.sh" \
   proxmox-iso-builder /build/pve.iso \
   --fetch-from iso \
   --answer-file /build/answer.toml \

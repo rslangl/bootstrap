@@ -14,6 +14,7 @@ source = "from-answer"
 cidr="192.168.1.20/24"
 dns="192.168.1.10"
 gateway="192.168.1.10"
+filter={ ID_NET_NAME_MAC = "enxe43d1afa379a" }
 
 [disk-setup]
 filesystem = "ext4"
@@ -25,7 +26,7 @@ disk_list = ["sda"]
 # [post-installation-webhook]
 # url = "https://my.endpoint.local/postinst"
 # cert-fingerprint = "AA:E8:CB:95:B1:..."
-#
+
 [first-boot]
 source = "from-iso"
 ordering = "before-network"
