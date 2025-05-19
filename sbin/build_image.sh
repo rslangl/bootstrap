@@ -2,6 +2,8 @@
 
 set -ex
 
+# TODO: declare list of images to be built, based on environment (e.g. --sandbox builds image versions for local development)
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 IMAGES_DIR="${ROOT_DIR}/images"
