@@ -6,6 +6,11 @@
     vagrant
     terraform
     python3
+    qemu
+    libvirt
+    virt-manager
+    # proxmox-auto-install-assistant
+    # xorriso
   ];
 
   in pkgs.mkShell {
@@ -14,7 +19,8 @@
 
     shellHook = ''
 
-      source ./sbin/* > /dev/null 2>&1
+      export HELPER_SCRIPTS="${toString ./_scripts}"
+      export PATH="$HELPER_SCRIPTS:$PATH"
 
       function terminate() {
         if [ "$(id -u)" -ne 0 ]; then

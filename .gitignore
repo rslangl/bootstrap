@@ -1,2 +1,4 @@
 .vagrant/
+test/output/*
+test/vm_disks/*
 NOTES_*
