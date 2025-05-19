@@ -14,6 +14,7 @@ else
   docker build -t proxmox-iso-builder -f Dockerfile.pve-autoinstaller-builder .
 fi
 
+# TODO: add --on-first-boot /build/first_boot.sh
 docker run --rm \
   -v "${IMAGES_DIR}/pve.iso:/build/pve.iso:ro" \
   -v "${SOURCES_DIR}/answer.toml:/build/answer.toml:ro" \
@@ -22,5 +23,4 @@ docker run --rm \
   proxmox-iso-builder /build/pve.iso \
   --fetch-from iso \
   --answer-file /build/answer.toml \
-  --on-first-boot /build/first_boot.sh \
   --output /build/output/pve-auto.iso

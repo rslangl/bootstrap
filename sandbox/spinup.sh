@@ -5,7 +5,7 @@ set -ex
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 IMAGES_DIR="${ROOT_DIR}/images"
-DISKS_DIR="${ROOT_DIR}/test/vm_disks"
+DISKS_DIR="${ROOT_DIR}/sandbox/vm_disks"
 
 NETWORK_NAME="testnet"
 
@@ -37,7 +37,12 @@ virsh --connect qemu:///session list
 
 # iterates list of VMs and ensures they are in a started state
 for host in "${!HOSTS[@]}"; do
-  IFS="|" read -r osinfo ram vcpu disk ip mac iso <<<"${HOSTS[$host]}"
+  IFS="|" read -r osinfo ram vcpu disk_size ip mac iso <<<"${HOSTS[$host]}"
+
+  if [ ! -e "${DISKS_DIR}/$host".qcow2 ]; then
+    echo "VM disk does not exist, creating..."
+    qemu-img create -f qcow2 "${DISKS_DIR}/$host".qcow2 "${disk_size}G"
+  fi
 
   echo "Spinning up $host..."
 
@@ -48,7 +53,7 @@ for host in "${!HOSTS[@]}"; do
     --ram "$ram" \
     --vcpus "$vcpu" \
     --cdrom "$iso" \
-    --disk path="${DISKS_DIR}/$host".qcow2,format=qcow2,size="$disk" \
+    --disk path="${DISKS_DIR}/$host".qcow2,format=qcow2,size="$disk_size" \
     --graphics vnc \
     --network user,model=virtio \
     --wait 0 \
@@ -56,3 +61,8 @@ for host in "${!HOSTS[@]}"; do
   #--console pty,target_type=serial
 
 done
+
+# TODO:
+# 1. virsh managedsave-remove <vm>
+# 2. virsh undefine <vm> --nvram (where nvram is used for UEFI systems)
+# 3. virsh destroy <vm>

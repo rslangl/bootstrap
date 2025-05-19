@@ -10,23 +10,24 @@ root-ssh-keys = [
 ]
 
 [network]
-source = "from-answer"
-cidr="192.168.1.20/24"
-dns="192.168.1.10"
-gateway="192.168.1.10"
-filter={ ID_NET_NAME_MAC = "enxe43d1afa379a" }
+# TODO: iaw the TODO for first-boot, we use DHCP as of now
+source = "from-dhcp"
+# source = "from-answer"
+# cidr="192.168.1.20/24"
+# dns="192.168.1.10"
+# gateway="192.168.1.10"
+# # NOTE: need to know the UDEV property for the network interface
+# udevadm info -q all -n ens18
+# filter={ ID_NET_NAME_MAC = "enxe43d1afa379a" }
 
+# NOTE: the real hardware is setup with ext4 for OS disk
+# and raidz2 for data
 [disk-setup]
 filesystem = "ext4"
 disk_list = ["sda"]
-#filesystem = "zfs"
-#zfs.raid = "raidz-2"
-#disk-list = ["sda", "sdb"]
 
-# [post-installation-webhook]
-# url = "https://my.endpoint.local/postinst"
-# cert-fingerprint = "AA:E8:CB:95:B1:..."
-
-[first-boot]
-source = "from-iso"
-ordering = "before-network"
+# TODO: creating the ISO with the script contents was not straight forward,
+# will therefore add this feature later
+# [first-boot]
+# source = "from-iso"
+# ordering = "before-network"
