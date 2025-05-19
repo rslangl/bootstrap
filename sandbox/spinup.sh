@@ -46,6 +46,14 @@ for host in "${!HOSTS[@]}"; do
 
   echo "Spinning up $host..."
 
+  # TODO: ensure nested virtualization is enabled:
+  # cat /sys/module/kvm_intel/parameters/nested  # For Intel
+  # cat /sys/module/kvm_amd/parameters/nested    # For AMD
+  # If not enabled:
+  # sudo tee /etc/modprobe.d/kvm.conf <<EOF
+  # options kvm_intel nested=1
+  # EOF
+  # sudo modprobe -r kvm_intel && sudo modprobe kvm_intel
   virt-install \
     --connect qemu:///session \
     --osinfo "$osinfo" \
@@ -54,6 +62,7 @@ for host in "${!HOSTS[@]}"; do
     --vcpus "$vcpu" \
     --cdrom "$iso" \
     --disk path="${DISKS_DIR}/$host".qcow2,format=qcow2,size="$disk_size" \
+    --boot cdrom,hd \
     --graphics vnc \
     --network user,model=virtio \
     --wait 0 \
