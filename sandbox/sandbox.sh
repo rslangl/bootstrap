@@ -4,8 +4,8 @@ set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-IMAGES_DIR="${ROOT_DIR}/images"
-DISKS_DIR="${ROOT_DIR}/sandbox/vm_disks"
+IMAGES_DIR="${ROOT_DIR}/runtime/images"
+DISKS_DIR="${ROOT_DIR}/runtime/vm_disks"
 
 declare -A HOSTS
 
@@ -82,12 +82,25 @@ if [[ "$TERMINATE" -eq 1 ]]; then
   done
 fi
 
+# TODO: ensure nested virtualization is enabled:
+# cat /sys/module/kvm_intel/parameters/nested  # For Intel
+# cat /sys/module/kvm_amd/parameters/nested    # For AMD
+# If not enabled:
+# sudo tee /etc/modprobe.d/kvm.conf <<EOF
+# options kvm_intel nested=1
+# EOF
+# sudo modprobe -r kvm_intel && sudo modprobe kvm_intel
 if [[ "$LAUNCH" -eq 1 ]]; then
 
   for host in "${!HOSTS[@]}"; do
     IFS="|" read -r osinfo ram vcpu disk ip mac iso <<<"${HOSTS[$host]}"
 
     echo "🚀 Launching VM: $VMNAME"
+
+    if [ ! -e "${DISKS_DIR}/$host".qcow2 ]; then
+      echo "VM disk does not exist, creating..."
+      qemu-img create -f qcow2 "${DISKS_DIR}/$host".qcow2 "${disk_size}G"
+    fi
 
     virt-install \
       --connect qemu:///session \
