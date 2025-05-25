@@ -1,0 +1,3 @@
+# interfaces/tasks/phy_lan.yaml
+---
+# TODO: setup LAN, OPT1, OPT2 each serving their own subnets

@@ -1,0 +1,4 @@
+# interfaces/tasks/phy.yaml
+---
+# TODO: specify WAN, receive IP with DHCP client
+# report open ports
