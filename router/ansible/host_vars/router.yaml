@@ -1,7 +1,10 @@
 # host_vars/router.yaml
 ---
 hostname: router
-domain: nekrohaven.lan
+dns:
+  local_domain: nekrohaven.lan
+  bootstrap_servers:
+    - 9.9.9.9:53
 config_file: /conf/config.xml
 templates_dir:
   default: /usr/local/opnsense/service/templates/OPNsense
