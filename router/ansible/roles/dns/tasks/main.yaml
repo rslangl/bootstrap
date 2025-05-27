@@ -1,0 +1,4 @@
+# dns/tasks/main.yaml
+---
+- name: Setup authoritative DNS
+  include_tasks: unbound.yaml
