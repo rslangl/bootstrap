@@ -1,3 +1,13 @@
 # host_vars/router.yaml
 ---
 hostname: router
+domain: nekrohaven.lan
+config_file: /conf/config.xml
+templates_dir:
+  default: /usr/local/opnsense/service/templates/OPNsense
+  custom: /usr/local/opnsense/service/templates/OPNsense-custom/
+interfaces:
+  wan: igc0
+  lan: igc1
+  opt1: igc2
+  opt2: igc3
