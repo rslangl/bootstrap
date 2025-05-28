@@ -6,48 +6,38 @@ Spins up a local sandbox for testing the IaC contained in the parent directory u
 * `libvirt`
 * `libvirt-daemon`
 * `libvirt-daemon-qemu`
+* `terraform`
 
 ## Usage 
 
-### Build PVE
-
-Build PVE autoinstaller image with Docker:
+Run terraform as sudo (required as we need the privileged session):
 ```shell
-docker build -t proxmox-iso-builder -f Dockerfile.pve-autoinstaller-builder .
+$ sudo terraform validate
+$ sudo terraform plan -out plan
+$ sudo terraform apply plan
 ```
 
-Run image to build image:
-```shell
-docker run --rm \
-  -v "$(pwd)/../images/pve.iso:/build/pve.iso:ro" \
-  -v "$(pwd)/answer.toml:/build/answer.toml:ro" \
-  -v "$(pwd)/output:/build/output" \
-  proxmox-iso-builder /build/pve.iso --fetch-from iso --answer-file /build/answer.toml \
-  --output /build/output/pve-auto.iso
-```
-
-Where:
-* `pve.iso` is the ISO fetched from Proxmox
-* `answer.toml` is the configuration file seeded to the PVE autoinstaller
-* `output/` is the path to which the autoinstaller image will be placed
-
-### Run VMs
-
-Run:
-```shell
-./spinup.sh
-```
-
-Once running, get the VNC display number, and connect:
+Once running, list the running instances to verify: 
 ```shell
 # lists running VMs
-$ virsh --connect qemu:///session list
+$ sudo virsh list --all
  Id   Name         State
 --------------------------------
  1    pve-local    running
 
+# list VM info
+$ sudo dominfo pve-local
+
+# list attached disks
+$ sudo domblklist pve-local
+```
+
+To connect, get the VNC display number:
+```shell
+```
+```
 # get the VNC display number
-$ virsh --connect qemu:///session vncdisplay pve-local 
+$ virsh vncdisplay pve-local 
 127.0.0.1:0
 
 # connect
