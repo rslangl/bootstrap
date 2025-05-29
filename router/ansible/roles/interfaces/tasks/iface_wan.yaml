@@ -1,4 +1,11 @@
-# interfaces/tasks/phy.yaml
+# interfaces/tasks/iface_wan.yaml
 ---
-# TODO: specify WAN, receive IP with DHCP client
-# report open ports
+- name: Configure WAN interface
+  ansible.builtin.blockinfile:
+    path: /conf/config.xml
+    marker: ""
+    block: "{{ lookup('template', 'wan.xml.j2') }}"
+    insertafter: "<interfaces>"
+    state: present
+    backup: true
+    create: false
