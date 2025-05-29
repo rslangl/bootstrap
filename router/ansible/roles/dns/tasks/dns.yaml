@@ -1,4 +1,0 @@
-# TODO: This is the authoritative server in the setup. 
-# Use DNSCrypt with Unbound
-# Use upstream resolver from servers.opennic.org (use api.opennicproject.org if connected to teh inturwebz)
----

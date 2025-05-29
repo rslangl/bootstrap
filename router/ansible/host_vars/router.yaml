@@ -1,3 +1,23 @@
 # host_vars/router.yaml
 ---
 hostname: router
+dns:
+  local_domain: nekrohaven.lan
+  bootstrap_servers:
+    - 9.9.9.9:53
+config_file: /conf/config.xml
+templates_dir:
+  default: /usr/local/opnsense/service/templates/OPNsense
+  custom: /usr/local/opnsense/service/templates/OPNsense-custom/
+interfaces:
+  wan: 
+    name: igc0
+  lan: 
+    name: igc1
+    ipv4: 192.168.10.1
+    subnet: 24
+    domain: nekrohaven.lan
+    dns: 192.168.10.1
+    dhcp:
+      from: 192.168.10.50
+      to: 192.168.10.254
