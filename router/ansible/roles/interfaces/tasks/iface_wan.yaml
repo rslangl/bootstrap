@@ -13,10 +13,10 @@
       }
       { print }
     ' /conf/config.xml > /conf/config.tmp.xml && mv /conf/config.tmp.xml /conf/config.xml
+
 - name: Configure WAN interface
   ansible.builtin.blockinfile:
     path: /conf/config.xml
-    marker: ""
     block: "{{ lookup('template', 'wan.xml.j2') }}"
     insertafter: "<!-- ANSIBLE WAN BLOCK -->"
     state: present
