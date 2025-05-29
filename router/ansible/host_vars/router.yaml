@@ -10,7 +10,14 @@ templates_dir:
   default: /usr/local/opnsense/service/templates/OPNsense
   custom: /usr/local/opnsense/service/templates/OPNsense-custom/
 interfaces:
-  wan: igc0
-  lan: igc1
-  opt1: igc2
-  opt2: igc3
+  wan: 
+    name: igc0
+  lan: 
+    name: igc1
+    ipv4: 192.168.10.1
+    subnet: 24
+    domain: nekrohaven.lan
+    dns: 192.168.10.1
+    dhcp:
+      from: 192.168.10.50
+      to: 192.168.10.254
