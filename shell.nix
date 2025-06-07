@@ -7,6 +7,7 @@
     terraform
     python3
     qemu
+    qemu_kvm
     libvirt
     virt-manager
     # proxmox-auto-install-assistant
