@@ -1,0 +1,12 @@
+<lan>
+  <enable>1</enable>
+  <range>
+    <from>{{ interfaces.lan.dhcp.from }}</from>
+    <to>{{ interfaces.lan.dhcp.to }}</to>
+  </range>
+  <defaultleasetime>7200</defaultleasetime>
+  <maxleasetime>86400</maxleasetime>
+  <gateway>{{ interfaces.lan.ipv4 }}</gateway>
+  <domain>{{ interfaces.lan.domain }}</domain>
+  <dnsserver>{{ interfaces.lan.dns }}</dnsserver>
+</lan>

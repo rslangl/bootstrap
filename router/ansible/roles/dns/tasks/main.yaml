@@ -1,7 +1,0 @@
-# dns/tasks/main.yaml
----
-- name: Setup authoritative DNS
-  include_tasks: unbound.yaml
-
-- name: Setup DNS forwarder
-  include_tasks: dnscrypt-proxy.yaml

@@ -1,0 +1,7 @@
+# dns/vars/main.yaml
+---
+dns:
+  port: "{{ lookup('env', 'DNS_PORT') }}"
+  authoritative: "{{ lookup('env', 'AUTHORITATIVE_DNS') }}"
+  public_dns_1: "{{ lookup('env', 'PUBLIC_DNS_1') }}"
+  public_dns_2: "{{ lookup('env', 'PUBLIC_DNS_2') }}"

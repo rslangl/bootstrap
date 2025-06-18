@@ -1,0 +1,16 @@
+# dns/tasks/dns.yaml
+---
+- name: Copy unbound template 
+  ansible.builtin.copy:
+    src: unbound.conf.j2
+    dest: "{{ templates_dir.custom }}"
+    user: root
+    group: root
+    mode: 0600
+
+- name: Reload unbound config
+  ansible.builtin.command: configctl template reload
+
+- name: Restart unbound service
+  ansible.builtin.command: configctl unbound restart
+
