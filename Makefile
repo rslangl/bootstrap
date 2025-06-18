@@ -2,7 +2,7 @@ RESOURCES_DIR := resources
 
 export RESOURCES_DIR
 
-include common/generate.mk
+include host_configs/generate.mk
 
 .PHONY: all clean
 
