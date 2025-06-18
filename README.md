@@ -15,3 +15,4 @@ $ direnv allow
 ## TODO
 
 * Sandbox environment to speed up the fecking development and testing cycle...
+* Better sudo handling in `_scripts/helper.sh`
