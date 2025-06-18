@@ -5,8 +5,6 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DEV_DIR="${ROOT_DIR}/dev"
 DOCKER_PID=""
 
-set -ex
-
 function shutdown_docker() {
   echo "Shutting down containers..."
 
