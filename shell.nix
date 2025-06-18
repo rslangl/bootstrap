@@ -8,6 +8,7 @@
     qemu
     libvirt
     virt-manager
+    shellcheck
   ];
 
   in pkgs.mkShell {
@@ -16,7 +17,7 @@
 
     shellHook = ''
 
-      export HELPER_SCRIPTS="${toString ./_scripts}"
+      export HELPER_SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[@]}")./_scripts" && pwd)"
       export PATH="$HELPER_SCRIPTS:$PATH"
 
       function terminate() {
