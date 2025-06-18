@@ -3,14 +3,11 @@
   let tools = with pkgs; [
     docker
     ansible
-    vagrant
     terraform
     python3
     qemu
     libvirt
     virt-manager
-    # proxmox-auto-install-assistant
-    # xorriso
   ];
 
   in pkgs.mkShell {
