@@ -1,6 +1,11 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+DEV_DIR="${ROOT_DIR}/dev"
 DOCKER_PID=""
+
+set -ex
 
 function shutdown_docker() {
   echo "Shutting down containers..."
@@ -44,7 +49,7 @@ function generate_ssh_key() {
   echo "Generating SSH key..."
 
   mkdir ssh
-  ssh-keygen -t rsa -b 4096 -f ssh/id_rsa -N "" -q
+  ssh-keygen -t rsa -b 4096 -f ${DEV_DIR}/ssh/id_rsa -N "" -q
 
   echo "Done!"
 }
