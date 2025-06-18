@@ -17,8 +17,13 @@
 
     shellHook = ''
 
-      export HELPER_SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[@]}")./_scripts" && pwd)"
+
+      export HELPER_SCRIPTS="$PWD/_scripts"
       export PATH="$HELPER_SCRIPTS:$PATH"
+
+      if [ -f "$HELPER_SCRIPTS/helper.sh" ]; then
+        source "$HELPER_SCRIPTS/helper.sh"
+      fi
 
       function terminate() {
         if [ "$(id -u)" -ne 0 ]; then
@@ -30,12 +35,16 @@
         fi
       }
 
-      trap 'terminate;' SIGTERM SIGINT EXIT
+      # Wrap trap setup with interactive shell check
+      if [[ $- == *i* ]]; then
+        trap 'echo "EXIT trap: status=$? line=$LINENO"; terminate;' SIGTERM SIGINT EXIT
+      fi
 
       echo ""
       echo "Working in nix-shell environment, usage:"
       echo -e "  start_docker:\t\tStarts the docker daemon"
       echo -e "  generate_ssh_key:\tGenerates an SSH key to ./ssh"
+
       # TODO: aliases for running lengthy ansible and terraform commands, with instructions printed here
       '';
   }
