@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+DEV_DIR="${ROOT_DIR}/dev"
 DOCKER_PID=""
 
 function shutdown_docker() {
@@ -7,19 +10,19 @@ function shutdown_docker() {
 
   if [ "$(docker ps -a -q | wc -l)" -gt 0 ]; then
     # stops all containers
-    docker stop $(docker ps -a -q)
+    docker stop "$(docker ps -a -q)"
 
     # force remove all containers and associated volumes
-    docker container rm -vf $(docker ps -a -q)
+    docker container rm -vf "$(docker ps -a -q)"
 
     # force remove all images
-    docker rmi -f $(docker images -aq)
+    docker rmi -f "$(docker images -aq)"
   fi
 
-  if [ ! -z "$DOCKER_PID" ]; then
-    if ps -p $DOCKER_PID ] &>/dev/null; then
+  if [ -n "$DOCKER_PID" ]; then
+    if ps -p "$DOCKER_PID" &>/dev/null; then
       # terminate docker service
-      kill $DOCKER_PID
+      kill "$DOCKER_PID"
     fi
   fi
 
@@ -28,12 +31,12 @@ function shutdown_docker() {
 
 function start_docker() {
 
-  if ps -p $DOCKER_PID &>/dev/null; then
+  if ps -p "$DOCKER_PID" &>/dev/null; then
     echo "Docker already running"
   else
     echo "Starting docker daemon..."
 
-    sudo nohup dockerd >/tmp/dockerd.log &>/dev/null &
+    sudo nohup dockerd >/tmp/dockerd.log 2>/dev/null &
     DOCKER_PID=$(echo $! | awk '{$1=$1};1')
 
     echo "Done!"
@@ -44,7 +47,7 @@ function generate_ssh_key() {
   echo "Generating SSH key..."
 
   mkdir ssh
-  ssh-keygen -t rsa -b 4096 -f ssh/id_rsa -N "" -q
+  ssh-keygen -t rsa -b 4096 -f "${DEV_DIR}"/ssh/id_rsa -N "" -q
 
   echo "Done!"
 }
