@@ -14,18 +14,57 @@ declare -A IMAGES
 
 IMAGES=(
   [pve]="$PVE_SRC"
-  #[ubuntu]="$UBUNTU_URL"
+  [opnsense]="$OPNSENSE_SRC"
 )
+
+is_compressed() {
+  local file="$1"
+  [[ -f "$file" ]] || return 1
+
+  file_type=$(file -b --mime-type "$file")
+
+  case "$file_type" in
+  application/x-gzip | application/gzip | application/x-bzip2 | application/zip)
+    return 0 # it's compressed
+    ;;
+  *)
+    return 1 # not compressed
+    ;;
+  esac
+}
+
+decompress_image() {
+  local img="$1"
+  [[ -f "$img" ]] || return 1
+
+  echo "Decompressing $1..."
+
+  case "$img" in
+  *.bz2)
+    bzip2 -dk "$img"
+    ;;
+  *)
+    echo "Error: unsupported compression type"
+    exit 1
+    ;;
+  esac
+}
 
 for image in "${!IMAGES[@]}"; do
   IFS="|" read -r url checksum <<<"${IMAGES[$image]}"
   dest_file="${DOWNLOAD_DIR}/${image}.iso"
+
+  # TODO: check if file is already present
 
   echo "Downloading from $url..."
   curl -s -o "$dest_file" "$url"
 
   if [[ $? -eq 0 ]]; then
     echo "Saved image as $dest_file"
+
+    if is_compressed "$dest_file"; then
+      decompress_image "$dest_file"
+    fi
 
     echo "Verifying checksum..."
     actual_checksum=$(sha256sum "$dest_file" | awk '{print $1}')
