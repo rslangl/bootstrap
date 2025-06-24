@@ -16,6 +16,12 @@ resource "libvirt_network" "sandbox_net" {
   mode = "route"
   domain = "sandbox.local"
   addresses = ["192.168.50.1/24"]
+  autostart = true
+  dns {
+    enabled = true
+    # Enables forwarding unanswered DNS queries to upstream
+    local_only = false
+  }
 }
 
 resource "libvirt_domain" "opnsense" {
