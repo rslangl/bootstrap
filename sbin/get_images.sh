@@ -17,6 +17,15 @@ IMAGES=(
   [opnsense]="$OPNSENSE_SRC"
 )
 
+get_checksum() {
+  local file="$1"
+  if [[ ! -f "$file" ]]; then
+    echo "Error: no file provided"
+    exit 1
+  fi
+  sha256sum "$file" | awk '{print $1}'
+}
+
 is_compressed() {
   local file="$1"
   [[ -f "$file" ]] || return 1
@@ -54,10 +63,17 @@ for image in "${!IMAGES[@]}"; do
   IFS="|" read -r url checksum <<<"${IMAGES[$image]}"
   dest_file="${DOWNLOAD_DIR}/${image}.iso"
 
-  # TODO: check if file is already present
+  if [[ -e "$dest_file" ]]; then
+    dest_file_checksum=$(get_checksum "$dest_file")
+
+    if [[ "$dest_file_checksum" == "$checksum" ]]; then
+      echo "$dest_file already present, skipping"
+      continue
+    fi
+  fi
 
   echo "Downloading from $url..."
-  curl -s -o "$dest_file" "$url"
+  curl -s -o "$dest_file" "$url" # TODO: error: unsupported compression type since file is stored as `opnsense.iso` and not *.bz2
 
   if [[ $? -eq 0 ]]; then
     echo "Saved image as $dest_file"
