@@ -7,8 +7,8 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DOWNLOAD_DIR="${ROOT_DIR}/images"
 
 PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
-UBUNTU_SRC="https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img|1ecb0f1fbb7d722987e498cc5cdb8a3221c09c9501d02cdbba31fb8097e5349b"
-OPNSENSE_SRC="https://opnsense-mirror.hiho.ch/releases/mirror/OPNsense-25.1-dvd-amd64.iso.bz2|68efe0e5c20bd5fbe42918f000685ec10a1756126e37ca28f187b2ad7e5889ca"
+OPNSENSE_SRC="https://opnsense-mirror.hiho.ch/releases/mirror/OPNsense-25.1-dvd-amd64.iso.bz2|e4c178840ab1017bf80097424da76d896ef4183fe10696e92f288d0641475871"
+# NOTE: checksum for tarball: 68efe0e5c20bd5fbe42918f000685ec10a1756126e37ca28f187b2ad7e5889ca"
 
 declare -A IMAGES
 
@@ -20,7 +20,7 @@ IMAGES=(
 get_checksum() {
   local file="$1"
   if [[ ! -f "$file" ]]; then
-    echo "Error: no file provided"
+    echo "ERROR: No file provided"
     exit 1
   fi
   sha256sum "$file" | awk '{print $1}'
@@ -28,7 +28,6 @@ get_checksum() {
 
 is_compressed() {
   local file="$1"
-  [[ -f "$file" ]] || return 1
 
   file_type=$(file -b --mime-type "$file")
 
@@ -43,17 +42,15 @@ is_compressed() {
 }
 
 decompress_image() {
-  local img="$1"
-  [[ -f "$img" ]] || return 1
+  local compressed="$1"
+  local dest="$2"
 
-  echo "Decompressing $1..."
-
-  case "$img" in
+  case "$compressed" in
   *.bz2)
-    bzip2 -dk "$img"
+    bunzip2 -c "$compressed" >"$dest"
     ;;
   *)
-    echo "Error: unsupported compression type"
+    echo "ERROR: Unsupported compression type"
     exit 1
     ;;
   esac
@@ -61,39 +58,59 @@ decompress_image() {
 
 for image in "${!IMAGES[@]}"; do
   IFS="|" read -r url checksum <<<"${IMAGES[$image]}"
-  dest_file="${DOWNLOAD_DIR}/${image}.iso"
+  clean_url="${url%%\?*}"
+  filename="${clean_url##*/}"
+  target_file="${DOWNLOAD_DIR}/${filename}"
+  image_file="${DOWNLOAD_DIR}/${image}.iso"
 
-  if [[ -e "$dest_file" ]]; then
-    dest_file_checksum=$(get_checksum "$dest_file")
+  echo "clean_url: $clean_url"
+  echo "filename: $filename"
+  echo "target_file: $target_file"
+  echo "image_file: $image_file"
 
-    if [[ "$dest_file_checksum" == "$checksum" ]]; then
-      echo "$dest_file already present, skipping"
+  if [[ -e "$image_file" ]]; then
+    image_checksum=$(get_checksum "$image_file")
+
+    if [[ "$image_checksum" == "$checksum" ]]; then
+      echo "$image_file already present, skipping"
       continue
     fi
   fi
 
   echo "Downloading from $url..."
-  curl -s -o "$dest_file" "$url" # TODO: error: unsupported compression type since file is stored as `opnsense.iso` and not *.bz2
 
-  if [[ $? -eq 0 ]]; then
-    echo "Saved image as $dest_file"
+  if [[ "$filename" =~ \.iso$ ]]; then
+    curl -s -o "$image_file" "$url"
+    echo "Saved file as $image_file"
+  else
+    curl -s -o "$target_file" "$url"
+    if is_compressed "$target_file"; then
+      "$target_file is compressed, decompressing..."
 
-    if is_compressed "$dest_file"; then
-      decompress_image "$dest_file"
+      case "$target_file" in
+      *.bz2)
+        bunzip2 -c "$target_file" >"$image_file"
+        ;;
+      *)
+        echo "ERROR: Unsupported compression type"
+        exit 1
+        ;;
+      esac
+
+      "Decompressed $target_file to $image_file"
     fi
+  fi
 
+  if [[ -f "$image_file" ]]; then
     echo "Verifying checksum..."
-    actual_checksum=$(sha256sum "$dest_file" | awk '{print $1}')
+    actual_checksum=$(get_checksum "$image_file")
 
     if [[ $actual_checksum == $checksum ]]; then
       echo "Checksum verified"
-      # echo "Converting to img..."
-      # qemu-img convert -f raw -O raw "$dest_file" "${DOWNLOAD_DIR}/${image}.img"
-      # echo "Done!"
     else
       echo "WARNING: Checksum failed! Expected $checksum but got $actual_checksum"
     fi
   else
-    echo "Failed to download from $url"
+    echo "ERROR: Failed to download from $url"
   fi
 done
