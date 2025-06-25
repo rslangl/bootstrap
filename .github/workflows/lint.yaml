@@ -1,0 +1,42 @@
+name: Lint checks
+
+on:
+  push:
+    paths:
+      - '**.sh'
+      - '**.yaml'
+      - '**.yml'
+      - '**.md'
+  pull_request:
+    paths:
+      - '**.sh'
+      - '**.yaml'
+      - '**.yml'
+      - '**.md'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install linters
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck yamllint
+          npm install -g markdownlint-cli
+
+      - name: Lint shell scripts
+        run: |
+          find . -name "*.sh" -exec shellcheck {} +
+
+      - name: Lint YAML files
+        run: |
+          yamllint .
+
+      - name: Lint Markdown files
+        run: |
+          markdownlint "**/*.md"
+
