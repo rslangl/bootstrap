@@ -10,6 +10,11 @@ provider "libvirt" {
   uri = "qemu:///system"
 }
 
+variable "opnsense_iso_path" {
+  type = string
+  #default = "../../images/opnsense.iso"
+}
+
 resource "libvirt_network" "sandbox_net" {
   name = "sandbox"
   bridge = "virbr10"
@@ -29,7 +34,7 @@ resource "libvirt_domain" "opnsense" {
   memory = 2048
   vcpu   = 2
   disk {
-    file = "opnsense.iso"
+    file = var.opnsense_iso_path #"opnsense.iso"
   }
   disk {
     volume_id = libvirt_volume.opnsense_disk.id
