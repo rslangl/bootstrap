@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DOWNLOAD_DIR="${ROOT_DIR}/images"
 
+# Structure: image URL, checksum
 PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
 OPNSENSE_SRC="https://opnsense-mirror.hiho.ch/releases/mirror/OPNsense-25.1-dvd-amd64.iso.bz2|e4c178840ab1017bf80097424da76d896ef4183fe10696e92f288d0641475871"
 # NOTE: checksum for tarball: 68efe0e5c20bd5fbe42918f000685ec10a1756126e37ca28f187b2ad7e5889ca"
@@ -63,11 +64,7 @@ for image in "${!IMAGES[@]}"; do
   target_file="${DOWNLOAD_DIR}/${filename}"
   image_file="${DOWNLOAD_DIR}/${image}.iso"
 
-  echo "clean_url: $clean_url"
-  echo "filename: $filename"
-  echo "target_file: $target_file"
-  echo "image_file: $image_file"
-
+  # Skip download if image or archive is already present
   if [[ -e "$image_file" ]]; then
     image_checksum=$(get_checksum "$image_file")
 
@@ -75,17 +72,20 @@ for image in "${!IMAGES[@]}"; do
       echo "$image_file already present, skipping"
       continue
     fi
+  elif [[ -e "$target_file" ]]; then
+    echo "$target_file already present, skipping..."
+    continue
   fi
 
   echo "Downloading from $url..."
 
+  # Save uncompressed images directly, otherwise do proper decompression
   if [[ "$filename" =~ \.iso$ ]]; then
     curl -s -o "$image_file" "$url"
     echo "Saved file as $image_file"
   else
     curl -s -o "$target_file" "$url"
     if is_compressed "$target_file"; then
-      "$target_file is compressed, decompressing..."
 
       case "$target_file" in
       *.bz2)
@@ -97,10 +97,11 @@ for image in "${!IMAGES[@]}"; do
         ;;
       esac
 
-      "Decompressed $target_file to $image_file"
+      echo "Saved decompressed $target_file to $image_file"
     fi
   fi
 
+  # Extra security check by comparing actual and expected checksums
   if [[ -f "$image_file" ]]; then
     echo "Verifying checksum..."
     actual_checksum=$(get_checksum "$image_file")
