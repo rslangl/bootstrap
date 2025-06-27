@@ -9,6 +9,9 @@
     # Depends on `make build` from root directory
     usb_source_dir: "../../build/bootstrap"
     usb_label: "BOOTSTRAP"
+    mock_pikvm_image_path: "/var/lib/libvirt/images/mock_pikvm.qcow2"
+    mock_pikvm_image_size_gb: 2
+    mock_pikvm_mount_temp: /mnt/mock-pikvm
     nat_interface: "virbr10"
     # Physical interface connected to internet
     nat_postrouting_iface: "wlan0"
@@ -16,6 +19,9 @@
   tasks:
   - name: Setup virtual USB image
     include_tasks: usb_image.yaml
+
+  - name: Setup mocked PiKVM image
+    include_tasks: mock_pikvm.yaml
 
   - name: Manage routed NAT for libvirt
     include_tasks: routed_nat.yaml
