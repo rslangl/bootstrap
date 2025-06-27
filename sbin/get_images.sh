@@ -9,13 +9,14 @@ DOWNLOAD_DIR="${ROOT_DIR}/images"
 # Structure: image URL, checksum
 PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
 OPNSENSE_SRC="https://opnsense-mirror.hiho.ch/releases/mirror/OPNsense-25.1-dvd-amd64.iso.bz2|e4c178840ab1017bf80097424da76d896ef4183fe10696e92f288d0641475871"
-# NOTE: checksum for tarball: 68efe0e5c20bd5fbe42918f000685ec10a1756126e37ca28f187b2ad7e5889ca"
+DEBIAN_SRC="http://ftp.uio.no/debian-cd/12.11.0/amd64/iso-dvd/debian-12.11.0-amd64-DVD-1.iso|be966aa53a436b3cfb96446d000e6c145a188e6df3dede4e2741161423aa4221"
 
 declare -A IMAGES
 
 IMAGES=(
   [pve]="$PVE_SRC"
   [opnsense]="$OPNSENSE_SRC"
+  [debian]="$DEBIAN_SRC"
 )
 
 get_checksum() {
