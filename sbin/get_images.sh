@@ -10,13 +10,14 @@ DOWNLOAD_DIR="${ROOT_DIR}/images"
 PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
 OPNSENSE_SRC="https://opnsense-mirror.hiho.ch/releases/mirror/OPNsense-25.1-dvd-amd64.iso.bz2|e4c178840ab1017bf80097424da76d896ef4183fe10696e92f288d0641475871"
 DEBIAN_SRC="http://ftp.uio.no/debian-cd/12.11.0/amd64/iso-dvd/debian-12.11.0-amd64-DVD-1.iso|be966aa53a436b3cfb96446d000e6c145a188e6df3dede4e2741161423aa4221"
+DEBIAN_CLOUD_SRC="https://cloud.debian.org/images/cloud/bookworm/20250530-2128/debian-12-generic-amd64-20250530-2128.qcow2|c8a11fa4bf0aafb2ec69fdf2348fc2c43aebfbf81791fe784d975e1b01cdc66e88b1046fda0649ac7771bec2f4e729100789bc11e8b3767637ad371306fa4333" # TODO: sha512sum, need a third field for algorithm used
 
 declare -A IMAGES
 
 IMAGES=(
   [pve]="$PVE_SRC"
   [opnsense]="$OPNSENSE_SRC"
-  [debian]="$DEBIAN_SRC"
+  [debian]="$DEBIAN_CLOUD_SRC"
 )
 
 get_checksum() {
@@ -83,7 +84,10 @@ for image in "${!IMAGES[@]}"; do
   # Save uncompressed images directly, otherwise do proper decompression
   if [[ "$filename" =~ \.iso$ ]]; then
     curl -s -o "$image_file" "$url"
-    echo "Saved file as $image_file"
+    echo "Saved ISO file as $image_file"
+  elif [[ "$filename" =~ \.qcow2$ ]]; then
+    curl -s -o "$image_file" $url
+    echo "Saved QCOW2 file as $image_file"
   else
     curl -s -o "$target_file" "$url"
     if is_compressed "$target_file"; then
