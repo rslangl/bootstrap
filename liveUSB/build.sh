@@ -2,13 +2,16 @@
 
 set -e
 
-# Copy config
-mkdir -p live-build
-cp -r config/* live-build/
+WORKDIR=/tmp/live-build
+mkdir -p "$WORKDIR"
+cp -r /config/* "$WORKDIR/"
+cd "$WORKDIR"
+
+rm -rf chroot binary cache
 
 # Configure live-build
 lb config \
-  --architecture amd64 \
+  --architectures amd64 \
   --distribution bookworm \
   --debian-installer live \
   --binary-images iso-hybrid \
@@ -19,4 +22,4 @@ lb config \
 # Build image
 lb build
 
-mv live-image-amd64.hybrid.iso ../output/liveUSB.iso
+mv live-image-amd64.hybrid.iso /output/liveUSB.iso

@@ -19,10 +19,8 @@ RUN apt-get update && \
         dosfstools && \
     apt-get clean
 
-#RUN useradd -m builder && echo "builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-#USER builder
 USER root
+
 WORKDIR /home/builder
 
 CMD ["/bin/bash"]
