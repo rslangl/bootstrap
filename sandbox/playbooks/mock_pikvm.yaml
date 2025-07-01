@@ -1,0 +1,82 @@
+---
+- name: Disconnect nbd1 if already in use
+  ansible.builtin.command: qemu-nbd -d /dev/nbd1
+  ignore_errors: true
+
+- name: Check if PiKVM image already exists
+  ansible.builtin.stat:
+    path: "{{ mock_pikvm_image_path }}"
+  register: pikvm_image_stat
+
+- name: Create PiKVM disk image
+  ansible.builtin.command: qemu-img create -f qcow2 "{{ mock_pikvm_image_path }}" "{{ mock_pikvm_image_size_gb }}G"
+  when: not pikvm_image_stat.stat.exists
+
+- name: Connect image to /dev/nbd1
+  ansible.builtin.command: qemu-nbd -c /dev/nbd1 "{{ mock_pikvm_image_path }}"
+
+- name: Create partition table and primary ext4 partition
+  ansible.builtin.shell: |
+    parted -s /dev/nbd1 mklabel msdos
+    parted -s /dev/nbd1 mkpart primary ext4 1MiB 100%
+    partprobe /dev/nbd1
+
+- name: Wait for /dev/nbd1p1
+  wait_for:
+    path: /dev/nbd1p1
+    timeout: 10
+
+- name: Format /dev/nbd1p1 as ext4
+  ansible.builtin.command: mkfs.ext4 /dev/nbd1p1
+
+- name: Ensure mount point exists
+  ansible.builtin.file:
+    path: "{{ mock_pikvm_mount_temp }}"
+    state: directory
+
+- name: Mount root filesystem
+  ansible.builtin.mount:
+    path: "{{ mock_pikvm_mount_temp }}"
+    src: /dev/nbd1p1
+    fstype: ext4
+    state: mounted
+
+- name: Bootstrap minimal Debian using debootstrap
+  ansible.builtin.command: >
+    debootstrap --arch=amd64 bookworm "{{ mock_pikvm_mount_temp }}"
+    http://deb.debian.org/debian
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Set hostname to {{ mock_pikvm_hostname }}
+  ansible.builtin.copy:
+    dest: "{{ mock_pikvm_mount_temp }}/etc/hostname"
+    content: "pikvm"
+
+- name: Set root password in chroot
+  ansible.builtin.command: > 
+    chroot {{ mock_pikvm_mount_temp }}
+    /bin/bash -c "echo root:changeme" | chpasswd
+
+- name: Enable systemd getty on ttyS0
+  ansible.builtin.file:
+    src: /lib/systemd/system/serial-getty@.service
+    dest: "{{ mock_pikvm_mount_temp }}/etc/systemd/system/getty.target.wants/serial-getty@ttyS0.service"
+    state: link
+    force: true
+
+- name: Install useful tools
+  ansible.builtin.shell: |
+    chroot {{ mock_pikvm_mount_temp }} /bin/bash -c "
+      apt-get update &&
+      apt-get install -y openssh-server curl python3 net-tools iproute2
+    "
+
+- name: Unmount root filesystem
+  ansible.builtin.mount:
+    path: "{{ mock_pikvm_mount_temp }}"
+    state: unmounted
+
+- name: Disconnect /dev/nbd1
+  ansible.builtin.command: qemu-nbd -d /dev/nbd1
+

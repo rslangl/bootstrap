@@ -8,22 +8,59 @@ Spins up a local sandbox for testing the IaC contained in the parent directory u
 * `libvirt-daemon-qemu`
 * `terraform`
 
-## Usage 
+The bridge created by libvirt is also required to use routed mode to enable VM-to-VM, host-to-VM, and VM-to-internet connectivity all at once. Thus, for the host machine, we need to configure:
+* Enable IP forwarding (so traffic can route from VMs to the internet)
+* Setup iptables MASQUERADE (so VM's traffic appears to come from the host)
 
-Run terraform as sudo (required as we need the privileged session):
+## Preparation
+
+Manual steps to setup the host:
+
 ```shell
-$ sudo terraform validate
-$ sudo terraform plan -out plan
-$ sudo terraform apply plan
+# Temporarilly enable forwarding
+$ sudo sysctl -w net.ipv4.ip_forward=1
+# Permanently enable forwarding
+$ echo 'net.ipv4.ip_forward=1' | sudo tee /etc/sysctl.d/99-kvm.conf
+$ sudo sysctl --system
+# Add NAT rule via iptables (check interface)
+$ sudo iptables -t nat -A POSTROUTING -s 192.168.50.0/24 -o wlan0 -j MASQUERADE
 ```
 
-Once running, list the running instances to verify: 
+Automated setup using Ansible:
+
 ```shell
-# lists running VMs
-$ sudo virsh list --all
+ansible-playbook host-setup.yaml --tags (default|setup|teardown)
+```
+
+Where:
+* `default`: Does nothing, only signifies to the user that a tag is needed
+* `setup`: Sets up forwarding on the host
+* `teardown`: Reverses the configs from the `setup` tasks
+
+## Usage 
+
+### Provision with Terraform
+
+The [dmacvicar/libvirt](https://github.com/dmacvicar/terraform-provider-libvirt) provider is used to provision a sandbox infrastructure. Simply run:
+```shell
+$ make validate
+$ make plan
+$ make apply
+```
+
+
+### Access VMs
+
+Once running, get the VNC display number, and connect:
+```shell
+# Lists running VMs
+$ sudo virsh list
  Id   Name         State
 --------------------------------
- 1    pve-local    running
+ 1    opnsense     running
+
+# Get the VNC display number
+$ sudo virsh vncdisplay --domain opnsense
 
 # list VM info
 $ sudo dominfo pve-local
@@ -44,35 +81,23 @@ $ virsh vncdisplay pve-local
 $ vncviewer :0
 ```
 
-
-## Troubleshooting
-
-### Docker
-
-I couldn't be bothered to do permission checks on users, so just give yourself privileges to run Docker as a regular user:
+Verify the VMs are assigned an IP from the virtual bridge:
 ```shell
-sudo usermod -aG docker $USER
+# Lists all networks
+$ sudo virsh net-list
+Name      State    Autostart   Persistent
+-------------------------------------------
+default   active   yes         yes
+sandbox   active   yes         yes
+
+# Get DHCP leases
+$ sudo virsh net-dhcp-leases --network sandbox
+Expiry Time   MAC address   Protocol   IP address   Hostname   Client ID or DUID
+-----------------------------------------------------------------------------------
+
 ```
 
-### libvirt
-
-Libvirt runs in two modes; namely system session and user session, of which we use the latter to avoid needing to run scripts as sudo.
-
-First, the test network we use is to provide a supported mode for user session mode, namely user-mode networking (slirp) or macvtap, which does not support `bridge` or `nat` with `virbr0`. Thus, this is solved as easily as to simply not define one, but pass the parameter `--network user` to `virt-install`, as shown below.
-
-The per-user session socket can be started by executing the following:
+To remove created resources:
 ```shell
-virsh --connect qemu:///session list
-```
-
-Then, you may perform a dry-run to check whether the session mode is working:
-```shell
-virt-install --connect qemu:///session \
-  --name testvm \
-  --memory 512 \
-  --vcpus 1 \
-  --disk size=5 \
-  --cdrom ../images/pve.iso \
-  --network user \
-  --dry-run
+$ make destroy
 ```

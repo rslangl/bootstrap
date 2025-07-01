@@ -1,0 +1,68 @@
+# usb_image.yaml
+--- 
+- name: Disconnect /dev/nbd0 if already connected
+  command: qemu-nbd -d /dev/nbd0
+  ignore_errors: true
+
+- name: Load nbd kernel module
+  ansible.builtin.shell: modprobe nbd max_part=8
+
+- name: Check if USB image exists
+  ansible.builtin.stat:
+    path: "{{ usb_image_path }}"
+  register: usb_image_stat
+
+- name: Create qcow2 USB stick image if missing
+  ansible.builtin.command: qemu-img create -f qcow2 "{{ usb_image_path }}" "{{ usb_image_size_gb }}G"
+  when: not usb_image_stat.stat.exists
+
+- name: Connect USB image to /dev/nbd0
+  ansible.builtin.command: qemu-nbd -c /dev/nbd0 "{{ usb_image_path }}"
+  when: not usb_image_stat.stat.exists
+
+- name: Create partition table and primary partition (FAT32)
+  ansible.builtin.shell: |
+    parted -s /dev/nbd0 mklabel msdos
+    parted -s /dev/nbd0 mkpart primary fat32 1MiB 100%
+    partprobe /dev/nbd0
+  when: not usb_image_stat.stat.exists
+
+- name: Wait for partition to be recognized
+  wait_for:
+    path: /dev/nbd0p1
+    timeout: 5
+    state: present
+  when: not usb_image_stat.stat.exists
+
+- name: Create FAT filesystem on /dev/nbd0p1 if image was newly created
+  ansible.builtin.command: mkfs.vfat -F 32 -n "{{ usb_label }}" /dev/nbd0p1
+  when: not usb_image_stat.stat.exists
+
+- name: Create temporary mount point
+  ansible.builtin.file:
+    path: "{{ usb_mount_temp }}"
+    state: directory
+
+- name: Mount USB image partition
+  ansible.builtin.mount:
+    path: "{{ usb_mount_temp }}"
+    src: /dev/nbd0p1
+    fstype: vfat
+    state: mounted
+
+- name: Copy airgapped repo content into USB stick image
+  ansible.builtin.copy:
+    src: "{{ usb_source_dir }}/"
+    dest: "{{ usb_mount_temp }}/"
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Unmount USB image
+  ansible.builtin.mount:
+    path: "{{ usb_mount_temp }}"
+    state: unmounted
+
+- name: Disconnect nbd device
+  ansible.builtin.command: qemu-nbd -d /dev/nbd0
+

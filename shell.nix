@@ -6,6 +6,7 @@
     terraform
     python3
     qemu
+    qemu_kvm
     libvirt
     virt-manager
     shellcheck
