@@ -66,11 +66,9 @@ resource "libvirt_domain" "sandbox_pikvm" {
   vcpu   = 1
   disk {
     volume_id = libvirt_volume.sandbox_pikvm_disk.id
-    #device    = "disk"
   }
   disk {
     volume_id = libvirt_volume.sandbox_bootstrap_usb.id
-    #device    = "usb"
   }
   network_interface {
     network_id = libvirt_network.sandbox_lan.id
@@ -153,4 +151,6 @@ resource "libvirt_domain" "sandbox_opnsense" {
 
 # -------------------------------
 #   PVE
-# -------------------------------
+# ------------------------------- 
+
+# TODO: 
