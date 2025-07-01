@@ -1,0 +1,8 @@
+*
+!.gitignore
+!config/hooks/live.chroot
+!config/package-lists/custom.list.chroot
+!config/includes.chroot/.gitkeep
+!Dockerfile
+!README.md
+!build.sh
