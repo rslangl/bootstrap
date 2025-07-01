@@ -1,0 +1,37 @@
+FROM debian:bookworm
+
+RUN apt-get update && \
+    apt-get install -y \
+        curl \
+        git \
+        make \
+        python3 \
+        python3-pip \
+        xorriso \
+        genisoimage \
+        wget \
+        ca-certificates \
+        sudo \
+        unzip \
+        systemd && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bookworm.gpg
+
+RUN echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" > /etc/apt/sources.list.d/pve.list
+
+RUN apt-get update && \
+  apt-get install -y \
+  proxmox-auto-install-assistant
+
+WORKDIR /build
+
+# Usage:
+# docker run --rm \
+#   -v "$(pwd)/images/pve.iso:/build/pve.iso:ro" \
+#   -v "$(pwd)/test/answer.toml:/build/answer.toml:ro" \
+#   -v "$(pwd)/test/output:/build/output" \
+#   proxmox-iso-builder /build/pve.iso --fetch-from iso --answer-file /build/answer.toml \
+#   --output /build/output/pve-auto.iso
+ENTRYPOINT ["proxmox-auto-install-assistant", "prepare-iso"]
+

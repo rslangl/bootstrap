@@ -1,0 +1,26 @@
+# dns/tasks/dnscrypt-proxy.yaml
+---
+- name: Ensure DNSCrypt-proxy is installed
+  ansible.builtin.package:
+    name: dnscrypt-proxy
+    state: present
+
+- name: Set fact for presence of existing DNSCrypt-proxy config
+  ansible.builtin.stat:
+    path: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+  register: dnscrypt-proxy_config
+
+- name: Backup existing DNSCrypt-proxy config
+  ansible.builtin.copy:
+    src: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+    dest: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml.bak
+    remote_src: true
+  when: dnscrypt-proxy_config.stat.exists
+
+- name: Create DNSCrypt-proxy config
+  ansible.builtin.template:
+    src: dnscrypt-proxy.toml.j2
+    dest: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+    user: root
+    group: root
+

@@ -1,4 +1,2 @@
 .vagrant/
-test/output/*
-test/vm_disks/*
-NOTES_*
+.direnv/

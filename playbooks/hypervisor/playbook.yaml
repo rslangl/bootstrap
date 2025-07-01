@@ -1,5 +1,0 @@
----
-- hosts: app_server
-  roles:
-    - prelude
-    - dns

@@ -6,6 +6,7 @@ Spins up a local sandbox for testing the IaC contained in the parent directory u
 * `libvirt`
 * `libvirt-daemon`
 * `libvirt-daemon-qemu`
+* `terraform`
 
 The bridge created by libvirt is also required to use routed mode to enable VM-to-VM, host-to-VM, and VM-to-internet connectivity all at once. Thus, for the host machine, we need to configure:
 * Enable IP forwarding (so traffic can route from VMs to the internet)
@@ -60,6 +61,20 @@ $ sudo virsh list
 
 # Get the VNC display number
 $ sudo virsh vncdisplay --domain opnsense
+
+# list VM info
+$ sudo dominfo pve-local
+
+# list attached disks
+$ sudo domblklist pve-local
+```
+
+To connect, get the VNC display number:
+```shell
+```
+```
+# get the VNC display number
+$ virsh vncdisplay pve-local 
 127.0.0.1:0
 
 # connect

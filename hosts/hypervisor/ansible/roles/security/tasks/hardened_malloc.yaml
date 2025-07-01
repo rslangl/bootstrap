@@ -1,0 +1,18 @@
+# security/tasks/hardened_malloc.yml
+---
+# TODO: upload tarball
+#
+# TODO: install dependencies (gcc)
+#
+# TODO: build
+#
+# TODO: install binary
+#
+# TODO: remove dependencies
+
+- name: Enable hardened-malloc
+  ansible.builtin.lineinfile:
+    path: /etc/profile
+    line: LD_PRELOAD="/usr/lib/libhardened_malloc.so"
+    state: present
+

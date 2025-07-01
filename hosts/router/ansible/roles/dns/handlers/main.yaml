@@ -1,0 +1,36 @@
+# dns/handlers/main.yaml
+---
+- name: Restart forwarder service
+  ansible.builtin.service:
+    name: dnscrypt-proxy
+    state: restarted
+    enabled: true
+
+- name: Wait for forwarder to start
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 5353
+    timeout: 10
+
+- name: Restart resolver service
+  ansible.builtin.command: configctl unbound restart
+
+- name: Wait for resolver service to start
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 53
+    timeout: 10
+
+- name: Test forwarder
+  ansible.builtin.shell: drill @127.0.0.1 -p 5353 opennic.org
+  register: forwarder_test
+  changed_when: false
+  failed_when: "'status: NOERRIR' not in forwarder_test.stdout"
+
+- name: Test resolver
+  ansible.builtin.shell: drill @127.0.0.1 opennic.org
+  register: resolver_test
+  changed_when: false
+  failed_when: "'status: NOERROR' not in resolver_test.stdout"
+
+
