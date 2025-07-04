@@ -1,19 +1,6 @@
 # bootstrap
 
-<!-- Build Status -->
-![Build](https://github.com/rslangl/bootstrap/actions/workflows/lint.yml/badge.svg)
-
-<!-- License -->
-![License](https://img.shields.io/github/license/rslangl/bootstrap)
-
-<!-- Release Version -->
-![GitHub release](https://img.shields.io/github/v/release/rslangl/bootstrap)
-
-<!-- Top Language -->
-![Top Language](https://img.shields.io/github/languages/top/rslangl/bootstrap)
-
-<!-- Repo Size -->
-![Repo Size](https://img.shields.io/github/repo-size/rslangl/bootstrap)
+![Build](https://github.com/rslangl/bootstrap/actions/workflows/lint.yml/badge.svg) ![License](https://img.shields.io/github/license/rslangl/bootstrap) ![GitHub release](https://img.shields.io/github/v/release/rslangl/bootstrap) ![Top Language](https://img.shields.io/github/languages/top/rslangl/bootstrap) ![Repo Size](https://img.shields.io/github/repo-size/rslangl/bootstrap)
 
 Bootable environment to bootstrap my infrastructure.
 
