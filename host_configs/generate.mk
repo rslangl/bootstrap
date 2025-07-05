@@ -10,5 +10,5 @@ clean:
 generate:
 	@echo "Generating host_vars files to $(HOST_VARS_DIR)..."
 	@mkdir -p $(HOST_VARS_DIR)
-	kcl run host_configs/router.k --output $(HOST_VARS_DIR)/router.yaml
+	kcl run hosts/router.k --output $(HOST_VARS_DIR)/router.yaml
 
