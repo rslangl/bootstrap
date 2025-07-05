@@ -9,4 +9,9 @@ router: router_config.RouterConfig = {
   ssh_port: common.common_config.ssh_port,
   localdomain: common.common_config.localdomain,
   config_file: "/conf/config.xml",
+  interfaces: [
+    {
+      iface_name: "igc0"
+    }
+  ]
 }
