@@ -10,6 +10,7 @@
     libvirt
     virt-manager
     shellcheck
+    kcl
   ];
 
   in pkgs.mkShell {
