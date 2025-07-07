@@ -4,7 +4,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DOWNLOAD_DIR="${ROOT_DIR}/images"
+DOWNLOAD_DIR="${ROOT_DIR}/resources/images"
 
 # Structure: image URL, checksum
 PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
@@ -86,7 +86,7 @@ for image in "${!IMAGES[@]}"; do
     curl -s -o "$image_file" "$url"
     echo "Saved ISO file as $image_file"
   elif [[ "$filename" =~ \.qcow2$ ]]; then
-    curl -s -o "$image_file" $url
+    curl -s -o "$image_file" "$url"
     echo "Saved QCOW2 file as $image_file"
   else
     curl -s -o "$target_file" "$url"
@@ -111,7 +111,7 @@ for image in "${!IMAGES[@]}"; do
     echo "Verifying checksum..."
     actual_checksum=$(get_checksum "$image_file")
 
-    if [[ $actual_checksum == $checksum ]]; then
+    if [[ "$actual_checksum" == "$checksum" ]]; then
       echo "Checksum verified"
     else
       echo "WARNING: Checksum failed! Expected $checksum but got $actual_checksum"
