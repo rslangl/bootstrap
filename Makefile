@@ -1,5 +1,6 @@
 # Specify commonly used variables for paths
 ROOT_DIR := $(CURDIR)
+HOSTS_CONFIG_DIR := $(ROOT_DIR)/host_configs
 RESOURCES_DIR := $(ROOT_DIR)/resources
 HOSTS_DIR := $(ROOT_DIR)/hosts
 SBIN_DIR := $(ROOT_DIR)/sbin
@@ -40,4 +41,4 @@ fetch_resources:
 	@echo "Fetching resources: Tools"
 	bash $(SBIN_DIR)/fetch_tools.sh
 
-build: fetch_resources host_configs.build live_os.build
+build: fetch_resources host_configs.generate live_os.build

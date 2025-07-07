@@ -6,6 +6,5 @@ host_configs.clean:
 
 host_configs.generate:
 	@echo "Generating host_vars files..."
-	mkdir $(HOSTS_DIR)/router/host_vars
-	kcl run hosts/router.k --output $(HOSTS_DIR)/router/host_vars/router.yaml
+	kcl run $(HOSTS_CONFIG_DIR)/hosts/router.k --output $(HOSTS_DIR)/router/host_vars/router.yaml
 
