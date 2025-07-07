@@ -19,6 +19,15 @@ router: router_config.RouterConfig = {
       role: "WLAN"
       use_dhcp: True
       static_ip: None
+    },
+    {
+      iface_name: "igc1"
+      role: "LAN"
+      use_dhcp: False
+      static_ip: {
+        ip: "14.88.0.1"
+        netmask: "255.255.255.0"
+      }
     }
   ]
 }

@@ -4,7 +4,6 @@ type NetworkInterfaceRole = "WLAN" | "LAN"
 
 schema StaticIPConfig:
   ip: str
-  gateway: str
   netmask: str = "255.255.255.0"
 
 schema NetworkInterface:

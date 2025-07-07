@@ -1,14 +1,13 @@
 .PHONY: generate clean
 
 HOSTS := router
-HOST_VARS_DIR := $(RESOURCES_DIR)/host_vars
 
 clean:
-	@echo "Cleaning KCL output in $(HOST_VARS_DIR)..."
-	rm -f $(HOST_VARS_DIR)/*.yaml
+	@echo "Cleaning KCL output in ..."
+	rm -f $(HOSTS_DIR)/router/host_vars/router.yaml
 
 generate:
-	@echo "Generating host_vars files to $(HOST_VARS_DIR)..."
-	@mkdir -p $(HOST_VARS_DIR)
-	kcl run hosts/router.k --output $(HOST_VARS_DIR)/router.yaml
+	@echo "Generating host_vars files..."
+	mkdir $(HOSTS_DIR)/router/host_vars
+	kcl run hosts/router.k --output $(HOSTS_DIR)/router/host_vars/router.yaml
 
