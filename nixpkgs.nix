@@ -1,6 +1,7 @@
 let
   pkgs = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/24.05.tar.gz";
+    # renovate: datasource=github-tags depName=NixOS/nixpgs
+    url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/25.05.tar.gz";
   }) {
     config.allowUnfree = true;
   };
