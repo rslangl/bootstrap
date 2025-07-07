@@ -3,12 +3,16 @@
 Spins up a local sandbox for testing the IaC contained in the parent directory using libvirt.
 
 ## Requirements
+
 * `libvirt`
 * `libvirt-daemon`
 * `libvirt-daemon-qemu`
 * `terraform`
 
-The bridge created by libvirt is also required to use routed mode to enable VM-to-VM, host-to-VM, and VM-to-internet connectivity all at once. Thus, for the host machine, we need to configure:
+The bridge created by libvirt is also required to use routed mode to enable VM-to-VM,
+host-to-VM, and VM-to-internet connectivity all at once. Thus, for the host machine,
+we need to configure:
+
 * Enable IP forwarding (so traffic can route from VMs to the internet)
 * Setup iptables MASQUERADE (so VM's traffic appears to come from the host)
 
@@ -33,25 +37,28 @@ ansible-playbook host-setup.yaml --tags (default|setup|teardown)
 ```
 
 Where:
+
 * `default`: Does nothing, only signifies to the user that a tag is needed
 * `setup`: Sets up forwarding on the host
 * `teardown`: Reverses the configs from the `setup` tasks
 
-## Usage 
+## Usage
 
 ### Provision with Terraform
 
-The [dmacvicar/libvirt](https://github.com/dmacvicar/terraform-provider-libvirt) provider is used to provision a sandbox infrastructure. Simply run:
-```shell
-$ make validate
-$ make plan
-$ make apply
-```
+The [dmacvicar/libvirt](https://github.com/dmacvicar/terraform-provider-libvirt)
+provider is used to provision a sandbox infrastructure. Simply run:
 
+```shell
+make validate
+make plan
+make apply
+```
 
 ### Access VMs
 
 Once running, get the VNC display number, and connect:
+
 ```shell
 # Lists running VMs
 $ sudo virsh list
@@ -70,9 +77,8 @@ $ sudo domblklist pve-local
 ```
 
 To connect, get the VNC display number:
+
 ```shell
-```
-```
 # get the VNC display number
 $ virsh vncdisplay pve-local 
 127.0.0.1:0
@@ -82,6 +88,7 @@ $ vncviewer :0
 ```
 
 Verify the VMs are assigned an IP from the virtual bridge:
+
 ```shell
 # Lists all networks
 $ sudo virsh net-list
@@ -98,6 +105,7 @@ Expiry Time   MAC address   Protocol   IP address   Hostname   Client ID or DUID
 ```
 
 To remove created resources:
+
 ```shell
-$ make destroy
+make destroy
 ```
