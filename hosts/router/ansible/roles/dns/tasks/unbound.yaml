@@ -1,6 +1,6 @@
 # dns/tasks/dns.yaml
 ---
-- name: Copy unbound template 
+- name: Copy unbound template
   ansible.builtin.copy:
     src: unbound.conf.j2
     dest: "{{ templates_dir.custom }}"

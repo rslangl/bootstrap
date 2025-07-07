@@ -54,7 +54,7 @@
     content: "pikvm"
 
 - name: Set root password in chroot
-  ansible.builtin.command: > 
+  ansible.builtin.command: >
     chroot {{ mock_pikvm_mount_temp }}
     /bin/bash -c "echo root:changeme" | chpasswd
 

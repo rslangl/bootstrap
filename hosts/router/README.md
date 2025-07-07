@@ -1,6 +1,7 @@
 # Router
 
-Provisioning of an OPNSense router, additionally used as the authoritative DNS for the internal network which is setup as a split-horizon DNS configuration.
+Provisioning of an OPNSense router, additionally used as the authoritative DNS
+for the internal network which is setup as a split-horizon DNS configuration.
 
 ## TODO
 

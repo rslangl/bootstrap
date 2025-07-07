@@ -10,6 +10,8 @@
     libvirt
     virt-manager
     shellcheck
+    yamllint
+    markdownlint-cli
     kcl
   ];
 

@@ -1,6 +1,7 @@
 # liveUSB
 
-Builds a bootable custom image with contents needed to serve as an airgapped resource provider for a centralized provisioner component, i.e. PiKVM. 
+Builds a bootable custom image with contents needed to serve as an airgapped resource
+provider for a centralized provisioner component, i.e. PiKVM.
 
 ## Overview
 
@@ -15,9 +16,12 @@ Builds a bootable custom image with contents needed to serve as an airgapped res
 
 ## Build
 
-During build, the `live-build` will try to mount `/proc` and `/dev/pts` inside the chroot, but Docker containers do not allow nested mounts by default. Thus, the container must be ran with elevated privileges.
+During build, the `live-build` will try to mount `/proc` and `/dev/pts` inside the chroot,
+but Docker containers do not allow nested mounts by default. Thus, the container must
+be ran with elevated privileges.
 
 Run the container and build:
+
 ```shell
 $ docker build -t liveos-builder .
 $ docker run --rm -it \
@@ -35,6 +39,7 @@ The image will be written to `output/liveUSB.iso`
 ## Test image
 
 Run with QEMU:
+
 ```shell
 $ qemu-system-x86_64 \
   -m 2048 \

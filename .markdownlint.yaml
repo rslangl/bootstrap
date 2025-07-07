@@ -1,0 +1,10 @@
+---
+default: true
+
+MD013:
+  line_length: 120
+  strict: false
+  stern: true
+
+MD012:
+  maximum: 1

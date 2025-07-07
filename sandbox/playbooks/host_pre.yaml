@@ -17,12 +17,12 @@
     nat_postrouting_iface: "wlan0"
 
   tasks:
-  - name: Setup virtual USB image
-    include_tasks: usb_image.yaml
+    - name: Setup virtual USB image
+      include_tasks: usb_image.yaml
 
-  - name: Setup mocked PiKVM image
-    include_tasks: mock_pikvm.yaml
+    - name: Setup mocked PiKVM image
+      include_tasks: mock_pikvm.yaml
 
-  - name: Manage routed NAT for libvirt
-    include_tasks: routed_nat.yaml
+    - name: Manage routed NAT for libvirt
+      include_tasks: routed_nat.yaml
 

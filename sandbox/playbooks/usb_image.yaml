@@ -1,5 +1,5 @@
 # usb_image.yaml
---- 
+---
 - name: Disconnect /dev/nbd0 if already connected
   command: qemu-nbd -d /dev/nbd0
   ignore_errors: true

@@ -45,7 +45,7 @@ function start_docker() {
   else
     echo "Starting docker daemon..."
 
-    sudo nohup dockerd >/tmp/dockerd.log 2>/dev/null &
+    nohup dockerd >/tmp/dockerd.log 2>/dev/null &
     DOCKER_PID=$(echo $! | awk '{$1=$1};1')
 
     echo "Done!"
