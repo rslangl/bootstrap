@@ -6,6 +6,11 @@ DEV_DIR="${ROOT_DIR}/dev"
 DOCKER_PID=""
 
 function shutdown_docker() {
+
+  if [ "$EUID" -ne 0 ]; then
+    exec sudo "$0" "$@"
+  fi
+
   echo "Shutting down containers..."
 
   if [ "$(docker ps -a -q | wc -l)" -gt 0 ]; then
@@ -30,6 +35,10 @@ function shutdown_docker() {
 }
 
 function start_docker() {
+
+  if [ "$EUID" -ne 0 ]; then
+    exec sudo "$0" "$@"
+  fi
 
   if ps -p "$DOCKER_PID" &>/dev/null; then
     echo "Docker already running"

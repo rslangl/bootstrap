@@ -1,6 +1,6 @@
 # common.k
 
-schema HostVars:
-  ansible_user: str
-  ansible_port: int = 22
-  timezone?: str = "Oslo/NO"
+common_config = {
+    ssh_port: 22,
+    localdomain: "nekrohaven.lan"
+}
