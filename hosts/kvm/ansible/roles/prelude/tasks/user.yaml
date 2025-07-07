@@ -16,7 +16,6 @@
       when: kvmd_users_output.stdout_lines | length > 1
   when: kvmd_users_outout is defined
 
-
 - name: Ensure only OS root account exists
   block:
     - name: Get OS users
@@ -32,3 +31,4 @@
       loop: "{{ os_non_root_users }}"
       when: os_users_output.stdout_lines | length > 1
   when: os_users_output is defined
+

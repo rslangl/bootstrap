@@ -10,6 +10,7 @@
     libvirt
     virt-manager
     shellcheck
+    yamllint
     kcl
   ];
 
