@@ -1,0 +1,22 @@
+# live_os_proxy/tasks/resource_proxy.yaml
+---
+- name: Enable IP forwarding
+  ansible.builtin.command: echo 1 > /proc/sys/net/ipv4/ip_forward
+
+- name: Setup NAT
+  ansible.builtin.iptables:
+    # Assume eth0 = uplink to live repo, eth1 = target network
+    iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+- name: Configure dnsmasq
+  ansible.builtin.lineinfile:
+    path: /etc/dnsmasq.conf
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - interface=eth1
+    - dhcp-range=192.168.100.50,192.168.100.100,12h # TODO: make var
+    - enable-tftp
+    - tftp-root=/srv/tftp
+    - pxe-service=x86PC, "Install Linux", pxelinux
+

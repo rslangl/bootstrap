@@ -1,0 +1,7 @@
+# live_os_proxy/tasks/main.yaml
+---
+- name: Enable live OS as virtual device
+  include_tasks: virtual_device.yaml
+
+- name: Enable resource proxying
+  include_tasks: resource_proxy.yaml

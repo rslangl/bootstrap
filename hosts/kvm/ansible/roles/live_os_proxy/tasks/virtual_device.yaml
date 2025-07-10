@@ -1,0 +1,32 @@
+# live_os_proxy/tasks/virtual_device.yaml
+---
+- name: Enable USB gadget mode
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    line: dtoverlay=dwc2
+    state: present
+
+- name: Enable g_ether kernel module
+  community.general.modprobe:
+    name: g_ether
+    state: present
+
+- name: Assign static IP to live system
+  block:
+    - name: Check if device exists
+      ansible.builtin.command: ip addr show usb0
+      register: ip_usb0_output
+
+    - name: Remove live system from routes if it exists
+      ansible.builtin.command: ip addr del usb0
+      when: '"usb0" in {{ ip_usb0_output }}'  # TODO: this wont work you dumbfuck
+
+    - name: Add live system to IP routes
+      ansible.builtin.command: |
+        ip addr add {{ ipv4_addr }} dev usb0
+        ip link set usb0 up
+      when: 
+
+    - name: Test connectivity to live system
+      ansible.builtin.command: curl http://{{ liveos_ipv4_addr }}/apt # TODO: loop over items to check conn, warning on failure only
+
