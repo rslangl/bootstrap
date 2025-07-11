@@ -13,20 +13,19 @@
 
 - name: Assign static IP to live system
   block:
-    - name: Check if device exists
+    - name: Check if network device exists
       ansible.builtin.command: ip addr show usb0
-      register: ip_usb0_output
+      register: liveos_nwdevice_output
 
-    - name: Remove live system from routes if it exists
-      ansible.builtin.command: ip addr del usb0
-      when: '"usb0" in {{ ip_usb0_output }}'  # TODO: this wont work you dumbfuck
+    - name: Set fact for network device
+      ansible.builtin.set_fact:
+        liveos_nwdevice_present: "{{ liveos_nwdevice_output == 0 }}"
 
-    - name: Add live system to IP routes
+    - name: Remove (old) network device if it exists
+      ansible.builtin.command: ip addr del {{ kvm.live_system.network_device }}
+      when: liveos_nwdevice_present
+
+    - name: Add network device to IP routes
       ansible.builtin.command: |
-        ip addr add {{ ipv4_addr }} dev usb0
+        ip addr add {{ kvm.live_system.ip }} dev {{ kvm.live_system.network_device }}
         ip link set usb0 up
-      when: 
-
-    - name: Test connectivity to live system
-      ansible.builtin.command: curl http://{{ liveos_ipv4_addr }}/apt # TODO: loop over items to check conn, warning on failure only
-

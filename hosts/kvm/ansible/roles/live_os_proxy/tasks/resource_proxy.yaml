@@ -3,20 +3,26 @@
 - name: Enable IP forwarding
   ansible.builtin.command: echo 1 > /proc/sys/net/ipv4/ip_forward
 
-- name: Setup NAT
+- name: Setup NAT masquerading to live system
   ansible.builtin.iptables:
-    # Assume eth0 = uplink to live repo, eth1 = target network
-    iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-
-- name: Configure dnsmasq
-  ansible.builtin.lineinfile:
-    path: /etc/dnsmasq.conf
-    line: "{{ item }}"
+    table: nat
+    chain: POSTROUTING
+    in_interface: eth0
+    out_interface: "{{ kvm.live_system.network_device }}"
+    jump: MASQUERADE
     state: present
-  with_items:
-    - interface=eth1
-    - dhcp-range=192.168.100.50,192.168.100.100,12h # TODO: make var
-    - enable-tftp
-    - tftp-root=/srv/tftp
-    - pxe-service=x86PC, "Install Linux", pxelinux
 
+- name: Accept forwarding from LAN to live system
+  ansible.builtin.iptables:
+    chain: FORWARD
+    in_interface: eth0
+    out_interface: "{{ kvm.live_system.network_device }}"
+    jump: ACCEPT
+    state: present
+
+- name: Accept forwarding from live system to LAN
+  ansible.builtin.iptables:
+    chain: FORWARD
+    in_interface: "{{ kvm.live_system.network_device }}"
+    jump: ACCEPT
+    state: present
