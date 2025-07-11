@@ -1,0 +1,53 @@
+#!/bin/bash
+
+echo "Installing packages..."
+
+apt-get update
+apt-get install -y nginx docker.io
+
+echo "Configuring services..."
+
+cat << 'EOF' > /etc/nginx/sites-available/repo
+server {
+   listen 80 default_server;
+  liten [ :: ]:80 default_server;
+
+    location /apt/ {
+        root /srv/apt/;
+        autoindex on;
+    }
+
+    location /bsd/ {
+        root /srv/bsd/;
+        autoindex on;
+    }
+
+    location /registry/ {
+      proxy_pass http://localhost:5000/;
+    }
+}
+EOF
+
+ln -sf /etc/nginx/sites-available/repo /etc/nginx/sites-enabled/default
+
+systemctl enable nginx
+
+systemctl enable docker
+
+cat << 'EOF' > /etc/systemd/system/registry.service
+[Unit]
+Description=Local Docker registry
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --rm -p 5000:5000 -v /srv/registry:/var/lib/registry registry:2
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable registry.service
+
+echo "Setup complete"
