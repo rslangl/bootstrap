@@ -12,7 +12,7 @@ export HOSTS_DIR
 
 # Include Makefiles from relevant subdirectories
 include host_configs/generate.mk
-include liveUSB/build.mk
+include liveUSB/os.mk
 
 # Helptext for whenever I sperg out too much
 define HELPTEXT
@@ -31,7 +31,7 @@ all: build
 help:
 	@echo "$$HELPTEXT"
 
-clean: host_configs.clean live_os.clean
+clean: host_configs.clean os.clean
 
 fetch_resources:
 	@echo "Fetching resources: ISO images"
@@ -41,4 +41,4 @@ fetch_resources:
 	@echo "Fetching resources: Tools"
 	bash $(SBIN_DIR)/fetch_tools.sh
 
-build: fetch_resources host_configs.generate live_os.build
+build: fetch_resources host_configs.generate os.build

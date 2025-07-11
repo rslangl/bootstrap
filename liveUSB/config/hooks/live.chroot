@@ -1,6 +1,0 @@
-#!/bin/bash
-
-echo "Enabling services..."
-
-systemctl enable docker
-systemctl enable nginx
