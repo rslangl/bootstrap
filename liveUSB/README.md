@@ -10,7 +10,8 @@ provider for a centralized provisioner component, i.e. PiKVM.
 * `package-lists/custom.list.chroot`: Packages to be installed to the live system
 * `includes.chroot`: Everything in here gets copied to the live system, for example:
   * `includes.chroot/srv/registry`: Container images
-  * `includes.chroot/srv/aptrepo`: Deb files
+  * `includes.chroot/srv/apt`: Apt repo files
+  * `includes.chroot/srv/bsd`: BSD repo files 
   * `includes.chroot/usr/local/bin/startup.sh`: Custom startup script
 * `hooks/live.chroot`: Configures services or startup scripts, e.g. docker, nginx
 

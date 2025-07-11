@@ -1,0 +1,31 @@
+# live_os_proxy/tasks/virtual_device.yaml
+---
+- name: Enable USB gadget mode
+  ansible.builtin.lineinfile:
+    path: /boot/config.txt
+    line: dtoverlay=dwc2
+    state: present
+
+- name: Enable g_ether kernel module
+  community.general.modprobe:
+    name: g_ether
+    state: present
+
+- name: Assign static IP to live system
+  block:
+    - name: Check if network device exists
+      ansible.builtin.command: ip addr show usb0
+      register: liveos_nwdevice_output
+
+    - name: Set fact for network device
+      ansible.builtin.set_fact:
+        liveos_nwdevice_present: "{{ liveos_nwdevice_output == 0 }}"
+
+    - name: Remove (old) network device if it exists
+      ansible.builtin.command: ip addr del {{ kvm.live_system.network_device }}
+      when: liveos_nwdevice_present
+
+    - name: Add network device to IP routes
+      ansible.builtin.command: |
+        ip addr add {{ kvm.live_system.ip }} dev {{ kvm.live_system.network_device }}
+        ip link set usb0 up
