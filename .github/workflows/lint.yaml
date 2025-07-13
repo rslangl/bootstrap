@@ -34,7 +34,6 @@ jobs:
           sudo apt-get install -y shellcheck yamllint
           npm install -g markdownlint-cli
           go install kcl-lang.io/cli/cmd/kcl@latest
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
       - name: Lint shell scripts
         run: |
@@ -52,7 +51,9 @@ jobs:
         run: |
           kcl lint configs/
 
-      - name: Lint Terraform manifests
+      - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v4
+
+      - name: Lint Terraform manifests
         run: |
           tflint --recursive
