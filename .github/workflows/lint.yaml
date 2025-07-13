@@ -33,7 +33,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y shellcheck yamllint
           npm install -g markdownlint-cli
-          go install kcl-lang.io/cmd/kcl@latest
+          go install kcl-lang.io/cli/cmd/kcl@latest
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
       - name: Lint shell scripts
