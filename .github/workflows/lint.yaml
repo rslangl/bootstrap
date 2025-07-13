@@ -23,12 +23,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.24
+
       - name: Install linters
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck yamllint
           npm install -g markdownlint-cli
-          wget -q https://kcl-lang.io/script/install-kcl-lsp.sh -O - | /bin/bash
+          go install kcl-lang.io/cmd/kcl@latest
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
       - name: Lint shell scripts
