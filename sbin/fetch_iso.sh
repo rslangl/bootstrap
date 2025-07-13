@@ -1,10 +1,11 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DOWNLOAD_DIR="${ROOT_DIR}/resources/images"
+DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
+CACHE_DIR="${ROOT_DIR}/.cache/images"
 
 # Structure: image URL, checksum
 PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
@@ -63,7 +64,7 @@ for image in "${!IMAGES[@]}"; do
   clean_url="${url%%\?*}"
   filename="${clean_url##*/}"
   target_file="${DOWNLOAD_DIR}/${filename}"
-  image_file="${DOWNLOAD_DIR}/${image}.iso"
+  image_file="${CACHE_DIR}/${image}.iso"
 
   # Skip download if image or archive is already present
   if [[ -e "$image_file" ]]; then

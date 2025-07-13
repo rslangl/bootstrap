@@ -1,4 +1,4 @@
-.PHONY: host_configs.generate host_configs.clean
+.PHONY: cfg.generate cfg.clean
 
 cfg.clean:
 	@echo "Cleaning KCL output in ..."
