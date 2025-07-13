@@ -1,0 +1,26 @@
+#!/bin/bash
+
+cat << 'EOF' > /etc/nginx/sites-available/repo
+server {
+  listen 80 default_server;
+  liten [ :: ]:80 default_server;
+
+  location /apt/ {
+    root /srv/apt/;
+    autoindex on;
+  }
+
+  location /bsd/ {
+    root /srv/bsd/;
+    autoindex on;
+  }
+
+  location /registry/ {
+    proxy_pass http://localhost:5000/;
+  }
+}
+EOF
+
+ln -sf /etc/nginx/sites-available/repo /etc/nginx/sites-enabled/default
+
+systemctl enable nginx

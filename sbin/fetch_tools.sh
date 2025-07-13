@@ -37,7 +37,7 @@ decompress_file() {
 
   case "$compressed" in
   *.zip)
-    unzip "$compressed" -d "$dest" -o
+    unzip "$compressed" -d "$dest"
     ;;
   *)
     echo "ERROR: Unsupported compression type"
@@ -63,7 +63,7 @@ for file in "${!TOOLS[@]}"; do
 
     case "$target_file" in
     *.zip)
-      unzip "$target_file" -o -d "$tool_file"
+      yes | unzip -o "$target_file" -d "$tool_file"
       ;;
     *)
       echo "ERROR: Unsupported compression type"
