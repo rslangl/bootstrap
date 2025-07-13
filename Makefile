@@ -46,3 +46,5 @@ resources:
 	bash $(SBIN_DIR)/fetch_tools.sh
 
 build: resources cfg.generate os.build
+
+test: cfg.test
