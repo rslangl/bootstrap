@@ -6,18 +6,18 @@ TF_PLAN := $(CACHE_DIR)/tfstate/sandbox/plan
 
 dev.clean:
 	@echo "Destroying resources..."
-	terraform destroy -auto-approve -var="opnsense_iso_path=$(ISO_ABS_PATH)"
+	terraform -chdir=$(SANDBOX_DIR) destroy -auto-approve -var="opnsense_iso_path=$(ISO_ABS_PATH)"
 
 dev.init:
 	@echo "Initializing Terraform..."
-	terraform init
+	terraform -chdir=$(SANDBOX_DIR) init
 
-dev.validate:
-	terraform validate
+dev.validate: dev.init
+	terraform -chdir=$(SANDBOX_DIR) validate
 
-dev.plan:
+dev.plan: dev.validate
 	@echo "Planning with ISO at $(ISO_ABS_PATH)..."
-	terraform plan -var="opnsense_iso_path=$(ISO_ABS_PATH)" -out $(TF_PLAN)
+	terraform -chir=$(SANDBOX_DIR) plan -var="opnsense_iso_path=$(ISO_ABS_PATH)" -out $(TF_PLAN)
 
 dev.build: dev.init dev.validate dev.plan
-	terraform apply -auto-approve -var="opnsense_iso_path=$(ISO_ABS_PATH)" $(TF_PLAN)
+	terraform -chdir=$(SANDBOX_DIR) apply -auto-approve -var="opnsense_iso_path=$(ISO_ABS_PATH)" $(TF_PLAN)
