@@ -28,6 +28,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y shellcheck yamllint
           npm install -g markdownlint-cli
+          wget -q https://kcl-lang.io/script/install-kcl-lsp.sh -O - | /bin/bash
 
       - name: Lint shell scripts
         run: |
@@ -41,3 +42,6 @@ jobs:
         run: |
           markdownlint "**/*.md"
 
+      - name: Lint KCL files
+        run: |
+          kcl lint configs/
