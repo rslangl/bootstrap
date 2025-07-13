@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:bookworm-20250610
 
 RUN apt-get update && apt-get install -y \
     reprepro gnupg2 curl && \

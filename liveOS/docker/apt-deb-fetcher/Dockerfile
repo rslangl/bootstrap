@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:bookworm-20250610
 
 RUN apt-get update && apt-get install -y \
     apt-rdepends \
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     curl
 
 WORKDIR /workdir
-COPY packages.txt fetch-debs.sh ./
+COPY packages.txt entrypoint.sh ./
 
 ENTRYPOINT ["bash", "entrypoint.sh"]
 
