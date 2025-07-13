@@ -25,11 +25,6 @@ os.apt: os.deb-fetch
 	docker build -t apt-repo-builder docker/apt-repo-builder/Dockerfile
 	docker run --rm -v $(PWD)/build-artifacts/aptrepo:/repo apt-repo-builder
 
-# os.copy_resources:
-# 	@echo "Copying resources to live OS config directory..."
-# 	cp $(RESOURCES_DIR)/images/* $(LIVE_OS_DIR)/config/hooks/includes.chroot/images/
-# 	cp $(RESOURCES_DIR)/containers/* $(LIVE_OS_DIR)/config/hooks/includes.chroot/containers/
-
 os.img-fetch:
 	@echo "Fetching container images..."
 	docker run -d -p 5000:5000 --name local_registry registry:2

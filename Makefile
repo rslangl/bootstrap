@@ -45,4 +45,6 @@ resources:
 	@echo "Fetching resources: Tools"
 	bash $(SBIN_DIR)/fetch_tools.sh
 
+generate: cfg.generate
+
 build: resources cfg.generate os.build
