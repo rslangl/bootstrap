@@ -13,6 +13,7 @@
     yamllint
     markdownlint-cli
     kcl
+    tflint
   ];
 
   in pkgs.mkShell {

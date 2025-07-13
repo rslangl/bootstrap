@@ -13,6 +13,7 @@ dev.init:
 	terraform -chdir=$(SANDBOX_DIR) init
 
 dev.validate: dev.init
+	tflint --chdir=$(SANDBOX_DIR)
 	terraform -chdir=$(SANDBOX_DIR) validate
 
 dev.plan: dev.validate
