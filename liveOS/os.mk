@@ -1,4 +1,4 @@
-.PHONY: live_os.clean live_os.build
+.PHONY: os.clean os.build
 
 CONTAINER_NAME := "liveos-builder"
 
