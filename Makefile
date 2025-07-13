@@ -14,6 +14,7 @@ export HOSTS_DIR
 
 # Include Makefiles from relevant subdirectories
 include configs/config.mk
+include sandbox/dev.mk
 include liveOS/os.mk
 
 # Helptext for whenever I sperg out too much
