@@ -53,5 +53,6 @@ jobs:
           kcl lint configs/
 
       - name: Lint Terraform manifests
+        uses: terraform-linters/setup-tflint@v4
         run: |
           tflint --recursive
