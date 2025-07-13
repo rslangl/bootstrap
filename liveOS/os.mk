@@ -1,5 +1,6 @@
 .PHONY: os.clean os.build
 
+REGISTRY_CONTAINERS := alpine
 CONTAINER_NAME := "liveos-builder"
 
 os.clean:
@@ -29,9 +30,28 @@ os.apt: os.deb-fetch
 # 	cp $(RESOURCES_DIR)/images/* $(LIVE_OS_DIR)/config/hooks/includes.chroot/images/
 # 	cp $(RESOURCES_DIR)/containers/* $(LIVE_OS_DIR)/config/hooks/includes.chroot/containers/
 
-os.build: os.apt
+os.img-fetch:
+	@echo "Fetching container images..."
+	docker run -d -p 5000:5000 --name local_registry registry:2
+	for container in "${!REGISTRY_CONTAINERS[@]}"; do \
+  	IFS="|" read -r name <<< "${REGISTRY_CONTAINERS[$container]}" \
+	  docker pull "$container" \
+  	docker tag "$container" "localhost:5000/$container" \
+	  docker push "localhost:5000/$container" \
+	done
+	mkdir "${DOWNLOAD_DIR}/registry_data"
+	docker stop registry
+
+os.img: os.img-fetch
+	@echo "Building container registry..."
+	docker cp registry:/var/lib/registry -v $(PWD)/build-artifacts/registry_data
+	docker save registry:2 -o $(PWD)/build-artifacts/registry.tar
+
+os.build: os.apt os.img
 	@echo "Copying resources to live OS image paths..."
 	cp -r build-artifacts/aptrepo live-build/config/includes.chroot/srv/
+	cp -r build-artifacts/registry_data live-build/config/includes.chroot/srv/
+	cp -r build-artifacts/registry.tar live-build/config/includes.chroot/srv/
 	@echo "Building live OS image..."
 	docker build -t $(CONTAINER_NAME) .
 	@echo "Running live OS image..."
