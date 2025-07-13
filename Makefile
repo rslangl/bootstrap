@@ -1,6 +1,6 @@
 # Specify commonly used variables for paths
 ROOT_DIR := $(CURDIR)
-HOSTS_CONFIG_DIR := $(ROOT_DIR)/host_configs
+HOSTS_CONFIG_DIR := $(ROOT_DIR)/configs
 RESOURCES_DIR := $(ROOT_DIR)/resources
 HOSTS_DIR := $(ROOT_DIR)/hosts
 SBIN_DIR := $(ROOT_DIR)/sbin
@@ -11,8 +11,8 @@ export RESOURCES_DIR
 export HOSTS_DIR
 
 # Include Makefiles from relevant subdirectories
-include host_configs/generate.mk
-include liveUSB/build.mk
+include configs/config.mk
+include liveOS/os.mk
 
 # Helptext for whenever I sperg out too much
 define HELPTEXT
@@ -24,16 +24,16 @@ Targets:
 endef
 export HELPTEXT
 
-.PHONY: all clean fetch_resources
+.PHONY: all clean resources
 
 all: build
 
 help:
 	@echo "$$HELPTEXT"
 
-clean: host_configs.clean live_os.clean
+clean: cfg.clean os.clean
 
-fetch_resources:
+resources:
 	@echo "Fetching resources: ISO images"
 	bash $(SBIN_DIR)/fetch_iso.sh
 	@echo "Fetching resources: Docker containers"
@@ -41,4 +41,4 @@ fetch_resources:
 	@echo "Fetching resources: Tools"
 	bash $(SBIN_DIR)/fetch_tools.sh
 
-build: fetch_resources host_configs.generate live_os.build
+build: resources cfg.generate os.build
