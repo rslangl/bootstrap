@@ -1,6 +1,6 @@
 FROM debian:bookworm-20250610
 
-RUN  echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list \
+RUN  echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list \
   && apt-get update
 
 RUN apt-get install -y \
