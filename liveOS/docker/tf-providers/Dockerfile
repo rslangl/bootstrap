@@ -6,5 +6,5 @@ COPY main.tf .
 
 VOLUME ["/mirror"]
 
-CMD terraform providers mirror /mirror
+CMD ["providers", "mirror", "/mirror"]
 
