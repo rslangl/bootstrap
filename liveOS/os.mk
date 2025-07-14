@@ -28,19 +28,16 @@ os.apt: os.deb-fetch
 os.img-fetch:
 	@echo "Fetching container images..."
 	docker run -d -p 5000:5000 --name local_registry registry:2
-	for container in "${!REGISTRY_CONTAINERS[@]}"; do \
-  	IFS="|" read -r name <<< "${REGISTRY_CONTAINERS[$container]}" \
-	  docker pull "$container" \
-  	docker tag "$container" "localhost:5000/$container" \
-	  docker push "localhost:5000/$container" \
+	@for c in $(REGISTRY_CONTAINERS); do \
+	  docker pull "$$c"; \
+  	docker tag "$$c" "localhost:5000/$$c"; \
+	  docker push "localhost:5000/$$c"; \
 	done
-	mkdir "${DOWNLOAD_DIR}/registry_data"
-	docker stop registry
 
 os.img: os.img-fetch
 	@echo "Building container registry..."
-	docker cp registry:/var/lib/registry -v $(PWD)/build-artifacts/registry_data
-	docker save registry:2 -o $(PWD)/build-artifacts/registry.tar
+	docker cp local_registry:/var/lib/registry $(LIVE_BUILD_DIR)/build-artifacts/registry-data
+	docker save registry:2 -o $(LIVE_BUILD_DIR)/build-artifacts/registry/registry.tar
 
 os.tf:
 	@echo "Fetching Terraform providers..."
