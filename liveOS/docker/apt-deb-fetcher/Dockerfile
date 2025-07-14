@@ -1,6 +1,9 @@
 FROM debian:bookworm-20250610
 
-RUN apt-get update && apt-get install -y \
+RUN  echo "deb http://deb.debian.org/debian stable main" > /etc/apt/sources.list \
+  && apt-get update
+
+RUN apt-get install -y \
     apt-rdepends \
     apt-utils \
     wget \
