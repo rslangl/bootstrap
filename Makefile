@@ -4,12 +4,14 @@ SANDBOX_DIR := $(ROOT_DIR)/sandbox
 HOSTS_CONFIG_DIR := $(ROOT_DIR)/configs
 CACHE_DIR := $(ROOT_DIR)/.cache
 HOSTS_DIR := $(ROOT_DIR)/hosts
+LIVE_BUILD_DIR := $(ROOT_DIR)/liveOS
 SBIN_DIR := $(ROOT_DIR)/sbin
 
 # Export common vars for use in sub-targets
 export ROOT_DIR
 export SANDBOX_DIR
 export RESOURCES_DIR
+export LIVE_BUILD_DIR
 export CACHE_DIR
 export HOSTS_DIR
 

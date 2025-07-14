@@ -18,6 +18,13 @@ server {
   location /registry/ {
     proxy_pass http://localhost:5000/;
   }
+
+  location /tf-providers/ {
+    root /srv/tf-providers/;
+    autoindex on;
+    gzip on;
+    gzip_types application/zip application/octet-stream;
+  }
 }
 EOF
 
