@@ -10,6 +10,6 @@ COPY packages.txt /packages.txt
 
 WORKDIR /pkg_repo
 
-COPY entrypoint.sh ./
+COPY entrypoint.sh /
 
-ENTRYPOINT ["bash", "./entrypoint.sh"]
+ENTRYPOINT ["bash", "/entrypoint.sh"]
