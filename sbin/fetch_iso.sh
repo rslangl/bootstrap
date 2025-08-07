@@ -19,6 +19,7 @@ IMAGES=(
   [pve]="$PVE_SRC"
   [opnsense]="$OPNSENSE_SRC"
   [debian]="$DEBIAN_CLOUD_SRC"
+  [freebsd]="$FREEBSD_SRC"
 )
 
 get_checksum() {
