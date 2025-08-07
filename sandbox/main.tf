@@ -19,7 +19,7 @@ resource "libvirt_pool" "sandbox_pool" {
   name = "sandbox"
   type = "dir"
   target {
-    path = "./libvirt/pool"
+    path = "../.cache/libvirt/pool/sandbox"
   }
 }
 
