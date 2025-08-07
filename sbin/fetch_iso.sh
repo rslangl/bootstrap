@@ -10,6 +10,7 @@ CACHE_DIR="${ROOT_DIR}/.cache/images"
 # Structure: image URL, checksum
 PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
 OPNSENSE_SRC="https://opnsense-mirror.hiho.ch/releases/mirror/OPNsense-25.1-dvd-amd64.iso.bz2|e4c178840ab1017bf80097424da76d896ef4183fe10696e92f288d0641475871"
+FREEBSD_SRC="https://download.freebsd.org/releases/ISO-IMAGES/14.2/FreeBSD-14.2-RELEASE-amd64-disc1.iso|3caa1fcbd9a9f825f394d5296e80e25a72022381154290ef508aa33f3e325ee4"
 DEBIAN_CLOUD_SRC="https://cloud.debian.org/images/cloud/bookworm/20250530-2128/debian-12-generic-amd64-20250530-2128.qcow2|c8a11fa4bf0aafb2ec69fdf2348fc2c43aebfbf81791fe784d975e1b01cdc66e88b1046fda0649ac7771bec2f4e729100789bc11e8b3767637ad371306fa4333" # TODO: sha512sum, need a third field for algorithm used
 
 declare -A IMAGES
