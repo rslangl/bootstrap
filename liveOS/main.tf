@@ -19,38 +19,61 @@ resource "libvirt_pool" "resourcebuilder_pool" {
   name = "resourcesbuilder"
   type = "dir"
   target {
-    path = "./libvirt/pool"
+    path = "../.cache/libvirt/pool"
   }
 }
 
-variable "iso_url" {
-  default = "https://download.freebsd.org/releases/ISO-IMAGES/14.1/FreeBSD-14.1-RELEASE-amd64-disc1.iso"
-}
+# -------------------------------
+#   ISO paths
+# -------------------------------
 
 variable "freebsd_iso_path" {
   type = string
 }
 
-# Download FreeBSD ISO
-resource "libvirt_volume" "resourcebuilder_freebsd_iso" {
-  name = "freebsd.iso"
-  pool = libvirt_pool.resourcesbuilder_pool.name
-  source = var.iso_url
-  format = "raw"
+# -------------------------------
+#   BSD resources VM
+# -------------------------------
+
+data "template_file" "user_data" {
+  template = file("${path.module}/cloud_init.cfg")
 }
 
-# Disk volume for VM
-resource "libvirt_volume" "resourcebuilder_freebsd_disk" {
-  name = "freebsd.qcow2"
-  pool = libvirt_pool.resourcesbuilder_pool.name
-  format = qcow2
+resource "libvirt_cloudinit_disk" "cloudinit" {
+  name = "cloudinit.iso"
+  pool = libvirt_pool.resourcebuilder_pool.name
+  user_data = data.template_file.user_data.rendered
 }
 
 resource "libvirt_domain" "resourcebuilder_freebsd" {
   name = "freebsd"
   memory = 2048
   vcpu = 2
+  cloudinit = libvirt_cloudinit_disk.cloudinit.id
   disk {
-    file = var.freebsd_iso_path
+    file = libvirt_volume.resourcebuilder_freebsd_disk.id
   }
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+  graphics {
+    type        = "spice"
+    listen_type = "address"
+    autoport    = true
+  }
+  autostart = true
 }
+
+resource "libvirt_volume" "resourcebuilder_freebsd_disk" {
+  name = "freebsd.qcow2"
+  pool = libvirt_pool.resourcebuilder_pool.name
+  #format = qcow2
+}
+
+# -------------------------------
+#   Apt resources VM
+# -------------------------------
+
+# TODO:
