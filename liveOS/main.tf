@@ -31,6 +31,10 @@ variable "freebsd_iso_path" {
   type = string
 }
 
+variable "debian_iso_path" {
+  type = string
+}
+
 # -------------------------------
 #   BSD resources VM
 # -------------------------------
@@ -76,4 +80,27 @@ resource "libvirt_volume" "resourcebuilder_freebsd_disk" {
 #   Apt resources VM
 # -------------------------------
 
-# TODO:
+# TODO: cloud init template file
+
+# TODO: cloud init disk
+
+resource "libvirt_domain" "resourcebuilder_debian" {
+  name = "debian"
+  memory = 2048
+  vcpu = 2
+  disk {
+    file = libvirt_volume.resourcebuilder_debian_disk.id
+  }
+  console {
+    type = "pty"
+    target_port = "0"
+    target_type = "serial"
+    autoport = true
+  }
+  autostart = true
+}
+
+resource "libvirt_volume" "resourcebuilder_debian_disk" {
+  name = "debian.qcow2"
+  pool = libvirt_pool.resourcebuilder_pool.name
+}
