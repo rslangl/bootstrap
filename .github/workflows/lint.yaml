@@ -52,7 +52,7 @@ jobs:
           kcl lint configs/
 
       - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v5
 
       - name: Lint Terraform manifests
         run: |
