@@ -95,6 +95,10 @@ resource "libvirt_domain" "resourcebuilder_debian" {
     type = "pty"
     target_port = "0"
     target_type = "serial"
+  }
+  graphics {
+    type = "spice"
+    listen_type = "address"
     autoport = true
   }
   autostart = true
