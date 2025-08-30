@@ -53,7 +53,7 @@ os.reg: #os.img-fetch
 
 os.init:
 	@echo "Initializing terraform..."
-	terraform -chdir=$(LIVEOS_DIR) init
+	terraform -chdir=$(LIVEOS_DIR) init -upgrade
 
 os.validate: os.init
 	tflint --chdir=$(LIVEOS_DIR)
