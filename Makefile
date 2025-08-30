@@ -4,7 +4,7 @@ SANDBOX_DIR := $(ROOT_DIR)/sandbox
 HOSTS_CONFIG_DIR := $(ROOT_DIR)/configs
 CACHE_DIR := $(ROOT_DIR)/.cache
 HOSTS_DIR := $(ROOT_DIR)/hosts
-LIVE_BUILD_DIR := $(ROOT_DIR)/liveOS
+LIVEOS_DIR := $(ROOT_DIR)/liveOS
 SBIN_DIR := $(ROOT_DIR)/sbin
 
 # Export common vars for use in sub-targets
@@ -53,4 +53,4 @@ generate: cfg.generate
 
 build: resources cfg.generate os.build
 
-validate: cfg.validate dev.validate
+validate: cfg.validate dev.validate os.validate
