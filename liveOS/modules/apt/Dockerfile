@@ -12,11 +12,12 @@ RUN apt-get install -y \
     curl
 
 WORKDIR /workdir
-COPY packages.txt download-deb-packages.sh ./
-RUN download-deb-packages.sh
+COPY packages.txt ./
+COPY download-deb-packages.sh ./
+RUN chmod +x download-deb-packages.sh && ./download-deb-packages.sh
 
-FROM debian:bookworm-20250610
-COPY --from=deb-fetcher deduped.txt /
+#FROM debian:bookworm-20250610
+#COPY --from=deb-fetcher deduped.txt /
 
 RUN apt-get update && apt-get install -y \
     reprepro gnupg2 curl && \

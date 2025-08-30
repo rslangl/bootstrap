@@ -25,16 +25,19 @@ resource "docker_container" "deb_fetch" {
   image = docker_image.deb_fetch.image_id
   rm = true
   volumes {
-    host_path = "${abspath("../../build-artifacts/aptrepo/packages")}"
+    #host_path = "${abspath("../build-artifacts/aptrepo/packages")}"
+    host_path = "/home/user/dev/sw/bootstrap/liveOS/build-artifacts/aptrepo/packages"
     container_path = "/workdir/packages"
     read_only = true
   }
   volumes {
-    host_path = "${abspath("../../build-artifacts/docker/apt-deb-fetcher/packages.txt")}"
+    #host_path = "${abspath("./modules/apt/packages.txt")}"
+    host_path = "/home/user/dev/sw/bootstrap/liveOS/modules/apt/packages.txt"
     container_path = "/workdir/packages.txt"
   }
   volumes {
-    host_path = "${abspath("../../build-artifacts/aptrepo")}"
+    #host_path = "${abspath("../build-artifacts/aptrepo")}"
+    host_path = "/home/user/dev/sw/bootstrap/liveOS/build-artifacts/aptrepo"
     container_path = "/repo"
   }
 }
