@@ -16,5 +16,4 @@ variable "iso_checksum" {
 variable "iso_path" {
   type    = string
   default = "../../../.cache/images/bsd.iso"
-  #default = "${var.cache_dir}/images/bsd.iso"
 }

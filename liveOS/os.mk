@@ -1,5 +1,7 @@
 .PHONY: os.clean os.build
 
+TF_PLAN := $(CACHE_DIR)/tfstate/liveos/plan
+
 # REGISTRY_CONTAINERS := alpine
 # CONTAINER_NAME := "liveos-builder"
 
@@ -58,7 +60,7 @@ os.validate: os.init
 	terraform -chdir=$(LIVEOS_DIR) validate #-var="cache_dir=$(CACHE_DIR)"
 
 os.plan: os.validate
-	terraform -chir=$(LIVEOS_DIR) plan -out $(TF_PLAN)
+	terraform -chdir=$(LIVEOS_DIR) plan -out $(TF_PLAN)
 
 os.build: os.init os.validate os.plan 
 	# @echo "Copying resources to live OS image paths..."

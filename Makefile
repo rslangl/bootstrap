@@ -43,7 +43,7 @@ clean: cfg.clean os.clean
 
 resources:
 	@echo "Fetching resources: ISO images"
-	bash $(SBIN_DIR)/fetch_iso.sh
+	bash $(SBIN_DIR)/fetch_iso_old.sh
 	#@echo "Fetching resources: Docker containers"
 	#bash $(SBIN_DIR)/fetch_container.sh
 	@echo "Fetching resources: Tools"
@@ -51,6 +51,6 @@ resources:
 
 generate: cfg.generate
 
-build: resources cfg.generate os.build
+build: cfg.generate os.build
 
 validate: cfg.validate dev.validate os.validate

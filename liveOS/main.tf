@@ -27,24 +27,12 @@ terraform {
   }
 }
 
-# -------------------------------
-#   Providers
-# -------------------------------
-
 provider "libvirt" {
   uri = "qemu:///system"
 }
 
 provider "docker" {
   host = "unix://var/run/docker.sock"
-}
-
-resource "libvirt_pool" "resourcebuilder_pool" {
-  name = "resourcesbuilder"
-  type = "dir"
-  target {
-    path = "../.cache/libvirt/pool"
-  }
 }
 
 module "apt" {

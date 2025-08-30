@@ -2,10 +2,10 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
-CACHE_DIR="${ROOT_DIR}/.cache/images"
+#SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+#ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+#DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
+#CACHE_DIR="${ROOT_DIR}/.cache/images"
 
 get_checksum() {
   local file="$1"
@@ -57,8 +57,21 @@ else
     curl -L -o "$ISO_PATH" "$ISO_URL"
 fi
 
+if is_compressed "$ISO_PATH"; then
+  case "$ISO_PATH" in
+    *.bz2)
+      bunzip2 -c "$ISO_PATH" >"$ISO_PATH"
+      ;;
+    *)
+      echo "ERROR: Unsupported compression type"
+      exit 1
+      ;;
+  esac
+fi
+
 echo "Verifying checksum..."
-ACTUAL_CHECKSUM=$(sha256sum "$ISO_PATH" | awk '{print $1}')
+#ACTUAL_CHECKSUM=$(sha256sum "$ISO_PATH" | awk '{print $1}')
+ACTUAL_CHECKSUM=$(get_checksum "$ISO_PATH")
 
 if [ "$ACTUAL_CHECKSUM" != "$EXPECTED_CHECKSUM" ]; then
     echo "Checksum mismatch!"
