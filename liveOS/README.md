@@ -17,6 +17,9 @@ provider for a centralized provisioner component, i.e. PiKVM.
 
 ## Build
 
+
+
+<!--
 During build, the `live-build` will try to mount `/proc` and `/dev/pts` inside the chroot,
 but Docker containers do not allow nested mounts by default. Thus, the container must
 be ran with elevated privileges.
@@ -36,6 +39,7 @@ $ docker run --rm -it \
 ```
 
 The image will be written to `output/liveUSB.iso`
+-->
 
 ## Test image
 

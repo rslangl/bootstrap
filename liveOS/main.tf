@@ -5,14 +5,35 @@ terraform {
       source = "dmacvicar/libvirt"
       version = "0.8.3"
     }
-  }
-  backend "local" {
-    path = "../.cache/tfstate/sandbox/terraform.tfstate"
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "3.0.2"
+    }
+    proxmox = {
+      source = "bpg/proxmox"
+      version = ">=0.79.0"
+    }
+    local = {
+      source = "hashicorp/local"
+      version = ">=2.5.3"
+    }
+
+    backend "local" {
+      path = "../.cache/tfstate/sandbox/terraform.tfstate"
+    }
   }
 }
 
+# -------------------------------
+#   Providers
+# -------------------------------
+
 provider "libvirt" {
   uri = "qemu:///system"
+}
+
+provider "docker" {
+  host = "unix://var/run/docker.sock"
 }
 
 resource "libvirt_pool" "resourcebuilder_pool" {
@@ -24,87 +45,39 @@ resource "libvirt_pool" "resourcebuilder_pool" {
 }
 
 # -------------------------------
-#   ISO paths
+#   Variables
 # -------------------------------
 
-variable "freebsd_iso_path" {
-  type = string
+variable "build_apt" {
+  type = bool
+  default = true
 }
 
-variable "debian_iso_path" {
-  type = string
+variable "build_bsd" {
+  type = bool
+  default = true
 }
 
-# -------------------------------
-#   BSD resources VM
-# -------------------------------
-
-data "template_file" "user_data" {
-  template = file("${path.module}/cloud_init.cfg")
-}
-
-resource "libvirt_cloudinit_disk" "cloudinit" {
-  name = "cloudinit.iso"
-  pool = libvirt_pool.resourcebuilder_pool.name
-  user_data = data.template_file.user_data.rendered
-}
-
-resource "libvirt_domain" "resourcebuilder_freebsd" {
-  name = "freebsd"
-  memory = 2048
-  vcpu = 2
-  cloudinit = libvirt_cloudinit_disk.cloudinit.id
-  disk {
-    file = libvirt_volume.resourcebuilder_freebsd_disk.id
-  }
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-  graphics {
-    type        = "spice"
-    listen_type = "address"
-    autoport    = true
-  }
-  autostart = true
-}
-
-resource "libvirt_volume" "resourcebuilder_freebsd_disk" {
-  name = "freebsd.qcow2"
-  pool = libvirt_pool.resourcebuilder_pool.name
-  #format = qcow2
+variable "build_registry" {
+  type = bool
+  default = true
 }
 
 # -------------------------------
-#   Apt resources VM
+#   Modules
 # -------------------------------
 
-# TODO: cloud init template file
-
-# TODO: cloud init disk
-
-resource "libvirt_domain" "resourcebuilder_debian" {
-  name = "debian"
-  memory = 2048
-  vcpu = 2
-  disk {
-    file = libvirt_volume.resourcebuilder_debian_disk.id
-  }
-  console {
-    type = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-  graphics {
-    type = "spice"
-    listen_type = "address"
-    autoport = true
-  }
-  autostart = true
+module "apt" {
+  source = "./modules/apt"
+  count = var.build_apt ? 1 : 0
 }
 
-resource "libvirt_volume" "resourcebuilder_debian_disk" {
-  name = "debian.qcow2"
-  pool = libvirt_pool.resourcebuilder_pool.name
+module "bsd" {
+  source = "./modules/bsd"
+  count = var.build_bsd ? 1 : 0
+}
+
+module "registry" {
+  source = "./modules/registry"
+  count = var.build_registry ? 1 : 0
 }

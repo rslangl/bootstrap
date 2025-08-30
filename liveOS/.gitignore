@@ -1,2 +1,4 @@
 ./config/includes.chroot/**
 ./output
+.terraform.lock.hcl
+.terraform/
