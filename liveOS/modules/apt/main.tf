@@ -1,9 +1,20 @@
+terraform {
+  required_providers {
+    libvirt = {
+      source = "dmacvicar/libvirt"
+    }
+    docker = {
+      source  = "kreuzwerker/docker"
+    }
+  }
+}
+
 resource "docker_image" "deb_fetch" {
   name = "deb-fetch"
-  tag = ["deb-fetch"]
   keep_locally = false
   build {
     context = "."
+    tag = ["deb-fetch"]
     dockerfile = "Dockerfile"
   }
 }
@@ -13,16 +24,16 @@ resource "docker_container" "deb_fetch" {
   image = docker_image.deb_fetch.image_id
   rm = true
   volumes {
-    host_path = "${LIVE_BUILD_DIR}/build-artifacts/aptrepo/packages"
+    host_path = "${abspath("../../build-artifacts/aptrepo/packages")}"
     container_path = "/workdir/packages"
     read_only = true
   }
   volumes {
-    host_path = "${LIVE_BUILD_DIR}/docker/apt-deb-fetcher/packages.txt"
+    host_path = "${abspath("../../build-artifacts/docker/apt-deb-fetcher/packages.txt")}"
     container_path = "/workdir/packages.txt"
   }
   volumes {
-    host_path = "${LIVE_BUILD_DIR}/build-artifacts/aptrepo"
+    host_path = "${abspath("../../build-artifacts/aptrepo")}"
     container_path = "/repo"
   }
 }

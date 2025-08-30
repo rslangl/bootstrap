@@ -1,7 +1,7 @@
 .PHONY: os.clean os.build
 
-REGISTRY_CONTAINERS := alpine
-CONTAINER_NAME := "liveos-builder"
+# REGISTRY_CONTAINERS := alpine
+# CONTAINER_NAME := "liveos-builder"
 
 os.clean:
 	# @echo "Cleanup live OS image build..."
@@ -51,11 +51,11 @@ os.reg: #os.img-fetch
 
 os.init:
 	@echo "Initializing terraform..."
-	terraform init -chdir=$(LIVEOS_DIR) init
+	terraform -chdir=$(LIVEOS_DIR) init
 
 os.validate: os.init
 	tflint --chdir=$(LIVEOS_DIR)
-	terraform -chdir=$(LIVEOS_DIR) validate
+	terraform -chdir=$(LIVEOS_DIR) validate #-var="cache_dir=$(CACHE_DIR)"
 
 os.plan: os.validate
 	terraform -chir=$(LIVEOS_DIR) plan -out $(TF_PLAN)

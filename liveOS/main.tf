@@ -17,10 +17,13 @@ terraform {
       source = "hashicorp/local"
       version = ">=2.5.3"
     }
-
-    backend "local" {
-      path = "../.cache/tfstate/sandbox/terraform.tfstate"
+    null = {
+      source = "hashicorp/null"
+      version = "3.2.4"
     }
+  }
+  backend "local" {
+    path = "../.cache/tfstate/sandbox/terraform.tfstate"
   }
 }
 
@@ -43,29 +46,6 @@ resource "libvirt_pool" "resourcebuilder_pool" {
     path = "../.cache/libvirt/pool"
   }
 }
-
-# -------------------------------
-#   Variables
-# -------------------------------
-
-variable "build_apt" {
-  type = bool
-  default = true
-}
-
-variable "build_bsd" {
-  type = bool
-  default = true
-}
-
-variable "build_registry" {
-  type = bool
-  default = true
-}
-
-# -------------------------------
-#   Modules
-# -------------------------------
 
 module "apt" {
   source = "./modules/apt"

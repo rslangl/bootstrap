@@ -11,7 +11,7 @@ SBIN_DIR := $(ROOT_DIR)/sbin
 export ROOT_DIR
 export SANDBOX_DIR
 export RESOURCES_DIR
-export LIVE_BUILD_DIR
+export LIVEOS_DIR
 export CACHE_DIR
 export HOSTS_DIR
 
