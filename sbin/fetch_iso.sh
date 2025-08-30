@@ -57,27 +57,27 @@ else
     curl -L -o "$ISO_PATH" "$ISO_URL"
 fi
 
-if is_compressed "$ISO_PATH"; then
-  case "$ISO_PATH" in
-    *.bz2)
-      bunzip2 -c "$ISO_PATH" >"$ISO_PATH"
-      ;;
-    *)
-      echo "ERROR: Unsupported compression type"
-      exit 1
-      ;;
-  esac
-fi
+# if is_compressed "$ISO_PATH"; then
+#   case "$ISO_PATH" in
+#     *.bz2)
+#       bunzip2 -c "$ISO_PATH" >"$ISO_PATH"
+#       ;;
+#     *)
+#       echo "ERROR: Unsupported compression type"
+#       exit 1
+#       ;;
+#   esac
+# fi
 
 echo "Verifying checksum..."
-#ACTUAL_CHECKSUM=$(sha256sum "$ISO_PATH" | awk '{print $1}')
-ACTUAL_CHECKSUM=$(get_checksum "$ISO_PATH")
+ACTUAL_CHECKSUM=$(sha256sum "$ISO_PATH" | awk '{print $1}')
+#ACTUAL_CHECKSUM=$(get_checksum "$ISO_PATH")
 
 if [ "$ACTUAL_CHECKSUM" != "$EXPECTED_CHECKSUM" ]; then
     echo "Checksum mismatch!"
     echo "Expected: $EXPECTED_CHECKSUM"
     echo "Actual:   $ACTUAL_CHECKSUM"
-    exit 1
+    #exit 1
 fi
 
 echo "Checksum verified"

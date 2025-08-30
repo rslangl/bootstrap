@@ -13,9 +13,10 @@ resource "docker_image" "deb_fetch" {
   name = "deb-fetch"
   keep_locally = false
   build {
-    context = "."
+    #context = "${path.cwd}/context-dir"
+    context = "${path.module}"
     tag = ["deb-fetch"]
-    dockerfile = "Dockerfile"
+    dockerfile = "${path.module}/Dockerfile"
   }
 }
 

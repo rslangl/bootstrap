@@ -16,7 +16,7 @@ COPY packages.txt download-deb-packages.sh ./
 RUN download-deb-packages.sh
 
 FROM debian:bookworm-20250610
-COPY --from=deb-fetcher deduped.txt
+COPY --from=deb-fetcher deduped.txt /
 
 RUN apt-get update && apt-get install -y \
     reprepro gnupg2 curl && \

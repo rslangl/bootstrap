@@ -14,7 +14,7 @@ os.clean:
 	# 	docker rmi $$CONTAINER_NAME; \
 	# fi
 	@echo "Destroying resources..."
-	terraform -chdir=$(SANDBOX_DIR) destroy -auto-approve
+	terraform -chdir=$(LIVEOS_DIR) destroy -auto-approve
 
 # os.deb-fetch:
 # 	@echo "Fetching apt repository packages..."
