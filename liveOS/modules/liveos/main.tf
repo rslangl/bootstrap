@@ -18,7 +18,6 @@ resource "docker_container" "liveos" {
   }
   security_opts = ["seccomp=unconfined"]
   volumes {
-    #host_path = "${var.cache_dir}/liveos/live_build/config"
     host_path = "${abspath(path.module)}/config"
     container_path = "/home/builder/config"
   }

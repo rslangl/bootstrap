@@ -2,11 +2,9 @@ terraform {
   required_providers {
     libvirt = {
       source = "dmacvicar/libvirt"
-      #version = "0.8.3"
     }
     docker = {
       source  = "kreuzwerker/docker"
-      #version = "3.0.2"
     }
     null = {
       source = "hashicorp/null"
@@ -37,16 +35,9 @@ resource "libvirt_pool" "bsd_pool" {
   name = "bsd_resource_pool"
   type = "dir"
   target {
-    #path = "../../../.cache/libvirt/pool/bsd"
     path = "${var.cache_dir}/libvirt/pool/bsd"
   }
 }
-
-# resource "libvirt_cloudinit_disk" "cloudinit" {
-#   name = "cloudinit.iso"
-#   pool = libvirt_pool.bsd_pool.name
-#   user_data = data.template_file.user_data.rendered
-# }
 
 resource "libvirt_volume" "bsd_disk" {
   name = "freebsd.qcow2"
@@ -58,7 +49,6 @@ resource "libvirt_domain" "bsd" {
   name = "freebsd"
   memory = 2048
   vcpu = 2
-  #cloudinit = libvirt_cloudinit_disk.cloudinit.id
   disk {
     file = libvirt_volume.bsd_disk.id
   }

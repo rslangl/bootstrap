@@ -6,7 +6,6 @@ variable cache_dir {
 variable "scripts_dir" {
   type = string
   default = ""
-  #default = "/home/user/dev/sw/bootstrap/sbin"
 }
 
 variable "iso_url" {
@@ -21,6 +20,5 @@ variable "iso_checksum" {
 
 variable "iso_path" {
   type    = string
-  #default = "../../../.cache/images/bsd.iso"
   default = "/home/user/dev/sw/bootstrap/.cache/images/bsd.iso"
 }
