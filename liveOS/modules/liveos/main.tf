@@ -18,11 +18,12 @@ resource "docker_container" "liveos" {
   }
   security_opts = ["seccomp=unconfined"]
   volumes {
-    host_path = "${CURDIR}/config"
+    #host_path = "${var.cache_dir}/liveos/live_build/config"
+    host_path = "${abspath(path.module)}/config"
     container_path = "/home/builder/config"
   }
   volumes {
-    host_path = "${CURDIR}/output"
+    host_path = "${var.cache_dir}/output"
     container_path = "/home/builder/output"
   }
   entrypoint = "build.sh"

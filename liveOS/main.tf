@@ -37,15 +37,16 @@ provider "docker" {
 
 module "apt" {
   source = "./modules/apt"
-  count = var.build_apt ? 1 : 0
+  cache_dir = var.cache_dir
 }
 
 module "bsd" {
   source = "./modules/bsd"
-  count = var.build_bsd ? 1 : 0
+  cache_dir = var.cache_dir
+  scripts_dir = var.scripts_dir
 }
 
-module "registry" {
-  source = "./modules/registry"
-  count = var.build_registry ? 1 : 0
-}
+# module "registry" {
+#   source = "./modules/registry"
+#   cache_dir = var.cache_dir
+# }

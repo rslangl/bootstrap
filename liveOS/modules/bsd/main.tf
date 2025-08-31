@@ -37,7 +37,8 @@ resource "libvirt_pool" "bsd_pool" {
   name = "bsd_resource_pool"
   type = "dir"
   target {
-    path = "../../../.cache/libvirt/pool/bsd"
+    #path = "../../../.cache/libvirt/pool/bsd"
+    path = "${var.cache_dir}/libvirt/pool/bsd"
   }
 }
 

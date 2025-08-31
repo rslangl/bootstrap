@@ -1,7 +1,12 @@
+variable cache_dir {
+  type = string
+  default = ""
+}
+
 variable "scripts_dir" {
   type = string
-  #default = "../../../sbin"
-  default = "/home/user/dev/sw/bootstrap/sbin"
+  default = ""
+  #default = "/home/user/dev/sw/bootstrap/sbin"
 }
 
 variable "iso_url" {

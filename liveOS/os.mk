@@ -28,7 +28,7 @@ os.apt: #os.deb-fetch
 	@echo "Building apt resources..."
 	# docker build -t apt-repo-builder -f $(LIVE_BUILD_DIR)/docker/apt-repo-builder/Dockerfile $(LIVE_BUILD_DIR)/docker/apt-repo-builder
 	# docker run --rm -v $(LIVE_BUILD_DIR)/build-artifacts/aptrepo:/repo apt-repo-builder
-	terraform apply -var="build-apt=true" -var="build_bsd=false" -var="build_registry=false"
+	terraform  -chdir=$(LIVEOS_DIR) apply -auto-approve #-var="build-apt=true" -var="build_bsd=false" -var="build_registry=false"
 
 # os.img-fetch:
 # 	@echo "Fetching container images..."
@@ -43,7 +43,7 @@ os.reg: #os.img-fetch
 	@echo "Building container registry..."
 	# docker cp local_registry:/var/lib/registry $(LIVE_BUILD_DIR)/build-artifacts/registry-data
 	# docker save registry:2 -o $(LIVE_BUILD_DIR)/build-artifacts/registry/registry.tar
-	terraform apply -var="build-apt=false" -var="build_bsd=false" -var="build_registry=true"
+	terraform -chdir=$(LIVEOS_DIR) apply -auto-approve #-var="build-apt=false" -var="build_bsd=false" -var="build_registry=true"
 
 # os.tf:
 # 	@echo "Fetching Terraform providers..."
@@ -60,7 +60,7 @@ os.validate: os.init
 	terraform -chdir=$(LIVEOS_DIR) validate #-var="cache_dir=$(CACHE_DIR)"
 
 os.plan: os.validate
-	terraform -chdir=$(LIVEOS_DIR) plan -out $(TF_PLAN)
+	terraform -chdir=$(LIVEOS_DIR) plan -var="cache_dir=$(CACHE_DIR)" -var="scripts_dir=$(SBIN_DIR)" -out $(TF_PLAN)
 
 os.build: os.init os.validate os.plan 
 	# @echo "Copying resources to live OS image paths..."
@@ -80,4 +80,4 @@ os.build: os.init os.validate os.plan
 	#  -v "$(CURDIR)/build.sh":/home/builder/build.sh \
 	#  $(CONTAINER_NAME) ./build.sh
 	@echo "Building live OS image..."
-	terraform -chdir=$(LIVEOS_DIR) apply -auto-approve $(TF_PLAN)
+	terraform -chdir=$(LIVEOS_DIR) apply -auto-approve -var="cache_dir=$(CACHE_DIR)" -var="scripts_dir=$(SBIN_DIR)" $(TF_PLAN)

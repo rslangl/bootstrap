@@ -1,0 +1,26 @@
+#!/bin/bash
+
+systemctl enable docker
+
+docker load -i /srv/registry/registry.tar
+
+cat << 'EOF' > /etc/systemd/system/registry.service
+[Unit]
+Description=Local Docker registry
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --rm -p 5000:5000 --name registry -v /srv/registry:/var/lib/registry registry:2
+ExecStop=/usr/bin/docker stop registry
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable registry.service
+
+# TODO: load additional images using `docker load -i <image>.tar`
+# TODO: tag image for local registry using `docker tag`
+# TODO: push them to the running registry `docker push`
