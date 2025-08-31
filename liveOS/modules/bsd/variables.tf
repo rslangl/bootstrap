@@ -22,3 +22,18 @@ variable "iso_path" {
   type    = string
   default = "/home/user/dev/sw/bootstrap/.cache/images/bsd.iso"
 }
+
+variable "image_url" {
+  type = string
+  default = "https://download.freebsd.org/releases/VM-IMAGES/14.2-RELEASE/amd64/Latest/FreeBSD-14.2-RELEASE-amd64.qcow2.xz"
+}
+
+variable "image_checksum" {
+  type = string
+  default = ""
+}
+
+variable "image_path" {
+  type = string
+  default = ""
+}
