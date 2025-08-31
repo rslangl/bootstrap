@@ -20,7 +20,7 @@ for image in ${join(" ", var.registry_containers)}; do
 done
 
 echo "Building container registry..."
-docker cp local_registry:/var/lib/registry ${var.cache_dir}/build_artifacts/registry-data
+docker cp local_registry:/var/lib/registry ${var.cache_dir}/build_artifacts/registry_data
 docker save registry:2 -o ${var.cache_dir}/build_artifacts/registry/registry.tar
     EOT
   }
