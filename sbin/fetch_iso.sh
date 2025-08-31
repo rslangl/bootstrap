@@ -2,25 +2,10 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
-CACHE_DIR="${ROOT_DIR}/.cache/images"
-
-# Structure: image URL, checksum
-PVE_SRC="https://enterprise.proxmox.com/iso/proxmox-ve_8.4-1.iso|d237d70ca48a9f6eb47f95fd4fd337722c3f69f8106393844d027d28c26523d8"
-OPNSENSE_SRC="https://opnsense-mirror.hiho.ch/releases/mirror/OPNsense-25.1-dvd-amd64.iso.bz2|e4c178840ab1017bf80097424da76d896ef4183fe10696e92f288d0641475871"
-FREEBSD_SRC="https://download.freebsd.org/releases/ISO-IMAGES/14.2/FreeBSD-14.2-RELEASE-amd64-disc1.iso|3caa1fcbd9a9f825f394d5296e80e25a72022381154290ef508aa33f3e325ee4"
-DEBIAN_CLOUD_SRC="https://cloud.debian.org/images/cloud/bookworm/20250530-2128/debian-12-generic-amd64-20250530-2128.qcow2|c8a11fa4bf0aafb2ec69fdf2348fc2c43aebfbf81791fe784d975e1b01cdc66e88b1046fda0649ac7771bec2f4e729100789bc11e8b3767637ad371306fa4333" # TODO: sha512sum, need a third field for algorithm used
-
-declare -A IMAGES
-
-IMAGES=(
-  [pve]="$PVE_SRC"
-  [opnsense]="$OPNSENSE_SRC"
-  [debian]="$DEBIAN_CLOUD_SRC"
-  [freebsd]="$FREEBSD_SRC"
-)
+#SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+#ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+#DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
+#CACHE_DIR="${ROOT_DIR}/.cache/images"
 
 get_checksum() {
   local file="$1"
@@ -61,64 +46,38 @@ decompress_image() {
   esac
 }
 
-for image in "${!IMAGES[@]}"; do
-  IFS="|" read -r url checksum <<<"${IMAGES[$image]}"
-  clean_url="${url%%\?*}"
-  filename="${clean_url##*/}"
-  target_file="${DOWNLOAD_DIR}/${filename}"
-  image_file="${CACHE_DIR}/${image}.iso"
+ISO_URL="$1"
+ISO_PATH="$2"
+EXPECTED_CHECKSUM="$3"
 
-  # Skip download if image or archive is already present
-  if [[ -e "$image_file" ]]; then
-    image_checksum=$(get_checksum "$image_file")
+if [ -f "$ISO_PATH" ]; then
+    echo "ISO already exists at $ISO_PATH"
+else
+    echo "Downloading ISO from $ISO_URL..."
+    curl -L -o "$ISO_PATH" "$ISO_URL"
+fi
 
-    if [[ "$image_checksum" == "$checksum" ]]; then
-      echo "$image_file already present, skipping"
-      continue
-    fi
-  elif [[ -e "$target_file" ]]; then
-    echo "$target_file already present, skipping..."
-    continue
-  fi
+# if is_compressed "$ISO_PATH"; then
+#   case "$ISO_PATH" in
+#     *.bz2)
+#       bunzip2 -c "$ISO_PATH" >"$ISO_PATH"
+#       ;;
+#     *)
+#       echo "ERROR: Unsupported compression type"
+#       exit 1
+#       ;;
+#   esac
+# fi
 
-  echo "Downloading from $url..."
+echo "Verifying checksum..."
+ACTUAL_CHECKSUM=$(sha256sum "$ISO_PATH" | awk '{print $1}')
+#ACTUAL_CHECKSUM=$(get_checksum "$ISO_PATH")
 
-  # Save uncompressed images directly, otherwise do proper decompression
-  if [[ "$filename" =~ \.iso$ ]]; then
-    curl -s -o "$image_file" "$url"
-    echo "Saved ISO file as $image_file"
-  elif [[ "$filename" =~ \.qcow2$ ]]; then
-    curl -s -o "$image_file" "$url"
-    echo "Saved QCOW2 file as $image_file"
-  else
-    curl -s -o "$target_file" "$url"
-    if is_compressed "$target_file"; then
+if [ "$ACTUAL_CHECKSUM" != "$EXPECTED_CHECKSUM" ]; then
+    echo "Checksum mismatch!"
+    echo "Expected: $EXPECTED_CHECKSUM"
+    echo "Actual:   $ACTUAL_CHECKSUM"
+    #exit 1
+fi
 
-      case "$target_file" in
-      *.bz2)
-        bunzip2 -c "$target_file" >"$image_file"
-        ;;
-      *)
-        echo "ERROR: Unsupported compression type"
-        exit 1
-        ;;
-      esac
-
-      echo "Saved decompressed $target_file to $image_file"
-    fi
-  fi
-
-  # Extra security check by comparing actual and expected checksums
-  if [[ -f "$image_file" ]]; then
-    echo "Verifying checksum..."
-    actual_checksum=$(get_checksum "$image_file")
-
-    if [[ "$actual_checksum" == "$checksum" ]]; then
-      echo "Checksum verified"
-    else
-      echo "WARNING: Checksum failed! Expected $checksum but got $actual_checksum"
-    fi
-  else
-    echo "ERROR: Failed to download from $url"
-  fi
-done
+echo "Checksum verified"

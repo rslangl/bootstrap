@@ -1,0 +1,16 @@
+#cloud-config
+hostname: freebsd-vm
+
+users:
+  - name: freebsd
+    shell: /bin/sh
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+
+runcmd:
+  - pkg bootstrap -f
+  - pkg update
+  - mkdir -p /usr/local/pkgrepo/packages/All
+  - pkg fetch -d -o /usr/local/pkgrepo/packages dnscrypt-proxy
+  - pkg repo /usr/local/pgkrepo/packages
+  - tar -czf /root/pkg_repo.tar.gz -C /usr/local/pkgrepo/packages
+

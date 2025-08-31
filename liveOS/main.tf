@@ -1,13 +1,29 @@
 terraform {
-  required_version = ">= 1.12.0"
+  required_version = ">= 1.13.0"
   required_providers {
     libvirt = {
       source = "dmacvicar/libvirt"
       version = "0.8.3"
     }
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "3.6.2"
+    }
+    proxmox = {
+      source = "bpg/proxmox"
+      version = "0.79.0"
+    }
+    local = {
+      source = "hashicorp/local"
+      version = "2.5.3"
+    }
+    null = {
+      source = "hashicorp/null"
+      version = "3.2.4"
+    }
   }
   backend "local" {
-    path = "../.cache/tfstate/sandbox/terraform.tfstate"
+    path = "../.cache/tfdata/liveos/terraform.tfstate"
   }
 }
 
@@ -15,65 +31,27 @@ provider "libvirt" {
   uri = "qemu:///system"
 }
 
-resource "libvirt_pool" "resourcebuilder_pool" {
-  name = "resourcesbuilder"
-  type = "dir"
-  target {
-    path = "../.cache/libvirt/pool"
-  }
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
 }
 
-# -------------------------------
-#   ISO paths
-# -------------------------------
-
-variable "freebsd_iso_path" {
-  type = string
+module "apt" {
+  source = "./modules/apt"
+  cache_dir = var.cache_dir
 }
 
-# -------------------------------
-#   BSD resources VM
-# -------------------------------
-
-data "template_file" "user_data" {
-  template = file("${path.module}/cloud_init.cfg")
+module "bsd" {
+  source = "./modules/bsd"
+  cache_dir = var.cache_dir
+  scripts_dir = var.scripts_dir
 }
 
-resource "libvirt_cloudinit_disk" "cloudinit" {
-  name = "cloudinit.iso"
-  pool = libvirt_pool.resourcebuilder_pool.name
-  user_data = data.template_file.user_data.rendered
+module "registry" {
+  source = "./modules/registry"
+  cache_dir = var.cache_dir
 }
 
-resource "libvirt_domain" "resourcebuilder_freebsd" {
-  name = "freebsd"
-  memory = 2048
-  vcpu = 2
-  cloudinit = libvirt_cloudinit_disk.cloudinit.id
-  disk {
-    file = libvirt_volume.resourcebuilder_freebsd_disk.id
-  }
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-  graphics {
-    type        = "spice"
-    listen_type = "address"
-    autoport    = true
-  }
-  autostart = true
+module "liveos" {
+  source = "./modules/liveos"
+  cache_dir = var.cache_dir
 }
-
-resource "libvirt_volume" "resourcebuilder_freebsd_disk" {
-  name = "freebsd.qcow2"
-  pool = libvirt_pool.resourcebuilder_pool.name
-  #format = qcow2
-}
-
-# -------------------------------
-#   Apt resources VM
-# -------------------------------
-
-# TODO:

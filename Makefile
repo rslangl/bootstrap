@@ -3,16 +3,18 @@ ROOT_DIR := $(CURDIR)
 SANDBOX_DIR := $(ROOT_DIR)/sandbox
 HOSTS_CONFIG_DIR := $(ROOT_DIR)/configs
 CACHE_DIR := $(ROOT_DIR)/.cache
+TOOLS_DIR := $(CACHE_DIR)/tools/amd64
 HOSTS_DIR := $(ROOT_DIR)/hosts
-LIVE_BUILD_DIR := $(ROOT_DIR)/liveOS
+LIVEOS_DIR := $(ROOT_DIR)/liveOS
 SBIN_DIR := $(ROOT_DIR)/sbin
 
 # Export common vars for use in sub-targets
 export ROOT_DIR
 export SANDBOX_DIR
 export RESOURCES_DIR
-export LIVE_BUILD_DIR
+export LIVEOS_DIR
 export CACHE_DIR
+export TOOLS_DIR
 export HOSTS_DIR
 
 # Include Makefiles from relevant subdirectories
@@ -43,7 +45,7 @@ clean: cfg.clean os.clean
 
 resources:
 	@echo "Fetching resources: ISO images"
-	bash $(SBIN_DIR)/fetch_iso.sh
+	bash $(SBIN_DIR)/fetch_iso_old.sh
 	#@echo "Fetching resources: Docker containers"
 	#bash $(SBIN_DIR)/fetch_container.sh
 	@echo "Fetching resources: Tools"
@@ -51,6 +53,6 @@ resources:
 
 generate: cfg.generate
 
-build: resources cfg.generate os.build
+build: cfg.generate os.build
 
-validate: cfg.validate dev.validate
+validate: cfg.validate dev.validate os.validate

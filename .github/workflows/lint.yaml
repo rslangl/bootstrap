@@ -56,4 +56,4 @@ jobs:
 
       - name: Lint Terraform manifests
         run: |
-          tflint --recursive
+          tflint --chdir liveOS/

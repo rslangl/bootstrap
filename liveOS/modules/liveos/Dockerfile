@@ -21,7 +21,12 @@ RUN apt-get update && \
 
 USER root
 
-WORKDIR /home/builder
+WORKDIR /workdir
 
-CMD ["/bin/bash"]
+RUN mkdir /workdir/output
+
+COPY config/ .
+COPY entrypoint.sh .
+
+ENTRYPOINT ["bash", "./entrypoint.sh"]
 
