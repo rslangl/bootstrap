@@ -40,12 +40,12 @@ resource "docker_container" "liveos" {
     add = ["SYS_ADMIN"]
   }
   security_opts = ["seccomp=unconfined"]
-  volumes {
-    host_path = "${abspath(path.module)}/config"
-    container_path = "/var/livebuild/config/includes.chroot/srv"
-  }
+  # volumes {
+  #   host_path = "${abspath(path.module)}/config"
+  #   container_path = "/var/livebuild/config/includes.chroot/srv"
+  # }
   volumes {
     host_path = "${var.cache_dir}/output"
-    container_path = "/var/livebuild/output"
+    container_path = "/workdir/output"
   }
 }

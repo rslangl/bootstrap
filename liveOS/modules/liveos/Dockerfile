@@ -23,6 +23,8 @@ USER root
 
 WORKDIR /workdir
 
+RUN mkdir /workdir/output
+
 COPY config/ .
 COPY entrypoint.sh .
 
