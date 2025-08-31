@@ -23,7 +23,7 @@ terraform {
     }
   }
   backend "local" {
-    path = "../.cache/tfstate/sandbox/terraform.tfstate"
+    path = "../.cache/tfstate/liveos/terraform.tfstate"
   }
 }
 
@@ -46,7 +46,7 @@ module "bsd" {
   scripts_dir = var.scripts_dir
 }
 
-# module "registry" {
-#   source = "./modules/registry"
-#   cache_dir = var.cache_dir
-# }
+module "registry" {
+  source = "./modules/registry"
+  cache_dir = var.cache_dir
+}
