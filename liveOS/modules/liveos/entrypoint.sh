@@ -2,10 +2,10 @@
 
 set -e
 
-WORKDIR=/tmp/live-build
-mkdir -p "$WORKDIR"
-cp -r /config/* "$WORKDIR/"
-cd "$WORKDIR"
+# WORKDIR=/tmp/live-build
+# mkdir -p "$WORKDIR"
+# cp -r /config/* "$WORKDIR/"
+# cd "$WORKDIR"
 
 rm -rf chroot binary cache
 
@@ -22,4 +22,4 @@ lb config \
 # Build image
 lb build
 
-mv live-image-amd64.hybrid.iso /output/liveUSB.iso
+mv live-image-amd64.hybrid.iso /var/livebuild/output/liveUSB.iso
