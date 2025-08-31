@@ -14,6 +14,7 @@
     markdownlint-cli
     kcl
     tflint
+    cdrtools
   ];
 
   in pkgs.mkShell {
