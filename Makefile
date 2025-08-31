@@ -3,6 +3,7 @@ ROOT_DIR := $(CURDIR)
 SANDBOX_DIR := $(ROOT_DIR)/sandbox
 HOSTS_CONFIG_DIR := $(ROOT_DIR)/configs
 CACHE_DIR := $(ROOT_DIR)/.cache
+TOOLS_DIR := $(CACHE_DIR)/tools/amd64
 HOSTS_DIR := $(ROOT_DIR)/hosts
 LIVEOS_DIR := $(ROOT_DIR)/liveOS
 SBIN_DIR := $(ROOT_DIR)/sbin
@@ -13,6 +14,7 @@ export SANDBOX_DIR
 export RESOURCES_DIR
 export LIVEOS_DIR
 export CACHE_DIR
+export TOOLS_DIR
 export HOSTS_DIR
 
 # Include Makefiles from relevant subdirectories
