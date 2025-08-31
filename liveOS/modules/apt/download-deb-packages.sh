@@ -9,8 +9,7 @@ OUTPUT_DIR="/repo/packages"
 echo "[*] Updating APT..."
 apt-get update -qq
 
-mkdir -p "$OUTPUT_DIR"
-> "$TEMP_DEPS"
+mkdir -p "$OUTPUT_DIR" > "$TEMP_DEPS"
 
 echo "[*] Resolving dependencies..."
 while read -r pkg; do
