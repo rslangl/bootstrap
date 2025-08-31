@@ -1,25 +1,30 @@
 #!/bin/bash
 set -euo pipefail
 
-mkdir -p packages
-touch all-deps.txt
+INPUT_LIST="/workdir/packages.txt"
+TEMP_DEPS="/workdir/all-deps.txt"
+DEDUPED_DEPS="/workdir/deduped.txt"
+OUTPUT_DIR="/repo/packages"
 
-echo "Resolving dependencies..."
-
+echo "[*] Updating APT..."
 apt-get update -qq
 
+mkdir -p "$OUTPUT_DIR"
+> "$TEMP_DEPS"
+
+echo "[*] Resolving dependencies..."
 while read -r pkg; do
     echo ">> Resolving: $pkg"
     apt-rdepends --follow=Depends --print-state --state-follow=Installed "$pkg" 2>/dev/null \
-        | grep -v '^ ' >> all-deps.txt
-done < packages.txt
+        | grep -v '^ ' >> "$TEMP_DEPS" 
+done < "$INPUT_LIST"
 
-sort -u all-deps.txt > deduped.txt
+sort -u "$TEMP_DEPS" > "$DEDUPED_DEPS"
 
-echo "Downloading .deb files..."
-cd packages
+echo "[*] Downloading .deb files into $OUTPUT_DIR..."
+cd "$OUTPUT_DIR"
 
-xargs -a ../deduped.txt apt-get download
+xargs -a "/$DEDUPED_DEPS" apt-get download
 
-echo "Done. .deb files are in $(pwd)"
+echo "[✔] Done. Downloaded packages stored in $OUTPUT_DIR"
 

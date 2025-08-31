@@ -1,4 +1,4 @@
-FROM debian:bookworm-20250610 AS deb-fetcher
+FROM debian:bookworm-20250610
 
 RUN  echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list \
   && apt-get update
@@ -7,24 +7,22 @@ RUN apt-get install -y \
     apt-rdepends \
     apt-utils \
     wget \
-    gnupg \
+    gnupg2 \
     ca-certificates \
-    curl
-
-WORKDIR /workdir
-COPY packages.txt ./
-COPY download-deb-packages.sh ./
-RUN chmod +x download-deb-packages.sh && ./download-deb-packages.sh
-
-RUN apt-get update && apt-get install -y \
-    reprepro gnupg2 curl && \
+    curl \
+    reprepro \
+    --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /
+WORKDIR /workdir
 
-RUN mkdir repo
+COPY packages.txt .
+COPY download-deb-packages.sh .
+COPY distributions ./config/distributions
+COPY entrypoint.sh .
 
-COPY entrypoint.sh ./
+RUN chmod +x download-deb-packages.sh && \
+  ./download-deb-packages.sh
 
 ENTRYPOINT ["bash", "./entrypoint.sh"]
 

@@ -25,16 +25,16 @@ resource "docker_container" "deb_fetch" {
   rm = true
   volumes {
     host_path = "${var.cache_dir}/build_artifacts/aptrepo/packages"
-    container_path = "/workdir/packages"
-    read_only = true
-  }
-  volumes {
-    host_path = "${abspath(path.module)}/packages.txt"
-    container_path = "/workdir/packages.txt"
+    container_path = "/var/packages"
     read_only = true
   }
   volumes {
     host_path = "${var.cache_dir}/build_artifacts/aptrepo"
     container_path = "/repo"
   }
+#   volumes {
+#     host_path = "${abspath(path.module)}/data"
+#     container_path = "/workdir"
+#     read_only = true
+#   }
 }
