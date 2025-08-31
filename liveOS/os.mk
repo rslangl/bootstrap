@@ -1,7 +1,8 @@
 .PHONY: os.clean os.build
 
-TF_DATA_DIR := $(shell mkdir -p ../.cache/tfdata && realpath -m ../.cache/tfdata)
-TF_PLUGIN_CACHE_DIR := $(TF_DATA_DIR)/liveos/plugin-cache
+#TF_DATA_DIR := $(shell mkdir -p ../.cache/tfdata && realpath -m ../.cache/tfdata)
+#TF_DATA_DIR := $(shell realpath ../.cache/tfdata)
+# TF_PLUGIN_CACHE_DIR := $(TF_DATA_DIR)/liveos/plugin-cache
 TF_PLAN := $(CACHE_DIR)/tfdata/liveos/plan
 TF_BIN := $(TOOLS_DIR)/terraform
 
@@ -14,7 +15,7 @@ os.clean:
 
 os.init:
 	@echo "Initializing terraform..."
-	$(TF_BIN) -chdir=$(LIVEOS_DIR) init -migrate-state
+	$(TF_BIN) -chdir=$(LIVEOS_DIR) init -upgrade
 
 os.validate: os.init
 	@echo "Validating terraform scripts..."
