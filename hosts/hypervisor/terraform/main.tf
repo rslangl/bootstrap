@@ -7,6 +7,6 @@ terraform {
   }
 }
 
-module "talos" {
-  source = "./modules/baseline"
-}
+# module "talos" {
+#   source = "./modules/baseline"
+# }
