@@ -1,0 +1,8 @@
+# interfaces/tasks/main.yaml
+---
+- name: Setup WAN interface
+  include_tasks: iface_wan.yaml
+
+- name: Setup LAN interfaces
+  include_tasks: iface_lan.yaml
+

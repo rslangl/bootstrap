@@ -1,0 +1,13 @@
+# security/tasks/main.yaml
+---
+- name: Setup hardened malloc
+  include_tasks: hardened_malloc.yaml
+
+- name: Setup AppArmor
+  include_tasks: apparmor.yaml
+
+- name: Configure firewall
+  include_tasks: firewall.yaml
+
+- name: Setup antivirus
+  include_tasks: antivirus.yaml

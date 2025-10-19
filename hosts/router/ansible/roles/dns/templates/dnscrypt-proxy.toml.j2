@@ -1,0 +1,29 @@
+listen_addresses = ['127.0.0.1:5353']
+
+cache = false
+
+log_level = 0
+log_file = '/var/log/dnscrypt-proxy.log'
+
+require_dnssec = true
+
+require_dnscrypt = true
+require_nolog = true
+require_nofilter = true
+
+ipv6_servers = false
+
+dnscrypt_servers = true
+doh_servers = true
+odoh_servers = false
+
+fallback_resolver = '9.9.9.9:53'
+
+block_unqualified = true
+block_undelegated = true
+
+server_names = [
+  {% for resolver in dns.bootstrap_resolvers %}
+  resolver
+  {% endfor %}
+]

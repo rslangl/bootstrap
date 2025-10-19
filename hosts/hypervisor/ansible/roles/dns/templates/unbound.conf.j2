@@ -1,0 +1,28 @@
+# Generated unbound.conf
+
+server:
+    verbosity: 1
+    interface: 0.0.0.0
+    port: {{ dns.port }}
+    #interface: ::0 # not used, ipv6 is disabled
+    access-control: 127.0.0.0/8 allow 
+    #access-control: ::1 allow  # not used, ipv6 is disabled
+    logfile: /var/log/unbound.log
+
+    cache-max-ttl: 86400
+    cache-min-ttl: 3600
+
+    auto-trust-anchor-file: "/var/lib/unbound/root.key"
+    local-zone: "{{ dns.authoritative }}" transparent
+    local-zone: "{{ host_fqdn }}" static
+    local-data: "{{ host_fqdn }} A {{ ansible_default_ipv4.address }}"
+
+    # Localhost/VM DNS resolution for internal names
+    #local-data: "myvm.local. IN A 192.168.1.10"
+    #local-data: "anothervm.local. IN A 192.168.1.11"
+
+    forward-zone:
+        name: "."
+        forward-addr: {{ dns.authoritative }}@{{ dns.port }}
+        #forward-addr: {{ dns.public_dns_1 }}
+        #forward-addr: {{ dns.public_dns_2 }}

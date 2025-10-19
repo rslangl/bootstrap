@@ -1,0 +1,5 @@
+---
+- hosts: kvm
+  roles:
+    - prelude
+    - live_os_proxy

@@ -1,0 +1,65 @@
+# routed_nat.yaml
+---
+- name: Default tag used — no action taken
+  debug:
+  msg: |
+    No action taken. Please run with one of the following tags:
+    - setup: to configure NAT and IP forwarding
+    - teardown: to remove NAT and IP forwarding
+  tags: [default]
+
+- name: Enable IP forwarding immediately
+  ansible.builtin.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: true
+  tags: [setup]
+
+- name: Add persistent IP forwarding config
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-kvm-forwarding.conf
+    content: "net.ipv4.ip_forward = 1\n"
+    mode: '0644'
+  tags: [setup]
+
+- name: Apply sysctl settings
+  ansible.builtin.command: sysctl --system
+  tags: [setup]
+
+- name: Setup NAT masquerade on host interface
+  ansible.builtin.command: >
+    iptables -t nat -C POSTROUTING -o {{ nat_postrouting_iface }} -j MASQUERADE
+  register: nat_rule_check
+  failed_when: false
+  changed_when: false
+
+- name: Add NAT masquerade rule if missing
+  ansible.builtin.command: >
+    iptables -t nat -A POSTROUTING -o {{ nat_postrouting_iface }} -j MASQUERADE
+  when: nat_rule_check.rc != 0
+
+- name: Allow forwarding for the routed libvirt interface
+  ansible.builtin.command: >
+    iptables -C FORWARD -i {{ nat_postrouting_iface }} -o {{ nat_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+  register: forward_rule_check1
+  failed_when: false
+  changed_when: false
+
+- name: Add forwarding rule if missing (internet -> routed bridge)
+  ansible.builtin.command: >
+    iptables -A FORWARD -i {{ nat_postrouting_iface }} -o {{ nat_interface }} -m state --state RELATED,ESTABLISHED -j ACCEPT
+  when: forward_rule_check1.rc != 0
+
+- name: Allow forwarding from routed bridge to internet
+  ansible.builtin.command: >
+    iptables -C FORWARD -i {{ nat_interface }} -o {{ nat_postrouting_iface }} -j ACCEPT
+  register: forward_rule_check2
+  failed_when: false
+  changed_when: false
+
+- name: Add forwarding rule if missing (routed bridge -> internet)
+  ansible.builtin.command: >
+    iptables -A FORWARD -i {{ nat_interface }} -o {{ nat_postrouting_iface }} -j ACCEPT
+  when: forward_rule_check2.rc != 0
+

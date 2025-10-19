@@ -1,0 +1,28 @@
+# live_os_proxy/tasks/resource_proxy.yaml
+---
+- name: Enable IP forwarding
+  ansible.builtin.command: echo 1 > /proc/sys/net/ipv4/ip_forward
+
+- name: Setup NAT masquerading to live system
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    in_interface: eth0
+    out_interface: "{{ kvm.live_system.network_device }}"
+    jump: MASQUERADE
+    state: present
+
+- name: Accept forwarding from LAN to live system
+  ansible.builtin.iptables:
+    chain: FORWARD
+    in_interface: eth0
+    out_interface: "{{ kvm.live_system.network_device }}"
+    jump: ACCEPT
+    state: present
+
+- name: Accept forwarding from live system to LAN
+  ansible.builtin.iptables:
+    chain: FORWARD
+    in_interface: "{{ kvm.live_system.network_device }}"
+    jump: ACCEPT
+    state: present
