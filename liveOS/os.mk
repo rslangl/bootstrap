@@ -30,3 +30,4 @@ os.plan: os.validate
 os.build: os.init os.validate os.plan 
 	@echo "Building live OS image..."
 	$(TF_BIN) -chdir=$(LIVEOS_DIR) apply -auto-approve -var="cache_dir=$(CACHE_DIR)" -var="scripts_dir=$(SBIN_DIR)" $(TF_PLAN)
+	docker logs liveos -f
