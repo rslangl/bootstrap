@@ -25,7 +25,7 @@ terraform {
 # }
 #
 
-resource "libvirt_pool" "bsd_pool" {
+resource "libvirt_pool" "liveos_bsd_pool" {
   name = "bsd_pool"
   type = "dir"
   target {
@@ -33,39 +33,44 @@ resource "libvirt_pool" "bsd_pool" {
   }
 }
 
-data "template_file" "user_data" {
+data "template_file" "liveos_bsd_user_data" {
   template = file("${path.module}/cloudinit/user-data")
 }
 
-data "template_file" "meta_data" {
+data "template_file" "liveos_bsd_meta_data" {
   template = file("${path.module}/cloudinit/meta-data")
 }
 
-resource "libvirt_cloudinit_disk" "bsd_cloudinit" {
-  name = "bsd_cloudinit.iso"
-  pool = libvirt_pool.bsd_pool.name
-  user_data = data.template_file.user_data.rendered
-  meta_data = data.template_file.meta_data.rendered
+resource "libvirt_network" "liveos_bsd_network" {
+  name = "liveos_bsd_network"
+  addresses = ["10.17.0.0/24"]
 }
 
-resource "libvirt_volume" "bsd_disk" {
+resource "libvirt_cloudinit_disk" "liveos_bsd_cloudinit_disk" {
+  name = "bsd_cloudinit.iso"
+  pool = libvirt_pool.liveos_bsd_pool.name
+  user_data = data.template_file.liveos_bsd_user_data.rendered
+  meta_data = data.template_file.liveos_bsd_meta_data.rendered
+}
+
+resource "libvirt_volume" "liveos_bsd_disk" {
   name = "freebsd.qcow2"
-  pool = libvirt_pool.bsd_pool.name
+  pool = libvirt_pool.liveos_bsd_pool.name
   source = "${var.cache_dir}/images/freebsd_cloudinit.qcow2"
   format = "qcow2"
   #depends_on = [null_resource.download_iso]
 }
 
-resource "libvirt_domain" "bsd" {
-  name = "freebsd"
+resource "libvirt_domain" "liveos_bsd_domain" {
+  name = "liveos_bsd_domain"
   memory = 2048
   vcpu = 2
   disk {
-    volume_id = libvirt_volume.bsd_disk.id
+    volume_id = libvirt_volume.liveos_bsd_disk.id
   }
-  cloudinit = libvirt_cloudinit_disk.bsd_cloudinit.id
+  cloudinit = libvirt_cloudinit_disk.liveos_bsd_cloudinit_disk.id
   network_interface {
-    network_name = "default"
+    network_id = libvirt_network.liveos_bsd_network.id
     wait_for_lease = true
   }
   filesystem {
