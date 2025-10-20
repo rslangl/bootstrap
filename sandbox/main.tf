@@ -7,7 +7,7 @@ terraform {
     }
   }
   backend "local" {
-    path = "../.cache/tfstate/sandbox/terraform.tfstate"
+    path = "../.cache/tfdata/sandbox/terraform.tfstate"
   }
 }
 
@@ -16,30 +16,22 @@ provider "libvirt" {
 }
 
 resource "libvirt_pool" "sandbox_pool" {
-  name = "sandbox"
+  name = "sandbox_pool"
   type = "dir"
   target {
-    path = "../.cache/libvirt/pool/sandbox"
+    path = "${var.cache_dir}/libvirt/pool/sandbox"
   }
-}
-
-# -------------------------------
-#   ISO paths
-# -------------------------------
-
-variable "opnsense_iso_path" {
-  type = string
 }
 
 # -------------------------------
 #   Virtual networks
 # -------------------------------
 
-# LAN network, used by all devices
-resource "libvirt_network" "sandbox_lan" {
+# LAN network, used by all devices, where routed mode is needed to
+# enable VM-VM, VM-internet, host-VM communication
+resource "libvirt_network" "sandbox_network_lan" {
   name = "sandbox LAN"
   bridge = "virbr10"
-  # Need routed mode to enable VM-VM, VM-internet, host-VM communication
   mode = "route"
   domain = "sandbox.local"
   addresses = ["192.168.50.0/24"]
@@ -52,7 +44,7 @@ resource "libvirt_network" "sandbox_lan" {
 }
 
 # WAN network, only used by OPNsense
-resource "libvirt_network" "sandbox_wan" {
+resource "libvirt_network" "sandbox_network_wan" {
   name = "sandbox WAN"
   bridge = "virbr20"
   mode = "route"
@@ -64,7 +56,7 @@ resource "libvirt_network" "sandbox_wan" {
 #   PiKVM
 # -------------------------------
 
-resource "libvirt_domain" "sandbox_pikvm" {
+resource "libvirt_domain" "sandbox_pikvm_domain" {
   name   = "pikvm"
   memory = 2048
   vcpu   = 1
@@ -72,10 +64,10 @@ resource "libvirt_domain" "sandbox_pikvm" {
     volume_id = libvirt_volume.sandbox_pikvm_disk.id
   }
   disk {
-    volume_id = libvirt_volume.sandbox_bootstrap_usb.id
+    volume_id = libvirt_volume.sandbox_bootstrap_disk.id
   }
   network_interface {
-    network_id = libvirt_network.sandbox_lan.id
+    network_id = libvirt_network.sandbox_network_lan.id
     mac        = "52:54:00:00:00:01"
   }
   console {
@@ -99,7 +91,7 @@ resource "libvirt_volume" "sandbox_pikvm_disk" {
 }
 
 # Bootstrap image (mountable)
-resource "libvirt_volume" "sandbox_bootstrap_usb" {
+resource "libvirt_volume" "sandbox_bootstrap_disk" {
   name   = "bootstrap.qcow2"
   pool = libvirt_pool.sandbox_pool.name
   format = "qcow2"
@@ -121,20 +113,20 @@ resource "libvirt_domain" "sandbox_opnsense" {
   memory = 2048
   vcpu   = 2
   disk {
-    file = var.opnsense_iso_path
+    file = var.sandbox_opnsense_iso
   }
   disk {
     volume_id = libvirt_volume.sandbox_opnsense_disk.id
     scsi = false
   }
   network_interface {
-    network_id = libvirt_network.sandbox_lan.id
+    network_id = libvirt_network.sandbox_network_lan.id
     mac = "52:54:00:ea:a5:05"
     hostname = "opnsense"
     wait_for_lease = false
   }
   network_interface {
-    network_id = libvirt_network.sandbox_wan.id
+    network_id = libvirt_network.sandbox_network_wan.id
     mac = "52:54:00:00:00:aa"
     wait_for_lease = false
   }
