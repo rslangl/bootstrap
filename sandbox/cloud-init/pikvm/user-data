@@ -1,0 +1,16 @@
+#cloud-config
+users:
+  - name: pikvm
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    groups: wheel
+    shell: /bin/bash
+
+package_update: true
+packages:
+  - vim
+  - net-tools
+  - openssh
+
+runcmd:
+  - systemctl enable sshd
+  - systemctl start sshd

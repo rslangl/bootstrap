@@ -41,7 +41,7 @@ all: build
 help:
 	@echo "$$HELPTEXT"
 
-clean: cfg.clean os.clean
+clean: cfg.clean dev.clean os.clean
 
 resources:
 	@echo "Fetching resources: ISO images"
@@ -52,6 +52,8 @@ resources:
 	bash $(SBIN_DIR)/fetch_tools.sh
 
 generate: cfg.generate
+
+dev: cfg.generate dev.build
 
 build: cfg.generate os.build
 
