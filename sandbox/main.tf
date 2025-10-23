@@ -5,6 +5,10 @@ terraform {
       source = "dmacvicar/libvirt"
       version = "0.8.3"
     }
+    template = {
+      source = "hashicorp/template"
+      version = "2.2.0"
+    }
   }
   backend "local" {
     path = "../.cache/tfdata/sandbox/terraform.tfstate"
@@ -53,18 +57,15 @@ resource "libvirt_network" "sandbox_network_wan" {
 }
 
 # -------------------------------
-#   PiKVM
+#   LiveOS
 # -------------------------------
 
-resource "libvirt_domain" "sandbox_pikvm_domain" {
+resource "libvirt_domain" "sandbox_liveos_domain" {
   name   = "pikvm"
   memory = 2048
   vcpu   = 1
   disk {
-    volume_id = libvirt_volume.sandbox_pikvm_disk.id
-  }
-  disk {
-    volume_id = libvirt_volume.sandbox_bootstrap_disk.id
+    volume_id = libvirt_volume.sandbox_liveos_disk.id
   }
   network_interface {
     network_id = libvirt_network.sandbox_network_lan.id
@@ -83,16 +84,74 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
   autostart = true
 }
 
-# PiKVM OS image
-resource "libvirt_volume" "sandbox_pikvm_disk" {
-  name = "pikvm.qcow2"
+resource "libvirt_volume" "sandbox_liveos_disk" {
+  name   = "liveos.qcow2"
+  source = "${var.cache_dir}/vm_disks/liveos.qcow2"
   pool = libvirt_pool.sandbox_pool.name
   format = "qcow2"
 }
 
-# Bootstrap image (mountable)
-resource "libvirt_volume" "sandbox_bootstrap_disk" {
-  name   = "bootstrap.qcow2"
+# -------------------------------
+#   PiKVM
+# -------------------------------
+
+resource "libvirt_domain" "sandbox_pikvm_domain" {
+  name   = "pikvm"
+  memory = 2048
+  vcpu   = 1
+  disk {
+    volume_id = libvirt_volume.sandbox_pikvm_disk.id
+  }
+  disk {
+    volume_id = libvirt_volume.sandbox_pikvm_cloudinit.id
+  }
+  network_interface {
+    network_id = libvirt_network.sandbox_network_lan.id
+    mac        = "52:54:00:00:00:01"
+  }
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+  graphics {
+    type        = "vnc"
+    listen_type = "address"
+    autoport    = true
+  }
+  boot_device {
+    dev = ["hd", "cdrom"]
+  }
+  depends_on = [libvirt_cloudinit_disk.sandbox_pikvm_cloudinit]
+  autostart = true
+}
+
+data "template_file" "sandbox_pikvm_cloudinit_userdata" {
+  template = file("${path.module}/cloud-init/pikvm/user-data")
+}
+
+data "template_file" "sandbox_pikvm_cloudinit_metadata" {
+  template = file("${path.module}/cloud-init/pikvm/meta-data")
+}
+
+data "template_file" "sandbox_pikvm_cloudinit_networkconfig" {
+  template = file("${path.module}/cloud-init/pikvm/network_config")
+
+}
+
+# PiKVM is based on Arch Linux, so to make it as similar as possible
+# we use an Arch Linux cloud image
+resource "libvirt_cloudinit_disk" "sandbox_pikvm_cloudinit" {
+  name = "pikvm-seed.iso"
+  pool = libvirt_pool.sandbox_pool.name
+  user_data = data.template_file.sandbox_pikvm_cloudinit_userdata
+  meta_data = data.template_file.sandbox_pikvm_cloudinit_metadata
+  network_config = data.template_file.sandbox_pikvm_cloudinit_networkconfig
+}
+
+resource "libvirt_volume" "sandbox_pikvm_disk" {
+  name = "pikvm"
+  source = "${var.cache_dir}/vm_disks/pikvm.qcow2"
   pool = libvirt_pool.sandbox_pool.name
   format = "qcow2"
 }
@@ -101,20 +160,10 @@ resource "libvirt_volume" "sandbox_bootstrap_disk" {
 #   OPNsense
 # -------------------------------
 
-resource "libvirt_volume" "sandbox_opnsense_disk" {
-  name   = "opnsense.qcow2"
-  format = "qcow2"
-  pool = libvirt_pool.sandbox_pool.name
-  size   = 21474836480
-}
-
 resource "libvirt_domain" "sandbox_opnsense" {
   name   = "opnsense"
   memory = 2048
   vcpu   = 2
-  disk {
-    file = var.sandbox_opnsense_iso
-  }
   disk {
     volume_id = libvirt_volume.sandbox_opnsense_disk.id
     scsi = false
@@ -143,6 +192,14 @@ resource "libvirt_domain" "sandbox_opnsense" {
   boot_device {
     dev = ["cdrom", "hd"]
   }
+}
+
+resource "libvirt_volume" "sandbox_opnsense_disk" {
+  name   = "opnsense"
+  source = "${var.cache_dir}/vm_disks/opnsense.qcow2"
+  pool = libvirt_pool.sandbox_pool.name
+  format = "qcow2"
+  size   = 21474836480
 }
 
 # -------------------------------

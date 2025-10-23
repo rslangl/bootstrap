@@ -3,7 +3,3 @@ variable cache_dir {
   default = ""
 }
 
-variable "sandbox_opnsense_iso" {
-  type = string
-}
-
