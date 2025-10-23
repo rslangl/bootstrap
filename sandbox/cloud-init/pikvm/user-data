@@ -1,14 +1,9 @@
 #cloud-config
-hostname: pikvm
-manage_etc_hosts: true
-
 users:
   - name: pikvm
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    groups: [wheel]
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    groups: wheel
     shell: /bin/bash
-    ssh_authorized_keys:
-      - ssh-ed25519 AAAA...yourkey
 
 package_update: true
 packages:
