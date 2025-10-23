@@ -19,10 +19,10 @@ dev.validate: dev.init
 
 dev.plan: dev.validate
 	@echo "Planning with ISO at $(ISO_ABS_PATH)..."
-	$(TF_BIN) -chdir=$(SANDBOX_DIR) plan -out $(DEV_TF_PLAN)
+	$(TF_BIN) -chdir=$(SANDBOX_DIR) plan -var="cache_dir=$(CACHE_DIR)" -out $(DEV_TF_PLAN)
 
 dev.build: dev.init dev.validate dev.plan
 	@echo "Setting up host system..."
 	ansible-playbook $(SANDBOX_DIR)/playbooks/host_pre.yaml --tags setup
 	@echo "Creating resources..."
-	$(TF_BIN) -chdir=$(SANDBOX_DIR) apply -auto-approve $(DEV_TF_PLAN)
+	$(TF_BIN) -chdir=$(SANDBOX_DIR) apply -var="cache_dir=$(CACHE_DIR)" -auto-approve $(DEV_TF_PLAN)

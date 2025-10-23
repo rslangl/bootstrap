@@ -163,7 +163,7 @@ resource "libvirt_volume" "sandbox_opnsense_disk" {
   source = "${var.cache_dir}/vm_disks/opnsense.qcow2"
   pool = libvirt_pool.sandbox_pool.name
   format = "qcow2"
-  size   = 21474836480
+  # size   = 21474836480
 }
 
 resource "libvirt_domain" "sandbox_opnsense" {
