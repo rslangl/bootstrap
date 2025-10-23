@@ -17,7 +17,8 @@ Uses a FreeBSD VM image with cloud-init to fetch desired bsd packages, which wil
 
 ### registry
 
-Uses the standard Docker registry image to build a tarball containing desired container images, which will be server under the `/registry` endpoint.
+Uses the standard Docker registry image to build a tarball containing desired container images,
+which will be server under the `/registry` endpoint.
 
 ### liveos
 
@@ -31,4 +32,3 @@ qemu-system-x86_64 \
   -enable-kvm \
   -nic user,hostfwd=tcp::8080-:80,hostfwd=tcp::5000-:5000
 ```
-
