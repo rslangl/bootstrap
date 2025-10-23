@@ -60,6 +60,13 @@ resource "libvirt_network" "sandbox_network_wan" {
 #   LiveOS
 # -------------------------------
 
+resource "libvirt_volume" "sandbox_liveos_disk" {
+  name   = "liveos.qcow2"
+  source = "${var.cache_dir}/vm_disks/liveos.qcow2"
+  pool = libvirt_pool.sandbox_pool.name
+  format = "qcow2"
+}
+
 resource "libvirt_domain" "sandbox_liveos_domain" {
   name   = "pikvm"
   memory = 2048
@@ -84,16 +91,39 @@ resource "libvirt_domain" "sandbox_liveos_domain" {
   autostart = true
 }
 
-resource "libvirt_volume" "sandbox_liveos_disk" {
-  name   = "liveos.qcow2"
-  source = "${var.cache_dir}/vm_disks/liveos.qcow2"
-  pool = libvirt_pool.sandbox_pool.name
-  format = "qcow2"
-}
-
 # -------------------------------
 #   PiKVM
 # -------------------------------
+
+data "template_file" "sandbox_pikvm_cloudinit_userdata" {
+  template = file("${path.root}/cloud-init/pikvm/user-data")
+}
+
+data "template_file" "sandbox_pikvm_cloudinit_metadata" {
+  template = file("${path.root}/cloud-init/pikvm/meta-data")
+}
+
+data "template_file" "sandbox_pikvm_cloudinit_networkconfig" {
+  template = file("${path.root}/cloud-init/pikvm/network-config")
+
+}
+
+# PiKVM is based on Arch Linux, so to make it as similar as possible
+# we use an Arch Linux cloud image
+resource "libvirt_cloudinit_disk" "sandbox_pikvm_cloudinit" {
+  name = "pikvm-seed.iso"
+  pool = libvirt_pool.sandbox_pool.name
+  user_data = data.template_file.sandbox_pikvm_cloudinit_userdata
+  meta_data = data.template_file.sandbox_pikvm_cloudinit_metadata
+  network_config = data.template_file.sandbox_pikvm_cloudinit_networkconfig
+}
+
+resource "libvirt_volume" "sandbox_pikvm_disk" {
+  name = "pikvm"
+  source = "${var.cache_dir}/vm_disks/pikvm.qcow2"
+  pool = libvirt_pool.sandbox_pool.name
+  format = "qcow2"
+}
 
 resource "libvirt_domain" "sandbox_pikvm_domain" {
   name   = "pikvm"
@@ -102,9 +132,7 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
   disk {
     volume_id = libvirt_volume.sandbox_pikvm_disk.id
   }
-  disk {
-    volume_id = libvirt_volume.sandbox_pikvm_cloudinit.id
-  }
+  cloudinit = libvirt_cloudinit_disk.sandbox_pikvm_cloudinit.id
   network_interface {
     network_id = libvirt_network.sandbox_network_lan.id
     mac        = "52:54:00:00:00:01"
@@ -126,39 +154,17 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
   autostart = true
 }
 
-data "template_file" "sandbox_pikvm_cloudinit_userdata" {
-  template = file("${path.module}/cloud-init/pikvm/user-data")
-}
-
-data "template_file" "sandbox_pikvm_cloudinit_metadata" {
-  template = file("${path.module}/cloud-init/pikvm/meta-data")
-}
-
-data "template_file" "sandbox_pikvm_cloudinit_networkconfig" {
-  template = file("${path.module}/cloud-init/pikvm/network_config")
-
-}
-
-# PiKVM is based on Arch Linux, so to make it as similar as possible
-# we use an Arch Linux cloud image
-resource "libvirt_cloudinit_disk" "sandbox_pikvm_cloudinit" {
-  name = "pikvm-seed.iso"
-  pool = libvirt_pool.sandbox_pool.name
-  user_data = data.template_file.sandbox_pikvm_cloudinit_userdata
-  meta_data = data.template_file.sandbox_pikvm_cloudinit_metadata
-  network_config = data.template_file.sandbox_pikvm_cloudinit_networkconfig
-}
-
-resource "libvirt_volume" "sandbox_pikvm_disk" {
-  name = "pikvm"
-  source = "${var.cache_dir}/vm_disks/pikvm.qcow2"
-  pool = libvirt_pool.sandbox_pool.name
-  format = "qcow2"
-}
-
 # -------------------------------
 #   OPNsense
 # -------------------------------
+
+resource "libvirt_volume" "sandbox_opnsense_disk" {
+  name   = "opnsense"
+  source = "${var.cache_dir}/vm_disks/opnsense.qcow2"
+  pool = libvirt_pool.sandbox_pool.name
+  format = "qcow2"
+  size   = 21474836480
+}
 
 resource "libvirt_domain" "sandbox_opnsense" {
   name   = "opnsense"
@@ -192,14 +198,6 @@ resource "libvirt_domain" "sandbox_opnsense" {
   boot_device {
     dev = ["cdrom", "hd"]
   }
-}
-
-resource "libvirt_volume" "sandbox_opnsense_disk" {
-  name   = "opnsense"
-  source = "${var.cache_dir}/vm_disks/opnsense.qcow2"
-  pool = libvirt_pool.sandbox_pool.name
-  format = "qcow2"
-  size   = 21474836480
 }
 
 # -------------------------------
