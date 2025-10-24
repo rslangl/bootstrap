@@ -2,11 +2,11 @@ terraform {
   required_version = ">= 1.12.0"
   required_providers {
     libvirt = {
-      source = "dmacvicar/libvirt"
+      source  = "dmacvicar/libvirt"
       version = "0.8.3"
     }
     template = {
-      source = "hashicorp/template"
+      source  = "hashicorp/template"
       version = "2.2.0"
     }
   }
@@ -34,10 +34,10 @@ resource "libvirt_pool" "sandbox_pool" {
 # LAN network, used by all devices, where routed mode is needed to
 # enable VM-VM, VM-internet, host-VM communication
 resource "libvirt_network" "sandbox_network_lan" {
-  name = "sandbox LAN"
-  bridge = "virbr10"
-  mode = "route"
-  domain = "sandbox.local"
+  name      = "sandbox_LAN"
+  bridge    = "virbr10"
+  mode      = "nat"
+  domain    = "sandbox.local"
   addresses = ["192.168.50.0/24"]
   dns {
     enabled = true
@@ -49,9 +49,9 @@ resource "libvirt_network" "sandbox_network_lan" {
 
 # WAN network, only used by OPNsense
 resource "libvirt_network" "sandbox_network_wan" {
-  name = "sandbox WAN"
-  bridge = "virbr20"
-  mode = "route"
+  name      = "sandbox_WAN"
+  bridge    = "virbr20"
+  mode      = "route"
   addresses = ["10.10.10.0/24"]
   autostart = true
 }
@@ -61,81 +61,25 @@ resource "libvirt_network" "sandbox_network_wan" {
 # -------------------------------
 
 resource "libvirt_volume" "sandbox_liveos_disk" {
-  name   = "liveos.qcow2"
+  name   = "liveos_disk"
   source = "${var.cache_dir}/vm_disks/liveos.qcow2"
-  pool = libvirt_pool.sandbox_pool.name
+  pool   = libvirt_pool.sandbox_pool.name
   format = "qcow2"
 }
 
 resource "libvirt_domain" "sandbox_liveos_domain" {
-  name   = "pikvm"
+  name   = "liveos"
   memory = 2048
   vcpu   = 1
   disk {
     volume_id = libvirt_volume.sandbox_liveos_disk.id
   }
+  # The bootstrap system will get the third address in the local range,
+  # namely 192.168.50.12
   network_interface {
     network_id = libvirt_network.sandbox_network_lan.id
-    mac        = "52:54:00:00:00:01"
-  }
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-  graphics {
-    type        = "spice"
-    listen_type = "address"
-    autoport    = true
-  }
-  autostart = true
-}
-
-# -------------------------------
-#   PiKVM
-# -------------------------------
-
-data "template_file" "sandbox_pikvm_cloudinit_userdata" {
-  template = file("${path.root}/cloud-init/pikvm/user-data")
-}
-
-data "template_file" "sandbox_pikvm_cloudinit_metadata" {
-  template = file("${path.root}/cloud-init/pikvm/meta-data")
-}
-
-data "template_file" "sandbox_pikvm_cloudinit_networkconfig" {
-  template = file("${path.root}/cloud-init/pikvm/network-config")
-
-}
-
-# PiKVM is based on Arch Linux, so to make it as similar as possible
-# we use an Arch Linux cloud image
-resource "libvirt_cloudinit_disk" "sandbox_pikvm_cloudinit" {
-  name = "pikvm-seed.iso"
-  pool = libvirt_pool.sandbox_pool.name
-  user_data = data.template_file.sandbox_pikvm_cloudinit_userdata.rendered
-  meta_data = data.template_file.sandbox_pikvm_cloudinit_metadata.rendered
-  network_config = data.template_file.sandbox_pikvm_cloudinit_networkconfig.rendered
-}
-
-resource "libvirt_volume" "sandbox_pikvm_disk" {
-  name = "pikvm"
-  source = "${var.cache_dir}/vm_disks/pikvm.qcow2"
-  pool = libvirt_pool.sandbox_pool.name
-  format = "qcow2"
-}
-
-resource "libvirt_domain" "sandbox_pikvm_domain" {
-  name   = "pikvm"
-  memory = 2048
-  vcpu   = 1
-  disk {
-    volume_id = libvirt_volume.sandbox_pikvm_disk.id
-  }
-  cloudinit = libvirt_cloudinit_disk.sandbox_pikvm_cloudinit.id
-  network_interface {
-    network_id = libvirt_network.sandbox_network_lan.id
-    mac        = "52:54:00:00:00:01"
+    hostname   = "bootstrap"
+    addresses  = ["192.168.50.12"]
   }
   console {
     type        = "pty"
@@ -147,11 +91,87 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
     listen_type = "address"
     autoport    = true
   }
-  boot_device {
-    dev = ["hd", "cdrom"]
-  }
-  depends_on = [libvirt_cloudinit_disk.sandbox_pikvm_cloudinit]
   autostart = true
+}
+
+# -------------------------------
+#   PiKVM (AP greenzone)
+# -------------------------------
+
+# TODO: 
+
+# -------------------------------
+#   PiKVM
+# -------------------------------
+
+# data "template_file" "sandbox_pikvm_cloudinit_userdata" {
+#   template = file("${path.root}/cloud-init/pikvm/user-data")
+# }
+#
+# data "template_file" "sandbox_pikvm_cloudinit_metadata" {
+#   template = file("${path.root}/cloud-init/pikvm/meta-data")
+# }
+#
+# data "template_file" "sandbox_pikvm_cloudinit_networkconfig" {
+#   template = file("${path.root}/cloud-init/pikvm/network-config")
+#
+# }
+#
+# # PiKVM is based on Arch Linux, so to make it as similar as possible
+# # we use an Arch Linux cloud image
+# resource "libvirt_cloudinit_disk" "sandbox_pikvm_cloudinit" {
+#   name           = "pikvm-seed.iso"
+#   pool           = libvirt_pool.sandbox_pool.name
+#   user_data      = data.template_file.sandbox_pikvm_cloudinit_userdata.rendered
+#   meta_data      = data.template_file.sandbox_pikvm_cloudinit_metadata.rendered
+#   network_config = data.template_file.sandbox_pikvm_cloudinit_networkconfig.rendered
+# }
+#
+resource "libvirt_volume" "sandbox_pikvm_disk" {
+  name   = "pikvm_disk"
+  # source = "${var.cache_dir}/vm_disks/pikvm.qcow2"
+  source = "${var.cache_dir}/vm_disks/debian_cloud.qcow2"
+  pool   = libvirt_pool.sandbox_pool.name
+  format = "qcow2"
+}
+
+# NOTE: the fields `machine`, `firmware`, and `nvram` were required to run UEFI images
+resource "libvirt_domain" "sandbox_pikvm_domain" {
+  name   = "pikvm"
+  memory = 2048
+  vcpu   = 1
+  # machine = "q35"
+  # firmware = "/nix/store/z30h26qgxw1bd2vmb1vxyp8xvapj74m4-OVMF-202508-fd/FV/OVMF_CODE.fd"
+  # nvram {
+  #   file = "${var.cache_dir}/tmp/pikvm_VARS.fd"
+  # }
+  # cloudinit = libvirt_cloudinit_disk.sandbox_pikvm_cloudinit.id
+  disk {
+    volume_id = libvirt_volume.sandbox_pikvm_disk.id
+  }
+  # The router gets the first IP in range, while the provisioner gets the next,
+  # namely 192.168.50.11
+  network_interface {
+    network_id = libvirt_network.sandbox_network_lan.id
+    hostname   = "pikvm"
+    addresses  = ["192.168.50.11"]
+  }
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+  graphics {
+    type        = "vnc"
+    listen_type = "address"
+    autoport    = true
+  }
+  # NOTE: used to be ["hd", "cdrom"] due to the cloudinit image
+  boot_device {
+    dev = ["hd"]
+  }
+  # depends_on = [libvirt_cloudinit_disk.sandbox_pikvm_cloudinit]
+  autostart  = true
 }
 
 # -------------------------------
@@ -159,11 +179,10 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
 # -------------------------------
 
 resource "libvirt_volume" "sandbox_opnsense_disk" {
-  name   = "opnsense"
+  name   = "opnsense_disk"
   source = "${var.cache_dir}/vm_disks/opnsense.qcow2"
-  pool = libvirt_pool.sandbox_pool.name
+  pool   = libvirt_pool.sandbox_pool.name
   format = "qcow2"
-  # size   = 21474836480
 }
 
 resource "libvirt_domain" "sandbox_opnsense" {
@@ -172,26 +191,30 @@ resource "libvirt_domain" "sandbox_opnsense" {
   vcpu   = 2
   disk {
     volume_id = libvirt_volume.sandbox_opnsense_disk.id
-    scsi = false
+    scsi      = false
   }
+  # OPNsense acts as the router for the entire network
   network_interface {
-    network_id = libvirt_network.sandbox_network_lan.id
-    mac = "52:54:00:ea:a5:05"
-    hostname = "opnsense"
+    network_id     = libvirt_network.sandbox_network_lan.id
+    hostname       = "opnsense"
+    addresses      = ["192.168.50.10"]
     wait_for_lease = false
   }
+  # OPNsense acts as a client towards `ap_greenzone` which serves IPs
+  # over the 10.10.10.0/24 subnet, thus getting the next address 10.10.10.11
   network_interface {
-    network_id = libvirt_network.sandbox_network_wan.id
-    mac = "52:54:00:00:00:aa"
+    network_id     = libvirt_network.sandbox_network_wan.id
+    hostname       = "opnsense"
+    addresses      = ["10.10.10.11"]
     wait_for_lease = false
   }
   graphics {
-    type = "vnc"
+    type        = "vnc"
     listen_type = "address"
-    autoport = true
+    autoport    = true
   }
   console {
-    type = "pty"
+    type        = "pty"
     target_type = "serial"
     target_port = "0"
   }
