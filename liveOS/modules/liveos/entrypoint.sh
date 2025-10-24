@@ -6,6 +6,7 @@ rm -rf chroot binary cache
 
 # Configure live-build
 lb config \
+  --config /workdir/config \
   --architectures amd64 \
   --distribution bookworm \
   --debian-installer live \

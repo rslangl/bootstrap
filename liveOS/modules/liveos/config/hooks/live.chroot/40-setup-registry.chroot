@@ -19,7 +19,7 @@ ExecStop=/usr/bin/docker stop registry
 WantedBy=multi-user.target
 EOF
 
-systemctl enable registry.service
+#systemctl enable registry.service
 
 # TODO: load additional images using `docker load -i <image>.tar`
 # TODO: tag image for local registry using `docker tag`

@@ -1,9 +1,14 @@
 #!/bin/bash
 
+set -e
+
+mkdir -p /srv/apt /srv/bsd /srv/tf-providers
+mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+
 cat << 'EOF' > /etc/nginx/sites-available/repo
 server {
   listen 80 default_server;
-  liten [ :: ]:80 default_server;
+  listen [ :: ]:80 default_server;
 
   location /apt/ {
     root /srv/apt/;
@@ -28,6 +33,10 @@ server {
 }
 EOF
 
-ln -sf /etc/nginx/sites-available/repo /etc/nginx/sites-enabled/default
 
-systemctl enable nginx
+mkdir -p /etc/systemd/system/multi-user.target.wants
+
+ln -sf /etc/nginx/sites-available/repo /etc/nginx/sites-enabled/default
+ln -sf /lib/systemd/system/nginx.service /etc/systemd/system/multi-user.target.wants/nginx.service
+
+
