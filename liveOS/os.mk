@@ -12,7 +12,6 @@ export TF_PLUGIN_CACHE_DIR
 os.clean:
 	@echo "Destroying resources..."
 	$(TF_BIN) -chdir=$(LIVEOS_DIR) destroy -auto-approve
-	rm $(CACHE_DIR)/output/*.iso
 
 os.init:
 	@echo "Initializing terraform..."
