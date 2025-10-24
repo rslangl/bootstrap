@@ -16,6 +16,24 @@ we need to configure:
 * Enable IP forwarding (so traffic can route from VMs to the internet)
 * Setup iptables MASQUERADE (so VM's traffic appears to come from the host)
 
+When launched, two network bridges are created:
+
+* `sandbox_WAN`: addresses `10.10.10.0/24`
+* `sandbox_LAN`: addresses `192.168.50.0/24`
+
+Where these are used to emulate the access point providing internet connectivity, and
+the local network, respectively.
+
+The VMs themselves are as follows:
+
+* `opnsense`: The router, using a real OPNsense image
+  * WAN: `10.10.10.11`
+  * LAN: `192.168.50.10`
+* `pikvm`: The centralized provisioner, using Debian cloud image, connected to LAN
+  * LAN: `192.168.50.11`
+* `liveos`: The image built by this project, using Debian, connected to LAN
+  * LAN: `192.168.50.12`
+
 ## Preparation
 
 Manual steps to setup the host:

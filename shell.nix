@@ -15,6 +15,7 @@
     kcl
     tflint
     cdrtools
+    tigervnc
   ];
 
   in pkgs.mkShell {

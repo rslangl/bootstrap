@@ -41,10 +41,10 @@ data "template_file" "liveos_bsd_meta_data" {
   template = file("${path.module}/cloudinit/meta-data")
 }
 
-resource "libvirt_network" "liveos_bsd_network" {
-  name = "liveos_bsd_network"
-  addresses = ["10.17.0.0/24"]
-}
+# resource "libvirt_network" "liveos_bsd_network" {
+#   name = "liveos_bsd_network"
+#   addresses = ["10.17.0.0/24"]
+# }
 
 resource "libvirt_cloudinit_disk" "liveos_bsd_cloudinit_disk" {
   name = "bsd_cloudinit.iso"
@@ -69,10 +69,10 @@ resource "libvirt_domain" "liveos_bsd_domain" {
     volume_id = libvirt_volume.liveos_bsd_disk.id
   }
   cloudinit = libvirt_cloudinit_disk.liveos_bsd_cloudinit_disk.id
-  network_interface {
-    network_id = libvirt_network.liveos_bsd_network.id
-    wait_for_lease = true
-  }
+  # network_interface {
+  #   network_id = libvirt_network.liveos_bsd_network.id
+  #   wait_for_lease = true
+  # }
   filesystem {
     source = "${var.cache_dir}/build_artifacts/bsdrepo"
     target = "shared"
