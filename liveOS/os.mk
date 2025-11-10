@@ -27,6 +27,3 @@ os.build: os.init os.validate os.plan
 	@echo "Building live OS image..."
 	$(TF_BIN) -chdir=$(LIVEOS_DIR) apply -auto-approve -var="cache_dir=$(CACHE_DIR)" -var="scripts_dir=$(SBIN_DIR)" $(TF_PLAN)
 	docker logs liveos -f
-	@if [ -f "$(CACHE_DIR)/output/liveUSB.iso" ]; then \
-		$(TF_BIN) -chdir=$(LIVEOS_DIR) destroy -auto-approve \
-	fi
