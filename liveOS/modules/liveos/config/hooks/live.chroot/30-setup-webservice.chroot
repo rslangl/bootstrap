@@ -11,12 +11,12 @@ server {
   listen [ :: ]:80 default_server;
 
   location /apt/ {
-    root /srv/apt/;
+    alias /srv/apt/;
     autoindex on;
   }
 
   location /bsd/ {
-    root /srv/bsd/;
+    alias /srv/bsd/;
     autoindex on;
   }
 
@@ -25,7 +25,7 @@ server {
   }
 
   location /tf-providers/ {
-    root /srv/tf-providers/;
+    alias /srv/tf-providers/;
     autoindex on;
     gzip on;
     gzip_types application/zip application/octet-stream;
