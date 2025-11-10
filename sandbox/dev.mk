@@ -24,5 +24,6 @@ dev.plan: dev.validate
 dev.build: dev.init dev.validate dev.plan
 	@echo "Setting up host system..."
 	ansible-playbook $(SANDBOX_DIR)/playbooks/host_pre.yaml --tags setup
+	qemu-img convert -f raw -O qcow2 -o preallocation=metadata,cluster_size=65536 $(CACHE_DIR)/output/liveUSB.iso $(CACHE_DIR)/vm_disks/liveos.qcow2
 	@echo "Creating resources..."
 	$(TF_BIN) -chdir=$(SANDBOX_DIR) apply -var="cache_dir=$(CACHE_DIR)" -auto-approve $(DEV_TF_PLAN)
