@@ -2,9 +2,11 @@ terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
+      version = "3.6.2"
     }
     null = {
       source = "hashicorp/null"
+      version = "3.2.4"
     }
   }
 }
@@ -14,10 +16,11 @@ resource "null_resource" "liveos_system_copy_resources" {
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
     command = <<EOT
-cp -r ${var.cache_dir}/build_artifacts/aptrepo ${path.module}/config/includes.chroot/srv
-cp -r ${var.cache_dir}/build_artifacts/registry ${path.module}/config/includes.chroot/srv
-cp -r ${var.cache_dir}/build_artifacts/registry_data ${path.module}/config/includes.chroot/srv
-    #cp -r ${var.cache_dir}/build_artifacts/tf_providers ${path.module}/config/includes.chroot/srv
+cp -r ${var.cache_dir}/build_artifacts/aptrepo/. ${path.module}/config/includes.chroot/srv/apt
+cp -r ${var.cache_dir}/build_artifacts/bsdrepo/. ${path.module}/config/includes.chroot/srv/bsd
+cp -r ${var.cache_dir}/build_artifacts/registry/. ${path.module}/config/includes.chroot/srv/registry
+cp -r ${var.cache_dir}/build_artifacts/registry_data/. ${path.module}/config/includes.chroot/srv/registry_data
+cp -r ${var.cache_dir}/build_artifacts/tf_providers/. ${path.module}/config/includes.chroot/srv
     EOT
   }
 }

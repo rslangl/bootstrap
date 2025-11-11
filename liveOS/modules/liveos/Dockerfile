@@ -25,7 +25,7 @@ WORKDIR /workdir
 
 RUN mkdir /workdir/output
 
-COPY config/ .
+COPY config/ ./config/
 COPY entrypoint.sh .
 
 ENTRYPOINT ["bash", "./entrypoint.sh"]
