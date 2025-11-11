@@ -28,8 +28,6 @@ ExecStop=/usr/bin/docker stop registry
 WantedBy=multi-user.target
 EOF
 
-/usr/bin/docker load -i /srv/registry/registry.tar
-
 systemctl daemon-reload
 systemctl enable docker
 systemctl enable registry
