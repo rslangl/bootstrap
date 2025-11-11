@@ -28,20 +28,5 @@ RUN mkdir /workdir/output
 COPY config/ ./config/
 COPY entrypoint.sh .
 
-# RUN lb config \
-#   --config /workdir/config \
-#   --architectures amd64 \
-#   --distribution bookworm \
-#   --debian-installer live \
-#   --binary-images iso-hybrid \
-#   --bootappend-live "boot=live components" \
-#   --mirror-bootstrap http://deb.debian.org/debian/ \
-#   --mirror-binary http://deb.debian.org/debian/ \
-#   --image-name bootstrap
-#
-# RUN lb build --verbose
-#
-# RUN mv bootstrap-amd64.hybrid.iso /workdir/output/liveUSB.iso
-#
 ENTRYPOINT ["bash", "./entrypoint.sh"]
 

@@ -1,0 +1,26 @@
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+  server_name _;
+
+  location /apt/ {
+    alias /srv/apt/;
+    autoindex on;
+  }
+
+  location /bsd/ {
+    alias /srv/bsd/;
+    autoindex on;
+  }
+
+  location /registry/ {
+    proxy_pass http://localhost:5000/;
+  }
+
+  location /tf-providers/ {
+    alias /srv/tf-providers/;
+    autoindex on;
+    gzip on;
+    gzip_types application/zip application/octet-stream;
+  }
+}

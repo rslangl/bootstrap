@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+mkdir -p /etc/systemd/system/docker.service.d
+cat <<'EOF' > /etc/systemd/system/docker.service.d/override.conf
+[Unit]
+After=network.target local-fs.target
+
+[Service]
+ExecStart=
+ExecStart=/usr/sbin/dockerd -H fd://
+Restart=always
+EOF
+
+cat <<'EOF' > /etc/systemd/system/registry.service
+[Unit]
+Description=Local Docker registry
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/docker load -i /srv/registry/registry.tar
+ExecStart=/usr/bin/docker run -p 5000:5000 --name registry -v /srv/registry:/var/lib/registry registry:2
+ExecStop=/usr/bin/docker stop registry
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+/usr/bin/docker load -i /srv/registry/registry.tar
+
+systemctl daemon-reload
+systemctl enable docker
+systemctl enable registry
+
