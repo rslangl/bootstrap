@@ -9,3 +9,10 @@ docker.io
 nginx
 reprepro
 
+# Live system utilities
+live-boot
+live-config
+isolinux
+syslinux-common
+systemd-sysv
+linux-image-amd64
