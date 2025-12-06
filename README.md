@@ -5,4 +5,3 @@
 <!-- markdownlint-enable MD013 -->
 
 Bootable environment to bootstrap my infrastructure.
-
