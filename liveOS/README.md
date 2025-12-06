@@ -32,3 +32,7 @@ qemu-system-x86_64 \
   -enable-kvm \
   -nic user,hostfwd=tcp::8080-:80,hostfwd=tcp::5000-:5000
 ```
+
+## References
+
+* [Building a custom Debian ISO image](https://debian-live-config.readthedocs.io/en/latest/custom.html)
