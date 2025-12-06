@@ -31,6 +31,8 @@ Targets:
 	clean			Cleans build cache, inlcuding downloaded resources
 	generate	Generates necessary configurations
 	validate	Runs validation checks on the various subdirectories
+	build			Builds the live OS image
+	dev				Creates the sandbox environment locally
 endef
 export HELPTEXT
 
@@ -45,11 +47,11 @@ clean: cfg.clean dev.clean os.clean
 
 resources:
 	@echo "Fetching resources: ISO images"
-	bash $(SBIN_DIR)/fetch_iso_old.sh
-	#@echo "Fetching resources: Docker containers"
-	#bash $(SBIN_DIR)/fetch_container.sh
+	bash $(SBIN_DIR)/get_iso_images.sh
+	@echo "Fetching resources: Containers"
+	bash $(SBIN_DIR)/get_containers.sh
 	@echo "Fetching resources: Tools"
-	bash $(SBIN_DIR)/fetch_tools.sh
+	bash $(SBIN_DIR)/get_tools.sh
 
 generate: cfg.generate
 

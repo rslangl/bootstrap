@@ -98,35 +98,12 @@ resource "libvirt_domain" "sandbox_liveos_domain" {
 #   PiKVM (AP greenzone)
 # -------------------------------
 
-# TODO: 
+# TODO:
 
 # -------------------------------
 #   PiKVM
 # -------------------------------
 
-# data "template_file" "sandbox_pikvm_cloudinit_userdata" {
-#   template = file("${path.root}/cloud-init/pikvm/user-data")
-# }
-#
-# data "template_file" "sandbox_pikvm_cloudinit_metadata" {
-#   template = file("${path.root}/cloud-init/pikvm/meta-data")
-# }
-#
-# data "template_file" "sandbox_pikvm_cloudinit_networkconfig" {
-#   template = file("${path.root}/cloud-init/pikvm/network-config")
-#
-# }
-#
-# # PiKVM is based on Arch Linux, so to make it as similar as possible
-# # we use an Arch Linux cloud image
-# resource "libvirt_cloudinit_disk" "sandbox_pikvm_cloudinit" {
-#   name           = "pikvm-seed.iso"
-#   pool           = libvirt_pool.sandbox_pool.name
-#   user_data      = data.template_file.sandbox_pikvm_cloudinit_userdata.rendered
-#   meta_data      = data.template_file.sandbox_pikvm_cloudinit_metadata.rendered
-#   network_config = data.template_file.sandbox_pikvm_cloudinit_networkconfig.rendered
-# }
-#
 resource "libvirt_volume" "sandbox_pikvm_disk" {
   name   = "pikvm_disk"
   # source = "${var.cache_dir}/vm_disks/pikvm.qcow2"

@@ -18,7 +18,7 @@ Uses a FreeBSD VM image with cloud-init to fetch desired bsd packages, which wil
 ### registry
 
 Uses the standard Docker registry image to build a tarball containing desired container images,
-which will be server under the `/registry` endpoint.
+which will be served under the `/registry` endpoint.
 
 ### liveos
 

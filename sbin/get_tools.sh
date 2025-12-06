@@ -7,6 +7,12 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
 CACHE_DIR="${ROOT_DIR}/.cache/tools/arm64"
 
+# docker: https://download.docker.com/linux/static/stable/x86_64/
+# QEMU: https://www.qemu.org/download/ (source only), github tags: https://api.github.com/repos/qemu/qemu/tags
+# tflint: https://github.com/terraform-linters/tflint/releases
+# ansible: https://api.github.com/repos/ansible/ansible/releases/latest, use tarball_url key
+# kcl: https://github.com/kcl-lang/cli/releases/download/v0.12.2-rc.1/kcl-v0.12.2-rc.1-linux-amd64.tar.gz
+
 # structure: ARM64
 TERRAFORM_SRC="https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_arm64.zip"
 
