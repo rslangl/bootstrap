@@ -11,7 +11,7 @@
     let
       pkgs = import nixpkgs { inherit system; };
       kclPath = builtins.path {
-        path = ./cache/tools/amd64/kcl;
+        path = ./cache/tools/amd64/kcl; # TODO: flake cannot find hidden files
         name = "kcl-local";
       };
       kclPatched = pkgs.runCommand "kcl-patched" { buildInputs = [pkgs.patchelf]; } ''
