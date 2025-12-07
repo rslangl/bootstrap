@@ -7,34 +7,22 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
 CACHE_DIR="${ROOT_DIR}/.cache/tools/arm64"
 
-# docker: https://download.docker.com/linux/static/stable/x86_64/
 # QEMU: https://www.qemu.org/download/ (source only), github tags: https://api.github.com/repos/qemu/qemu/tags
 
 TERRAFORM_SRC_ARM64="https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_arm64.zip"
 TFLINT_SRC_ARM64="https://github.com/terraform-linters/tflint/releases/download/v0.60.0/tflint_linux_arm64.zip"
 KCL_SRC_ARM64="https://github.com/kcl-lang/cli/releases/download/v0.12.1/kcl-v0.12.1-linux-arm64.tar.gz"
 ANSIBLE_SRC_ARM64="https://github.com/ansible/ansible/archive/refs/tags/v2.20.0.tar.gz"
-
-TERRAFORM_SRC_AMD64="https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_amd64.zip"
-TFLINT_SRC_AMD64="https://github.com/terraform-linters/tflint/releases/download/v0.60.0/tflint_linux_amd64.zip"
-KCL_SRC_AMD64="https://github.com/kcl-lang/cli/releases/download/v0.12.1/kcl-v0.12.1-linux-amd64.tar.gz"
-ANSIBLE_SRC_AMD64="https://github.com/ansible/ansible/archive/refs/tags/v2.20.0.tar.gz"
+DOCKER_SRC_ARM64="https://download.docker.com/linux/static/stable/aarch64/docker-29.1.2.tgz"
 
 declare -A TOOLS_ARM64
-declare -A TOOLS_AMD64
 
 TOOLS_ARM64=(
   [terraform]="$TERRAFORM_SRC_ARM64"
   [tflint]="$TFLINT_SRC_ARM64"
   [kcl]="$KCL_SRC_ARM64"
   [ansible]="$ANSIBLE_SRC_ARM64"
-)
-
-TOOLS_AMD64=(
-  [terraform]="$TERRAFORM_SRC_AMD64"
-  [tflint]="$TFLINT_SRC_AMD64"
-  [kcl]="$KCL_SRC_AMD64"
-  [ansible]="$ANSIBLE_SRC_AMD64"
+  [docker]="$DOCKER_SRC_ARM64"
 )
 
 is_compressed() {
@@ -67,15 +55,21 @@ is_compressed() {
 #   esac
 # }
 
-download_tools() {
-  local tools="$1"
+mkdir -p "${CACHE_DIR}/arm64"
 
-  for file in "${tools[@]}"; do
-    IFS="|" read -r url <<<"${tools[$file]}"
-    clean_url="${url%%\?*}"
-    filename="${clean_url##*/}"
-    target_file="${DOWNLOAD_DIR}/${filename}"
-    tool_file="${CACHE_DIR}/arm64/${file}"
+for file in "${!TOOLS_ARM64[@]}"; do
+  IFS="|" read -r url <<<"${TOOLS_ARM64[$file]}"
+  clean_url="${url%%\?*}"
+  filename="${clean_url##*/}"
+  target_file="${DOWNLOAD_DIR}/${filename}"
+  tool_file="${CACHE_DIR}/arm64/${file}"
+
+  # echo "clean_url: $clean_url"
+  # echo "filename: $filename"
+  # echo "target_file: $target_file"
+  # echo "tool_file: $tool_file"
+  
+  if [ -f "$tool_file" ]; then
 
     echo "Downloading from $url..."
 
@@ -101,11 +95,8 @@ download_tools() {
     fi
 
     # TODO: if directory, handle accordingly
+  else
+    echo "INFO: $tool_file already exists, skipping..."
+  fi
+done
 
-  done
-}
-
-mkdir -p "${CACHE_DIR}"
-
-download_tools "$TOOLS_ARM64"
-download_tools "$TOOLS_AMD64"
