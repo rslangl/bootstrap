@@ -1,6 +1,6 @@
 .PHONY: cfg.generate cfg.clean
 
-KCL_BIN := $(TOOLS_DIR)/kcl
+# KCL_BIN := $(TOOLS_DIR)/kcl
 
 cfg.clean:
 	@echo "Cleaning KCL output in ..."
