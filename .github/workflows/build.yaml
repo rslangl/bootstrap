@@ -21,9 +21,15 @@ jobs:
         run: |
           wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-          sudo apt update && sudo apt install terraform
+          sudo apt update && sudo apt install terraform ansible
           go install kcl-lang.io/cli/cmd/kcl@latest
           echo "$HOME/go/bin" >> $GITHUB_PATH
+
+      - uses: terraform-linters/setup-tflint@v6
+        name: Setup TFLint
+        with:
+          tflint_version: v0.52.0
+          cache: true
 
       - name: Build ISO
         run: |
