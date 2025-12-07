@@ -11,7 +11,7 @@ SBIN_DIR := $(ROOT_DIR)/sbin
 # Set vars for executables
 TF_BIN := $(or $(shell command -v terraform 2>/dev/null),$(TOOLS_DIR)/terraform)
 TFLINT_BIN := $(or $(shell command -v tflint 2>/dev/null),$(TOOLS_DIR)/tflint)
-KCL_BIN := $(shell command -v kcl) #$(or $(shell command -v kcl 2>/dev/null),$(TOOLS_DIR)/kcl)
+KCL_BIN := $(or $(shell command -v kcl 2>/dev/null),$(TOOLS_DIR)/kcl)
 DOCKER_BIN := $(or $(shell command -v docker 2>/dev/null),$(TOOLS_DIR)/docker/bin/docker)
 ANSIBLE_BIN := $(or $(shell command -v ansible-playbook 2>/dev/null),$(TOOLS_DIR)/ansible/bin/ansible-playbook)
 
