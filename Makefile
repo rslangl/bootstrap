@@ -25,6 +25,10 @@ export TOOLS_DIR
 export HOSTS_DIR
 
 export TF_BIN
+export TFLINT_BIN
+export KCL_BIN
+export DOCKER_BIN
+export ANSIBLE_BIN
 
 # Include Makefiles from relevant subdirectories
 include configs/config.mk
