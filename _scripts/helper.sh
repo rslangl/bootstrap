@@ -2,7 +2,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DEV_DIR="${ROOT_DIR}/dev"
+CACHE_DIR="${ROOT_DIR}/.cache"
 DOCKER_PID=""
 
 function shutdown_docker() {
@@ -55,8 +55,9 @@ function start_docker() {
 function generate_ssh_key() {
   echo "Generating SSH key..."
 
-  mkdir ssh
-  ssh-keygen -t rsa -b 4096 -f "${DEV_DIR}"/ssh/id_rsa -N "" -q
+  mkdir -p "$CACHE_DIR}/ssh"
+
+  ssh-keygen -t rsa -b 4096 -f "${CACHE_DIR}"/ssh/id_rsa -N "" -q
 
   echo "Done!"
 }
