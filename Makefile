@@ -59,12 +59,14 @@ help:
 clean: cfg.clean dev.clean os.clean
 
 resources:
-	@echo "Fetching resources: ISO images"
-	bash $(SBIN_DIR)/get_iso_images.sh
-	@echo "Fetching resources: Containers"
-	bash $(SBIN_DIR)/get_containers.sh
-	@echo "Fetching resources: Tools"
-	bash $(SBIN_DIR)/get_tools.sh
+	# @echo "Fetching resources: ISO images"
+	# bash $(SBIN_DIR)/get_iso_images.sh
+	# @echo "Fetching resources: Containers"
+	# bash $(SBIN_DIR)/get_containers.sh
+	@echo "Fetching resources: Tools for aarch64"
+	bash $(SBIN_DIR)/get_tools_aarch64.sh
+	@echo "Fetcing resources: Tools for x86_64"
+	bash $(SBIN_DIR)/get_tools_amd64.sh
 
 generate: cfg.generate
 
