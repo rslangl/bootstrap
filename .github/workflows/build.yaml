@@ -12,6 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install tools
+        run: |          
+          go install kcl-lang.io/cli/cmd/kcl@latest
+
       - name: Build ISO
         run: |
           make build
