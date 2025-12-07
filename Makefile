@@ -8,6 +8,13 @@ HOSTS_DIR := $(ROOT_DIR)/hosts
 LIVEOS_DIR := $(ROOT_DIR)/liveOS
 SBIN_DIR := $(ROOT_DIR)/sbin
 
+# Set vars for executables
+TF_BIN := $(or $(shell command -v terraform 2>/dev/null),$(TOOLS_DIR)/terraform)
+TFLINT_BIN := $(or $(shell command -v tflint 2>/dev/null),$(TOOLS_DIR)/tflint)
+KCL_BIN := $(or $(shell command -v kcl 2>/dev/null),$(TOOLS_DIR)/kcl)
+DOCKER_BIN := $(or $(shell command -v docker 2>/dev/null),$(TOOLS_DIR)/docker/bin/docker)
+ANSIBLE_BIN := $(or $(shell command -v ansible-playbook 2>/dev/null),$(TOOLS_DIR)/ansible/bin/ansible-playbook)
+
 # Export common vars for use in sub-targets
 export ROOT_DIR
 export SANDBOX_DIR
@@ -16,6 +23,8 @@ export LIVEOS_DIR
 export CACHE_DIR
 export TOOLS_DIR
 export HOSTS_DIR
+
+export TF_BIN
 
 # Include Makefiles from relevant subdirectories
 include configs/config.mk
