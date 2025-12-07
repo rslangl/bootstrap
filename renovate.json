@@ -1,0 +1,32 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "packagePatterns": ["^ansible$"],
+      "datasource": "github-tags",
+      "versioning": "semver",
+      "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "packagePatterns": ["^kcl-lang/kcl$"],
+      "datasource": "github-tags",
+      "versioning": "semver",
+      "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "packagePatterns": ["^terraform-linters/tflint$"],
+      "datasource": "github-tags",
+      "versioning": "semver",
+      "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "managers": ["regex"],
+      "matchStrings": [
+        "ANSIBLE_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "KCL_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "TFLINT_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ]
+    }
+  ]
+}
+
