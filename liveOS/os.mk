@@ -1,10 +1,5 @@
 .PHONY: os.clean os.build
 
-TF_PLAN := $(CACHE_DIR)/tfdata/liveos/plan
-TF_BIN := $(TOOLS_DIR)/terraform
-TFLINT_BIN := $(TOOLS_DIR)/tflint
-DOCKER_BIN := $(TOOLS_DIR)/docker/docker
-
 os.clean:
 	@echo "Destroying resources..."
 	$(TF_BIN) -chdir=$(LIVEOS_DIR) destroy -auto-approve
