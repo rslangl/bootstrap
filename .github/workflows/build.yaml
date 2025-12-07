@@ -12,9 +12,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 1.25
+
       - name: Install tools
         run: |
           go install kcl-lang.io/cli/cmd/kcl@latest
+          echo "$HOME/go/bin" >> $GITHUB_PATH
 
       - name: Build ISO
         run: |
