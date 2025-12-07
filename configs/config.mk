@@ -1,7 +1,5 @@
 .PHONY: cfg.generate cfg.clean
 
-# KCL_BIN := $(TOOLS_DIR)/kcl
-
 cfg.clean:
 	@echo "Cleaning KCL output in ..."
 	rm -f $(HOSTS_DIR)/router/ansible/host_vars/router.yaml

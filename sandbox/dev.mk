@@ -1,9 +1,5 @@
 .PHONY: dev.clean dev.build
 
-# TF_BIN := $(TOOLS_DIR)/terraform
-# TFLINT_BIN := $(TOOLS_DIR)/tflint
-# ANSIBLE_BIN := $(TOOLS_DIR)/ansible/bin/ansible-playbook
-
 dev.clean:
 	@echo "Destroying resources..."
 	$(TF_BIN) -chdir=$(SANDBOX_DIR) destroy -auto-approve
