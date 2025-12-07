@@ -3,7 +3,7 @@ name: Build ISO
 
 on:
   pull_request:
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,10 +13,9 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install tools
-        run: |          
+        run: |
           go install kcl-lang.io/cli/cmd/kcl@latest
 
       - name: Build ISO
         run: |
           make build
-  
