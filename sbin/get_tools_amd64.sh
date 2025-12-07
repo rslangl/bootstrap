@@ -7,11 +7,11 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DOWNLOAD_DIR="${ROOT_DIR}/.cache/tmp"
 CACHE_DIR="${ROOT_DIR}/.cache/tools/arm64"
 
-# renovate: datasource=pypi depName=ansible
+# renovate: datasource=github-tags depName=ansible/ansible
 ANSIBLE_VERSION="2.20.0"
-# renovate: datasource=github-tags depName=kcl-lang/kcl
+# renovate: datasource=github-releases depName=kcl-lang/kcl
 KCL_VERSION="0.21.1"
-# renovate: datasource=github-tags depName=terraform-linters/tflint
+# renovate: datasource=github-releases depName=terraform-linters/tflint
 TFLINT_VERSION="0.60.0"
 # renovate: datasource=regex depName=terraform versioning=semver
 TERRAFORM_VERSION="1.12.2"

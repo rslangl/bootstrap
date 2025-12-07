@@ -9,13 +9,13 @@
     },
     {
       "packagePatterns": ["^kcl-lang/kcl$"],
-      "datasource": "github-tags",
+      "datasource": "github-releases",
       "versioning": "semver",
       "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
     },
     {
       "packagePatterns": ["^terraform-linters/tflint$"],
-      "datasource": "github-tags",
+      "datasource": "github-releases",
       "versioning": "semver",
       "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
     },
