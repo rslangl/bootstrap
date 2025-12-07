@@ -24,8 +24,11 @@
       "matchStrings": [
         "ANSIBLE_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
         "KCL_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
-        "TFLINT_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
-      ]
+        "TFLINT_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "TERRAFORM_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "DOCKER_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "versioning": "semver"
     }
   ]
 }

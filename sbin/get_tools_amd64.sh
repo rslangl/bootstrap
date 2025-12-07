@@ -13,12 +13,16 @@ ANSIBLE_VERSION="2.20.0"
 KCL_VERSION="0.21.1"
 # renovate: datasource=github-tags depName=terraform-linters/tflint
 TFLINT_VERSION="0.60.0"
+# renovate: datasource=regex depName=terraform versioning=semver
+TERRAFORM_VERSION="1.12.2"
+# renovate: datasource=regex depName=docker versioning=semver
+DOCKER_VERSION="29.1.0"
 
-TERRAFORM_SRC_AMD64="https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_amd64.zip"
+TERRAFORM_SRC_AMD64="https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
 TFLINT_SRC_AMD64="https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VERSION}/tflint_linux_amd64.zip"
 KCL_SRC_AMD64="https://github.com/kcl-lang/cli/releases/download/v${KCL_VERSION}/kcl-v${KCL_VERSION}-linux-amd64.tar.gz"
 ANSIBLE_SRC_AMD64="https://github.com/ansible/ansible/archive/refs/tags/v${ANSIBLE_VERSION}.tar.gz"
-DOCKER_SRC_AMD64="https://download.docker.com/linux/static/stable/x86_64/docker-29.1.2.tgz"
+DOCKER_SRC_AMD64="https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz"
 
 declare -A TOOLS_AMD64
 
