@@ -1,0 +1,21 @@
+{
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["ansible/ansible"],
+      "matchDatasources": ["github-tags"],
+      "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "matchPackageNames": ["kcl-lang/kcl"],
+      "matchDatasources": ["github-releases"],
+      "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "matchPackageNames": ["terraform-linters/tflint"],
+      "matchDatasources": ["github-releases"],
+      "extractVersion": "^v?(\\d+\\.\\d+\\.\\d+)$"
+    }
+  ]
+}
+
