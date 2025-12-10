@@ -3,112 +3,146 @@ terraform {
     libvirt = {
       source = "dmacvicar/libvirt"
     }
-  #   null = {
-  #     source = "hashicorp/null"
-  #   }
   }
 }
 
-# resource "null_resource" "download_iso" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#       bash ${var.scripts_dir}/fetch_iso.sh \
-#         "${var.iso_url}" \
-#         "${var.iso_path}" \
-#         "${var.iso_checksum}"
-#     EOT
-#   }
-#   triggers = {
-#     iso_url = var.iso_url
-#     iso_checksum = var.iso_checksum
-#   }
-# }
-#
-
-resource "libvirt_pool" "liveos_bsd_pool" {
-  name = "bsd_pool"
+resource "libvirt_pool" "builder_bsd_pool" {
+  name = "builder-bsd-pool"
   type = "dir"
   target = {
-    path = "${var.cache_dir}/libvirt/pool/bsd"
+    path = "${var.cache_dir}/libvirt/pool/builder_bsd"
   }
 }
 
-data "template_file" "liveos_bsd_user_data" {
+# Base FreeBSD cloud image
+resource "libvirt_volume" "builder_bsd_base" {
+  name = "builder-base"
+  pool = libvirt_pool.builder_bsd_pool.name
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
+  create = {
+    content = {
+      url = "${var.image_url}"
+    }
+  }
+}
+
+data "template_file" "builder_bsd_user_data" {
   template = file("${path.module}/cloudinit/user-data")
 }
 
-data "template_file" "liveos_bsd_meta_data" {
+data "template_file" "builder_bsd_meta_data" {
   template = file("${path.module}/cloudinit/meta-data")
 }
 
-# resource "libvirt_network" "liveos_bsd_network" {
-#   name = "liveos_bsd_network"
-#   addresses = ["10.17.0.0/24"]
-# }
-
-resource "libvirt_cloudinit_disk" "liveos_bsd_cloudinit_disk" {
-  name = "bsd_cloudinit.iso"
+resource "libvirt_cloudinit_disk" "builder_bsd_cloudinit_disk" {
+  name = "builder-bsd-cloudinit-disk"
   # pool = libvirt_pool.liveos_bsd_pool.name
-  user_data = data.template_file.liveos_bsd_user_data.rendered
-  meta_data = data.template_file.liveos_bsd_meta_data.rendered
+  user_data = data.template_file.builder_bsd_user_data.rendered
+  meta_data = data.template_file.builder_bsd_meta_data.rendered
 }
 
-resource "libvirt_volume" "liveos_bsd_disk" {
-  name = "freebsd.qcow2"
-  pool = libvirt_pool.liveos_bsd_pool.name
-  #source = "${var.cache_dir}/images/freebsd_cloudinit.qcow2"
-  #format = "qcow2"
+# Upload cloud-init ISO to pool
+resource "libvirt_volume" "builder_bsd_seed_disk" {
+  name = "builder-bsd-seed"
+  pool = libvirt_pool.builder_bsd_pool.name
+  # target = {
+  #   format = {
+  #     type = "qcow2"
+  #   }
+  # }
   create = {
     content = {
-      url = "${var.cache_dir}/images/freebsd_cloudinit.qcow2"
+      url = libvirt_cloudinit_disk.builder_bsd_cloudinit_disk.path
     }
   }
-  #depends_on = [null_resource.download_iso]
+  #backing_store = {
+  #   #path = "${var.cache_dir}/libvirt/vm_disks/liveos_builder_bsd_seed.qcow2"
+  #   path = libvirt_volume.bsd_base.path
+  #   format = {
+  #     type = "qcow2"
+  #   }
+  # }
+  capacity = 2147483648
 }
 
-resource "libvirt_domain" "liveos_bsd_domain" {
-  name = "liveos_bsd_domain"
+# Writable copy-on-write layer for the FreeBSD VM
+resource "libvirt_volume" "builder_bsd_disk" {
+  name = "builder-bsd-disk"
+  pool   = libvirt_pool.builder_bsd_pool.name
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
+  backing_store = {
+    #path = "${var.cache_dir}/libvirt/vm_disks/builder_bsd.qcow2"
+    path = libvirt_volume.builder_bsd_base.path
+    format = {
+      type = "qcow2"
+    }
+  }
+  capacity = 2147483648
+}
+
+resource "libvirt_domain" "builder_bsd" {
+  name = "builder-bsd"
   memory = 2048
   memory_unit = "MiB"
   vcpu = 2
   type   = "kvm"
 
-  # os = {
-  #   type         = "hvm"
-  #   type_arch    = "x86_64"
-  #   type_machine = "q35"
-  #   boot_devices = ["hd"]
-  # }
-  #
+  os = {
+    type         = "hvm"
+    type_arch    = "x86_64"
+    type_machine = "q35"
+    #boot_devices = ["hd"]
+  }
+
   devices = {
     disks = [
       {
         source = {
-          volume_id = libvirt_volume.liveos_bsd_disk.id
+          volume = {
+             pool = libvirt_volume.builder_bsd_disk.pool
+             volume = libvirt_volume.builder_bsd_disk.name
+          }
+        }
+        target = {
+          dev = "vda"
+          bus = "virtio"
+        }
+        driver = {
+          type = "qcow2"
         }
       }
     ]
-    filesystem = {
-      source = "${var.cache_dir}/build_artifacts/bsdrepo"
-      target = "shared"
-      accessmode = "passthrough"
-    }
-    console = {
-      type        = "pty"
-      target_port = "0"
-      target_type = "serial"
-    }
-  #   graphics = {
-  #     type        = "spice"
-  #     listen_type = "address"
-  #     autoport    = true
-  #   }
+    filesystems = [
+      {
+        source = {
+          mount = {
+            dir = "${var.cache_dir}/build_artifacts/bsdrepo"
+          }
+        }
+        target = {
+          dir = "shared"
+        }
+        access_mode = "mapped"
+        #read_only = true
+      }
+    ]
+    consoles = [
+      {
+        target = {
+          port = "0"
+          type = "serial" # or "pty""?
+        }
+      }
+    ]
   }
   #cloudinit = libvirt_cloudinit_disk.liveos_bsd_cloudinit_disk.id
-
-  # network_interface {
-  #   network_id = libvirt_network.liveos_bsd_network.id
-  #   wait_for_lease = true
-  # }
 }
 
