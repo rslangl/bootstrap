@@ -71,6 +71,9 @@ resource "libvirt_network" "sandbox_network_wan" {
       address = "192.168.88.0/24"
     }
   ]
+  domain = {
+    name = "sandbox.local"
+  }
   autostart = true
 }
 
@@ -80,11 +83,19 @@ resource "libvirt_network" "sandbox_network_wan" {
 
 resource "libvirt_volume" "sandbox_liveos_disk" {
   name   = "liveos_disk"
+  pool   = libvirt_pool.sandbox_pool.name
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
   backing_store = {
     path = "${var.cache_dir}/libvirt/vm_disks/liveos.qcow2"
-    #format = "qcow2"
+    format = {
+      type = "qcow2"
+    }
   }
-  pool   = libvirt_pool.sandbox_pool.name
+  capacity = 2147483648
 }
 
 resource "libvirt_domain" "sandbox_liveos_domain" {
@@ -97,10 +108,17 @@ resource "libvirt_domain" "sandbox_liveos_domain" {
     disks = [
       {
         source = {
-          file = {
-            #pool = libvirt_pool.sandbox_pool.name
+          volume = {
+            pool = libvirt_pool.sandbox_pool.name
             volume = libvirt_volume.sandbox_liveos_disk.name
           }
+        }
+        target = {
+          dev = "vda"
+          bus = "virtio"
+        }
+        driver = {
+          type = "qcow2"
         }
       }
     ]
@@ -151,11 +169,19 @@ resource "libvirt_domain" "sandbox_liveos_domain" {
 
 resource "libvirt_volume" "sandbox_pikvm_disk" {
   name   = "pikvm_disk"
+  pool   = libvirt_pool.sandbox_pool.name
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
   backing_store = {
     path = "${var.cache_dir}/libvirt/vm_disks/debian_cloud.qcow2"
-    #format = "qcow2"
+    format = {
+      type = "qcow2"
+    }
   }
-  pool   = libvirt_pool.sandbox_pool.name
+  capacity = 2147483648
 }
 
 resource "libvirt_domain" "sandbox_pikvm_domain" {
@@ -168,8 +194,17 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
     disks = [
       {
         source = {
-          #pool = libvirt_pool.sandbox_pool.name
-          volume = libvirt_volume.sandbox_pikvm_disk.name
+          volume = {
+            pool = libvirt_pool.sandbox_pool.name
+            volume = libvirt_volume.sandbox_pikvm_disk.name
+          }
+        }
+        target = {
+          dev = "vda"
+          bus = "virtio"
+        }
+        driver = {
+          type = "qcow2"
         }
       }
     ]
@@ -215,11 +250,19 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
 
 resource "libvirt_volume" "sandbox_opnsense_disk" {
   name   = "opnsense_disk"
+  pool   = libvirt_pool.sandbox_pool.name
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
   backing_store = {
     path = "${var.cache_dir}/libvirt/vm_disks/opnsense.qcow2"
-    #format = "qcow2"
+    format = {
+      type = "qcow2"
+    }
   }
-  pool   = libvirt_pool.sandbox_pool.name
+  capacity = 2147483648
 }
 
 resource "libvirt_domain" "sandbox_opnsense" {
@@ -228,12 +271,12 @@ resource "libvirt_domain" "sandbox_opnsense" {
   vcpu   = 2
   type = "kvm"
 
-  # os = {
-  #   type         = "hvm"
-  #   type_arch    = "x86_64"
-  #   type_machine = "q35"
-  #   boot_devices = ["cdrom", "hd"]
-  # }
+  os = {
+    type         = "hvm"
+    type_arch    = "x86_64"
+    type_machine = "q35"
+    #boot_devices = ["cdrom", "hd"]
+  }
 
   devices = {
     consoles = [
@@ -255,8 +298,17 @@ resource "libvirt_domain" "sandbox_opnsense" {
     disks = [
       {
         source = {
-          #pool = libvirt_pool.sandbox_pool.name
-          volume = libvirt_volume.sandbox_opnsense_disk.name
+          volume = {
+            pool = libvirt_pool.sandbox_pool.name
+            volume = libvirt_volume.sandbox_opnsense_disk.name
+          }
+        }
+        target = {
+          dev = "vda"
+          bus = "virtio"
+        }
+        driver = {
+          type = "qcow2"
         }
       }
     ]
