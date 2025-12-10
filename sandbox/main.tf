@@ -216,7 +216,7 @@ resource "libvirt_domain" "sandbox_pikvm_domain" {
 resource "libvirt_volume" "sandbox_opnsense_disk" {
   name   = "opnsense_disk"
   backing_store = {
-    path = "${var.cache_dir}/vm_disks/opnsense.qcow2"
+    path = "${var.cache_dir}/libvirt/vm_disks/opnsense.qcow2"
     #format = "qcow2"
   }
   pool   = libvirt_pool.sandbox_pool.name
