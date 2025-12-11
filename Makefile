@@ -61,7 +61,7 @@ clean: cfg.clean dev.clean os.clean
 
 resources:
 	@echo "Fetching resources: ISO images"
-	bash $(SBIN_DIR)/get_iso_images.sh
+	bash $(SBIN_DIR)/get_iso.sh
 	# @echo "Fetching resources: Containers"
 	# bash $(SBIN_DIR)/get_containers.sh
 	@echo "Fetching resources: Tools for aarch64"
