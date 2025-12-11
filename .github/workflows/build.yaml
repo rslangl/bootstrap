@@ -45,6 +45,10 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      - name: Install QEMU
+        run: |
+          sudo apt install -y qemu-utils qemu-system-x86
+
       - name: Get resources
         run: |
           make resources
