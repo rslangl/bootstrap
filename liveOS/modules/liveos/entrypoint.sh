@@ -19,4 +19,4 @@ lb config \
 # Build image
 lb build
 
-mv bootstrap-amd64.hybrid.iso /workdir/output/liveUSB.iso
+mv bootstrap-amd64.hybrid.iso /workdir/output/bootstrap.iso

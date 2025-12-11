@@ -23,7 +23,7 @@ terraform {
     }
   }
   backend "local" {
-    path = "../.cache/tfdata/liveos/terraform.tfstate"
+    path = "../.cache/tfdata/modules/liveos/terraform.tfstate"
   }
 }
 
