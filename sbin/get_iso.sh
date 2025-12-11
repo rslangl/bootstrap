@@ -57,7 +57,7 @@ for image in "${!IMAGES[@]}"; do
   # echo "filename: $filename"
   # echo "target_file: $target_file"
   # echo "image_file: $image_file"
-
+  
   rm -f "$target_file"
 
   curl --fail --location --show-error --output "$target_file" "$url"
@@ -99,4 +99,3 @@ for image in "${!IMAGES[@]}"; do
   # echo "Checksum verified"
 
 done
-
