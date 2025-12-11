@@ -10,8 +10,8 @@ CACHE_DIR="${ROOT_DIR}/.cache/images"
 FREEBSD_CLOUDINIT_VERSION="15.0"
 DEBIAN_CLOUDINIT_VERSION="13"
 
-FREEBSD_CLOUDINIT_SRC="https://download.freebsd.org/releases/VM-IMAGES/${FREEBSD_CLOUDINIT_VERSION}-RELEASE/amd64/Latest/FreeBSD-${FREEBSD_CLOUDINIT_VERSION}-RELEASE-amd64-BASIC-CLOUDINIT-zfs.qcow2.xz"
-DEBIAN_CLOUDINIT_SRC="https://cloud.debian.org/images/cloud/trixie/latest/debian-${DEBIAN_CLOUDINIT_VERSION}-generic-amd64.qcow2"
+FREEBSD_CLOUDINIT_SRC="https://download.freebsd.org/releases/VM-IMAGES/${FREEBSD_CLOUDINIT_VERSION}-RELEASE/amd64/Latest/FreeBSD-${FREEBSD_CLOUDINIT_VERSION}-RELEASE-amd64-BASIC-CLOUDINIT-zfs.qcow2.xz|bsd-cloud|qcow2"
+DEBIAN_CLOUDINIT_SRC="https://cloud.debian.org/images/cloud/trixie/latest/debian-${DEBIAN_CLOUDINIT_VERSION}-generic-amd64.qcow2|debian-cloud|qcow2"
 
 declare -A IMAGES
 
@@ -20,7 +20,7 @@ IMAGES=(
   [debian]="${DEBIAN_CLOUDINIT_SRC}"
 )
 
-get_checksum() {
+get_checksum() {  # TODO: check for type of checksum
   local file="$1"
   if [[ ! -f "$file" ]]; then
     echo "ERROR: No file provided"
@@ -44,34 +44,24 @@ is_compressed() {
   esac
 }
 
-decompress_image() {
-  local compressed="$1"
-  local dest="$2"
-
-  case "$compressed" in
-  *.bz2)
-    bunzip2 -c "$compressed" >"$dest"
-    ;;
-  *)
-    echo "ERROR: Unsupported compression type"
-    exit 1
-    ;;
-  esac
-}
-
 mkdir -p "${CACHE_DIR}"
 
 for image in "${!IMAGES[@]}"; do
-  IFS="|" read -r url <<<"${IMAGES[$image]}"
+  IFS="|" read -r url file_name file_format <<<"${IMAGES[$image]}"
   clean_url="${url%%\?*}"
   filename="${clean_url##*/}"
   target_file="${DOWNLOAD_DIR}/${filename}"
-  image_file="${CACHE_DIR}/${file}"
+  image_file="${CACHE_DIR}/${file_name}.${file_format}"
  
+  # echo "clean_url: $clean_url"
+  # echo "filename: $filename"
+  # echo "target_file: $target_file"
+  # echo "image_file: $image_file"
+
   if [ -f "$image_file" ]; then
     echo "ISO already exists at $image_file"
   else
-    echo "Downloading ISO from $url..."
+    echo "Downloading ISO from $url to file $target_file"
     curl -s -o "$target_file" "$url"
   fi
 
@@ -81,13 +71,15 @@ for image in "${!IMAGES[@]}"; do
         bunzip2 -c "$target_file" >"$image_file"
         ;;
       *.xz)
-        # TODO: decompress xz
+        xz -d -c "$target_file" > "$image_file"
         ;;
       *)
         echo "ERROR: Unsupported compression type"
         exit 1
         ;;
     esac
+  else
+    cp "$target_file" "$image_file"
   fi
 
   # echo "Verifying checksum..."
