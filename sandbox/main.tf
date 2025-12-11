@@ -11,7 +11,7 @@ terraform {
     }
   }
   backend "local" {
-    path = "../.cache/tfdata/sandbox/terraform.tfstate"
+    path = "../.cache/tfdata/modules/sandbox/terraform.tfstate"
   }
 }
 
@@ -22,8 +22,8 @@ provider "libvirt" {
 resource "libvirt_pool" "sandbox_pool" {
   name = "sandbox_pool"
   type = "dir"
-  target = {
-    path = "${var.cache_dir}/libvirt/pool/sandbox"
+  target {
+    path = "${var.cache_dir}/tfdata/providers/libvirt/pool/sandbox"
   }
 }
 
