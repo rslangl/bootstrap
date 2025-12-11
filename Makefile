@@ -42,6 +42,7 @@ Usage: make <target>
 Targets:
 	help			Prints this help text
 	clean			Cleans build cache, inlcuding downloaded resources
+	resources	Downloads resources required for the build process
 	generate	Generates necessary configurations
 	validate	Runs validation checks on the various subdirectories
 	build			Builds the live OS image
@@ -59,8 +60,8 @@ help:
 clean: cfg.clean dev.clean os.clean
 
 resources:
-	# @echo "Fetching resources: ISO images"
-	# bash $(SBIN_DIR)/get_iso_images.sh
+	@echo "Fetching resources: ISO images"
+	bash $(SBIN_DIR)/get_iso.sh
 	# @echo "Fetching resources: Containers"
 	# bash $(SBIN_DIR)/get_containers.sh
 	@echo "Fetching resources: Tools for aarch64"

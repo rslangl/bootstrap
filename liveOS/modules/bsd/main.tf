@@ -3,93 +3,104 @@ terraform {
     libvirt = {
       source = "dmacvicar/libvirt"
     }
-  #   null = {
-  #     source = "hashicorp/null"
-  #   }
   }
 }
 
-# resource "null_resource" "download_iso" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#       bash ${var.scripts_dir}/fetch_iso.sh \
-#         "${var.iso_url}" \
-#         "${var.iso_path}" \
-#         "${var.iso_checksum}"
-#     EOT
-#   }
-#   triggers = {
-#     iso_url = var.iso_url
-#     iso_checksum = var.iso_checksum
-#   }
-# }
-#
-
-resource "libvirt_pool" "liveos_bsd_pool" {
-  name = "bsd_pool"
+resource "libvirt_pool" "builder_pool" {
+  name = "builder-pool"
   type = "dir"
-  target {
-    path = "${var.cache_dir}/libvirt/pool/bsd"
+  target = {
+    path = "${var.cache_dir}/tfdata/providers/libvirt/pool/builder"
   }
 }
 
-data "template_file" "liveos_bsd_user_data" {
+data "template_file" "builder_bsd_user_data" {
   template = file("${path.module}/cloudinit/user-data")
 }
 
-data "template_file" "liveos_bsd_meta_data" {
+data "template_file" "builder_bsd_meta_data" {
   template = file("${path.module}/cloudinit/meta-data")
 }
 
-# resource "libvirt_network" "liveos_bsd_network" {
-#   name = "liveos_bsd_network"
-#   addresses = ["10.17.0.0/24"]
-# }
-
-resource "libvirt_cloudinit_disk" "liveos_bsd_cloudinit_disk" {
-  name = "bsd_cloudinit.iso"
-  pool = libvirt_pool.liveos_bsd_pool.name
-  user_data = data.template_file.liveos_bsd_user_data.rendered
-  meta_data = data.template_file.liveos_bsd_meta_data.rendered
+resource "libvirt_cloudinit_disk" "builder_bsd_cloudinit_disk" {
+  name = "builder-bsd-cloudinit-disk"
+  user_data = data.template_file.builder_bsd_user_data.rendered
+  meta_data = data.template_file.builder_bsd_meta_data.rendered
 }
 
-resource "libvirt_volume" "liveos_bsd_disk" {
-  name = "freebsd.qcow2"
-  pool = libvirt_pool.liveos_bsd_pool.name
-  source = "${var.cache_dir}/images/freebsd_cloudinit.qcow2"
-  format = "qcow2"
-  #depends_on = [null_resource.download_iso]
+resource "libvirt_volume" "builder_bsd_seed_disk" {
+  name = "builder-bsd-seed-disk"
+  pool = libvirt_pool.builder_pool.name
+  create = {
+    content = {
+      url = libvirt_cloudinit_disk.builder_bsd_cloudinit_disk.path
+    }
+  }
 }
 
-resource "libvirt_domain" "liveos_bsd_domain" {
-  name = "liveos_bsd_domain"
+resource "libvirt_volume" "builder_bsd_disk" {
+  name = "builder-bsd-disk"
+  pool   = libvirt_pool.builder_pool.name
+  target = {
+    format = {
+      type = "qcow2"
+    }
+  }
+  backing_store = {
+     path = "${var.cache_dir}/images/bsd-cloud.qcow2"
+     format = {
+       type = "qcow2"
+     }
+   }
+  capacity = 2147483648
+}
+
+resource "libvirt_domain" "builder_bsd_vm" {
+  name = "builder-bsd-vm"
   memory = 2048
+  memory_unit = "MiB"
   vcpu = 2
-  disk {
-    volume_id = libvirt_volume.liveos_bsd_disk.id
+  type   = "kvm"
+
+  os = {
+    type         = "hvm"
+    type_arch    = "x86_64"
+    type_machine = "q35"
+    #boot_devices = ["hd"]
   }
-  cloudinit = libvirt_cloudinit_disk.liveos_bsd_cloudinit_disk.id
-  # network_interface {
-  #   network_id = libvirt_network.liveos_bsd_network.id
-  #   wait_for_lease = true
-  # }
-  filesystem {
-    source = "${var.cache_dir}/build_artifacts/bsdrepo"
-    target = "shared"
-    accessmode = "passthrough"
-  }
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-  graphics {
-    type        = "spice"
-    listen_type = "address"
-    autoport    = true
-  }
-  boot_device {
-    dev = ["hd"]
+
+  devices = {
+    disks = [
+      {
+        source = {
+          volume = {
+             pool = libvirt_pool.builder_pool.name
+             volume = libvirt_volume.builder_bsd_disk.name
+          }
+        }
+        target = {
+          dev = "vda"
+          bus = "virtio"
+        }
+        driver = {
+          type = "qcow2"
+        }
+      }
+    ]
+    filesystems = [
+      {
+        source = {
+          mount = {
+            dir = "${var.cache_dir}/build_artifacts/bsdrepo"
+          }
+        }
+        target = {
+          dir = "shared"
+        }
+        access_mode = "mapped"
+        #read_only = true
+      }
+    ]
   }
 }
 

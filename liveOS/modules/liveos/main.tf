@@ -37,7 +37,7 @@ resource "docker_image" "liveos_system_image" {
 }
 
 # Docker container that builds the live OS image, where the output ISO
-# will be stored in ../../../.cache/output
+# will be stored in ../../../.cache/build_output/bootstrap.iso
 resource "docker_container" "liveos_system_container" {
   name = "liveos"
   image = docker_image.liveos_system_image.image_id
@@ -48,7 +48,7 @@ resource "docker_container" "liveos_system_container" {
   }
   security_opts = ["seccomp=unconfined"]
   volumes {
-    host_path = "${var.cache_dir}/output"
+    host_path = "${var.cache_dir}/build_output"
     container_path = "/workdir/output"
   }
 }
