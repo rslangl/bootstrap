@@ -47,8 +47,10 @@ jobs:
 
       - name: Install QEMU
         run: |
-          sudo apt install -y qemu-utils qemu-system-x86
-          sudo systemctl enable --now libvirtd
+          sudo apt-get update
+          sudo apt-get install -y libvirt-daemon-system libvirt-clients qemu-system
+          sudo systemctl enable --now virtqemud.service
+          sudo systemctl enable --now virtproxyd.service
 
       - name: Get resources
         run: |
