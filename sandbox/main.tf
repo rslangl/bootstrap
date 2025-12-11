@@ -22,7 +22,7 @@ provider "libvirt" {
 resource "libvirt_pool" "sandbox_pool" {
   name = "sandbox_pool"
   type = "dir"
-  target {
+  target = {
     path = "${var.cache_dir}/tfdata/providers/libvirt/pool/sandbox"
   }
 }
@@ -90,7 +90,7 @@ resource "libvirt_volume" "sandbox_liveos_disk" {
     }
   }
   backing_store = {
-    path = "${var.cache_dir}/libvirt/vm_disks/liveos.qcow2"
+    path = "${var.cache_dir}/providers/libvirt/vm_disks/liveos.qcow2"
     format = {
       type = "qcow2"
     }
@@ -176,7 +176,7 @@ resource "libvirt_volume" "sandbox_pikvm_disk" {
     }
   }
   backing_store = {
-    path = "${var.cache_dir}/libvirt/vm_disks/debian_cloud.qcow2"
+    path = "${var.cache_dir}/providers/libvirt/vm_disks/debian_cloud.qcow2"
     format = {
       type = "qcow2"
     }
@@ -257,7 +257,7 @@ resource "libvirt_volume" "sandbox_opnsense_disk" {
     }
   }
   backing_store = {
-    path = "${var.cache_dir}/libvirt/vm_disks/opnsense.qcow2"
+    path = "${var.cache_dir}/providers/libvirt/vm_disks/opnsense.qcow2"
     format = {
       type = "qcow2"
     }
