@@ -58,29 +58,32 @@ for image in "${!IMAGES[@]}"; do
   # echo "target_file: $target_file"
   # echo "image_file: $image_file"
 
-  if [ -f "$image_file" ]; then
-    echo "ISO already exists at $image_file"
-  else
-    echo "Downloading ISO from $url to file $target_file"
-    curl -s -o "$target_file" "$url"
-  fi
+  rm -f "$target_file"
 
-  if is_compressed "$target_file"; then
-    case "$target_file" in
-      *.bz2)
-        bunzip2 -c "$target_file" >"$image_file"
-        ;;
-      *.xz)
-        xz -d -c "$target_file" > "$image_file"
-        ;;
-      *)
-        echo "ERROR: Unsupported compression type"
-        exit 1
-        ;;
-    esac
-  else
-    cp "$target_file" "$image_file"
-  fi
+  curl --fail --location --show-error --output "$target_file" "$url"
+
+  [ -s "$target_file" ] || { echo "ERROR: Download empty"; exit 1; }
+
+  rm -f "$image_file"
+  tmp="${image_file}.tmp"
+
+  case "$target_file" in
+    *.bz2)
+      bunzip2 --stdout "$target_file" > "$tmp"
+      ;;
+    *.xz)
+      xz --decompress --stdout "$target_file" > "$tmp"
+      ;;
+    *)
+      cp "$target_file" "$tmp"
+      ;;
+  esac
+
+  [ -s "$tmp" ] || { echo "ERROR: Decompress empty"; exit 1; }
+  mv "$tmp" "$image_file"
+
+  qemu-img info --force-share -f qcow2 "$image_file" >/dev/null
+  qemu-img check -f qcow2 "$image_file"
 
   # echo "Verifying checksum..."
   # ACTUAL_CHECKSUM=$(sha256sum "$ISO_PATH" | awk '{print $1}')
