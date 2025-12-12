@@ -1,6 +1,6 @@
 # Orchestration
 
-Layered provisioning steps in which the sequence depends on the former stage. 
+Layered provisioning steps in which the sequence depends on the former stage.
 
 ## Stage 1
 
