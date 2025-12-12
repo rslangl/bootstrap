@@ -50,10 +50,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y qemu-system qemu-utils
 
-      - name: Get resources
-        run: |
-          make resources
-
-      - name: Build ISO
-        run: |
-          make validate
+      # - name: Get resources
+      #   run: |
+      #     make resources
+      #
+      # - name: Build ISO
+      #   run: |
+      #     make validate

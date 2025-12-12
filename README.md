@@ -17,4 +17,3 @@ Using nix, which spins up a nix-shell containing all tools required:
 ```shell
 nix develop .#default
 ```
-
