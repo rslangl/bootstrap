@@ -1,0 +1,18 @@
+# roles/firewall/defaults/main.yaml
+---
+firewall_block_list:
+  - service_name: rpcbind
+    port: 111
+  - service_name: squid-http
+    port: 3128
+
+firewall_allow_list:
+  - service_name: SSH
+    protocol: tcp
+    port: 22
+  - service_name: PVE-WebUI
+    protocol: tcp
+    port: 8006
+  - service_name: DNS
+    protocol: udp
+    port: 5353

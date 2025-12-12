@@ -1,8 +1,0 @@
-# prelude/tasks/main.yaml
----
-- name: Configure user
-  include_tasks: user.yaml
-
-- name: Configure HIDs
-  include_tasks: hid.yaml
-

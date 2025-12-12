@@ -1,0 +1,15 @@
+---
+namespace: nekrohaven
+name: bootstrap
+version: 0.1.0
+readme: README.md
+authors:
+  - rslangl
+description: Infrastructure bootstrap provisioning
+license_file: LICENSE.md
+tags:
+  - bootstrap
+repository: https://github.com/rslangl/bootstrap
+homepage: https://github.com/rslangl/bootstrap
+issues: https://github.com/rslangl/bootstrap/issues
+

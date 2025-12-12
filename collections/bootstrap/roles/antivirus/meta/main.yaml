@@ -1,0 +1,5 @@
+# roles/antivirus/meta/main.yaml
+---
+galaxy_info:
+  author: rslangl
+  description: Antivirus role

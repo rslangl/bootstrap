@@ -1,0 +1,5 @@
+# bootstrap/playbooks/all.yaml
+---
+# TODO: create CA and copy to host
+
+# TODO: run all playbooks

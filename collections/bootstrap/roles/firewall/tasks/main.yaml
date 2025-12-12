@@ -1,0 +1,61 @@
+# roles/firewall/tasks/main.yaml
+---
+- name: Flush iptables filter
+  ansible.builtin.iptables:
+    chain: "{{ item }}"
+    flush: true
+  with_items:
+    - INPUT
+    - FORWARD
+    - OUTPUT
+
+- name: Flush iptables NAT
+  ansible.builtin.iptables:
+    table: nat
+    chain: "{{ item }}"
+    flush: true
+  with_items:
+    - INPUT
+    - OUTPUT
+    - PREROUTING
+    - POSTROUTING
+
+- name: Set default INPUT chain policy to DROP
+  ansible.builtin.iptables:
+    chain: INPUT
+    policy: DROP
+
+- name: Allow localhost traffic
+  ansible.builtin.iptables:
+    chain: INPUT
+    source: 127.0.0.1
+    jump: ACCEPT
+
+- name: Open port for {{ allow_port.service_name }}
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: "{{ allow_port.protocol }}"
+    destination_port: "{{ allow_port.port }}"
+    jump: ACCEPT
+    state: present
+  loop: "{{ firewall_allow_list }}"
+  loop_control:
+    loop_var: allow_port
+
+- name: Close port for {{ deny_port.service_name }}
+  ansible.builtin.iptables:
+    chain: INPUT
+    destination_port: "{{ deny_port.port }}"
+    jump: DROP
+  loop: "{{ firewall_block_list }}"
+  loop_control:
+    loop_var: deny_port
+
+- name: Save iptables rules to /etc/iptables/rules.v4
+  ansible.builtin.command:
+    cmd: iptables-save > /etc/iptables/rules.v4
+
+- name: Apply iptables rules
+  ansible.builtin.command:
+    cmd: iptables-restore < /etc/iptables/rules.v4
+
