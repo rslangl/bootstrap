@@ -1,0 +1,7 @@
+# roles/runtime_security/meta/main.yaml
+---
+galaxy_info:
+  author: rslangl
+  description: Runtime security role
+dependencies:
+  - role: prelude

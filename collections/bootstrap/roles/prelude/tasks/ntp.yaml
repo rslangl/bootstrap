@@ -1,0 +1,8 @@
+# roles/prelude/tasks/ntp.yaml
+---
+# TODO: https://pve.proxmox.com/pve-docs/chapter-sysadmin.html#_using_custom_ntp_servers
+#
+# add entries to /etc/chrony/sources.d/<server>.sources
+# (peer|pool|server) ip/fqdn iburst
+#
+# reload by: chronyc reload sources

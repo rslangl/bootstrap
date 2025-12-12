@@ -1,0 +1,5 @@
+# roles/dns/defaults/main.yaml
+---
+dns_port: "{{ lookup('env', 'DNS_PORT') }}"
+dns_host_authoritative: "{{ lookup('env', 'AUTHORITATIVE_DNS') }}"
+dns_host_public: "{{ lookup('env', 'PUBLIC_DNS_1') }}"

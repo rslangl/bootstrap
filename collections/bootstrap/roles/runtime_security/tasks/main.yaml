@@ -1,0 +1,16 @@
+# roles/security/tasks/main.yaml
+---
+- name: Ensure specified services are disabled
+  ansible.builtin.service:
+    name: "{{ service_disable }}"
+    state: stopped
+    enabled: false
+  loop: "{{ runtime_security_service_disable_list }}"
+  loop_control:
+    loop_var: service_disable
+
+- name: Setup hardened malloc
+  include_tasks: hardened_malloc.yaml
+
+- name: Setup AppArmor
+  include_tasks: apparmor.yaml

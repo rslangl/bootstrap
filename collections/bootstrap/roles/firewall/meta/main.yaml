@@ -1,0 +1,7 @@
+# roles/firewall/meta/main.yaml
+---
+galaxy_info:
+  author: rslangl
+  description: Firewall role
+dependencies:
+  - role: runtime_security

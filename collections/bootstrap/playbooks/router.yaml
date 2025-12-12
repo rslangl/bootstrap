@@ -1,0 +1,18 @@
+# bootstrap/playbooks/router.yaml
+---
+- name: Top-level router
+  hosts: router
+  tasks:
+    - name: Ensure custom templates directory exists
+      ansible.builtin.file:
+        path: "{{ templates_dir.custom }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0700
+
+    - include_role:
+        name: dns_external
+
+    - include_role:
+        name: nw_interface

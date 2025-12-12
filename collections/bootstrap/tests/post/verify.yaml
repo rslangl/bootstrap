@@ -1,0 +1,61 @@
+---
+- name: Test DNSSEC resolution
+  ansible.builtin.shell: "dig +dnssec +multi {{ host_fqdn }} @{{ ansible_default_ipv4.address }} -p {{ dns.port }}"
+  register: dnssec_result
+  changed_when: false
+
+- name: Check for AD flag in DNSSEC response
+  ansible.builtin.fail:
+    msg: "DNSSEC validation failed. 'AD' flag not found"
+  when: "'ad;' not in dnssec_result.stdout.lower()"
+
+- name: Test local domain resolution
+  ansible.builtin.shell: "dig {{ host_fqdn }} @{{ ansible_default_ipv4.address }}"
+  register: resolution_result
+  changed_when: false
+
+- name: Check if local domain resolved correctly
+  ansible.builtin.fail:
+    msg: "Local domain resolution failed. {{ host_fqdn }} not found"
+  when: "'ANSWER SECTION' not in resolution_result.stdout"
+
+- name: Check DNS port is open
+  ansible.builtin.shell: "ss -tulpn | grep unbound"
+  register: port_result
+  changed_when: false
+
+- name: Verify DNS listens on correct port
+  ansible.builtin.fail:
+    msg: "DNS is listening on unexpected port"
+  when: port_result.stdout_lines | select("search", ":1053") | list | length != 2
+
+- name: Confirm forwarding to router IP
+  ansible.builtin.shell: "tcpdump -c 10 -nn -i any host {{ dns.authoritative }} and port {{ dns.port }} -w /tmp/dns_forwarding_test.pcap"
+  async: 10
+  poll: 0
+  ignore_errors: true
+
+- name: Wait for tcpdump to finish
+  ansible.builtin.pause:
+    seconds: 12
+
+- name: Check if forwarding traffic was captured
+  ansible.builtin.stat:
+    path: /tmp/dns_forwarding_test.pcap
+  register: pcap_check
+
+- name: Fail if no DNS forwarding captured
+  ansible.builtin.fail:
+    msg: "No DNS forwarding traffic detected to router {{ dns.authoritative }}"
+  when: not pcap_check.stat.exists or pcap_check.stat.size == 0
+
+- name: Test IPSec tunnel status
+  ansible.builtin.shell: "ipsec status"
+  register: ipsec_status
+  changed_when: false
+  ignore_errors: true
+
+- name: Check if IPSec tunnel is up
+  ansible.builtin.fail:
+    msg: "IPSec tunnel appears down or misconfigured"
+  when: ipsec_status.stdout is not search("IKE_SA")

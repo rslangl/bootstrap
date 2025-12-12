@@ -1,0 +1,20 @@
+router:
+  hostname: router
+  ip: '14.88.0.1'
+  ssh_port: 22
+  localdomain: nekrohaven.lan
+  interfaces:
+  - iface_name: igc0
+    role: WLAN
+    use_dhcp: true
+    static_ip: null
+  - iface_name: igc1
+    role: LAN
+    use_dhcp: false
+    static_ip:
+      ip: '14.88.0.1'
+      netmask: '255.255.255.0'
+  config_file: /conf/config.xml
+  templates_dir:
+    default: /usr/local/opnsense/service/templates/OPNsense-custom/
+    custom: /usr/local/opnsense/service/templates/OPNsense

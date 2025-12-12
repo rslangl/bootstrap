@@ -1,0 +1,6 @@
+# roles/prelude/meta/main.yaml
+---
+galaxy_info:
+  author: rslangl
+  description: Prelude role
+

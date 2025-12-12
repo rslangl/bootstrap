@@ -1,0 +1,35 @@
+---
+- name: Capture USB HID devices and their status
+  ansible.builtin.command: kvmd-otgconf
+  register: otgconf_outout
+
+- name: Set fact for current USB HID devices
+  ansible.builtin.set_fact:
+    hid_lines: "{{ otgconf_output.stdout_lines | select('match', '^(\\+|\\-) hid\\.usb[0-9]+') | list }}"
+    enabled_hids: "{{ hid_lines | select('match', '^\\+ ') | map('regex_search', 'hid\\.usb[0-9]+') | list }}"
+    all_hids: "{{ hid_lines | map('regex_search', 'hid\\.usb[0-9]+') | list }}"
+    device_map: >-
+      {{
+        dict(hid_lines | map('regex_search', 'hid\\.usb[0-9]+') |
+        zip(hid_lines | map('regex_search', '#\\s*(.*)$')))
+      }}
+
+- name: Ensure keyboard and mouse HID are enabled
+  ansible.builtin.shell: "kvmd-otgconf --enable-function {{ item }}"
+  loop: "{{ all_hids }}"
+  when: "item not in hid_devices"
+
+- name: Generate toggle script
+  ansible.builtin.template:
+    src: toggle-local-remote.sh.j2
+    dest: "/usr/local/bin/toggle-local-remote.sh"
+    mode: 0755
+  vars:
+    hid_devices: "{{ all_hids }}"
+
+- name: Make toggle script reachable
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    line: "alias toggleinput='/usr/local/bin/toggle-local-remote.sh'"
+    state: present
+

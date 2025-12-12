@@ -1,0 +1,40 @@
+# dns/tasks/unbound.yaml
+---
+- name: Install unbound
+  ansible.builtin.package:
+    name: ["unbound", "unbound-anchor"]
+    state: present
+    update_cache: true
+
+- name: Configure AppArmor for access to logfile
+  ansible.builtin.lineinfile:
+    path: /etc/unbound/unbound.conf
+    line: '  /var/log/unbound.log rw,'
+    insertbefore: '}$'
+    state: present
+  register: aa_unbound
+
+- name: Reload AppArmor
+  ansible.builtin.command: apparmor_parser -r /etc/apparmor.d/usr.sbin.unbound
+  when: aa_unbound.changed
+
+- name: Setup trust anchor
+  ansible.builtin.command: unbound-anchor -a /var/lib/unbound/root.key
+
+- name: Configure unbound
+  ansible.builtin.template:
+    src: unbound.conf.j2
+    dest: /etc/unbound/unbound.conf
+
+- name: Configure interface resolver
+  ansible.builtin.lineinfile:
+    path: /etc/network/interfaces
+    line: ' dns-nameservers 127.0.0.1'
+    insertafter: '^iface vmbr0 inet static'
+    state: present
+
+- name: Configure resolv.conf
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    backup: true

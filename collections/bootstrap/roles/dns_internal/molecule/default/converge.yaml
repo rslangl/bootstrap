@@ -1,0 +1,5 @@
+# roles/dns/molecule/default/converge.yaml
+---
+- hosts: all
+  roles:
+    - dns

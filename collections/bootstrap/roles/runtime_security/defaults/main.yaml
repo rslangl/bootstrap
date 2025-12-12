@@ -1,0 +1,5 @@
+# roles/runtime_security/defaults/main.yaml
+---
+runtime_security_service_disable_list:
+  - squid-http
+  - rpcbind

@@ -1,0 +1,14 @@
+# roles/dns/molecule/default/molecule.yaml
+---
+driver:
+  name: docker
+
+platforms:
+  - name: instance
+    image: docker.io/library/rockylinux:9
+
+provisioner:
+  name: ansible
+  playbooks:
+    converge: converge.yml
+    verify: verify.yml

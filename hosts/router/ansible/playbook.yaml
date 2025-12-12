@@ -1,6 +1,0 @@
----
-- hosts: router
-  roles:
-    - interfaces
-    - dns
-    - security

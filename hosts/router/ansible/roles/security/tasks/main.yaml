@@ -1,5 +1,0 @@
-# roles/security&main.yaml
----
-- name: Configure firewall
-  include_tasks: firewall.yaml
-
