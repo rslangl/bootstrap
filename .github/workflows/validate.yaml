@@ -1,5 +1,5 @@
 ---
-name: Build ISO
+name: Validate
 
 on:
   pull_request:
