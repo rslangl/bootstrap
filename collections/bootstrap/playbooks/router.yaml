@@ -2,17 +2,44 @@
 ---
 - name: Top-level router
   hosts: router
-  tasks:
-    - name: Ensure custom templates directory exists
-      ansible.builtin.file:
-        path: "{{ templates_dir.custom }}"
-        state: directory
-        owner: root
-        group: root
-        mode: 0700
+  variables:
+    # TODO: Ensure DHCP settings for WAN interface
 
-    - include_role:
-        name: dns_external
+    # TODO: Configure DNSCrypt on WAN
 
-    - include_role:
-        name: nw_interface
+    # TODO: Enaable Unbound with DNSSEC and hardening on LAN
+
+    # TODO: Enable Kea DHCP, disable ISC and Unbound DNS
+
+    # TODO: Firewall: block LAN -> WAN:53
+
+    - name: Setup DHCP range for LAN
+      oxlorg.opnsense.dhcp_general:
+        enabled: true
+        socket_type: raw
+        interfaces: lan
+        fw_rules: true
+        lifetime: 4000
+
+    - name: Setup DHCP subnets
+      oxlorg.opnsense.dhcp_subnet:
+        subnet: "{{ subnet.cidr }}"
+        pools:
+          - "{{ subnet.pool }}"
+        auto_options: false
+        gateway: "{{ subnet.gateway }}"
+        dns: ['127.0.0.1']
+        domain: "{{ subnet.domain }}"
+      loop: dhcp_subnet_list
+      loop_control:
+        var: subnet
+
+    - name: Setup static DHCP mappings for defined clients
+      oxlorg.opnsense.dhcp_reservation:
+        ip: "{{ host.ip }}"
+        subnet: "{{ host.subnet }}"
+        mac: "{{ host.mac }}"
+      loop: dhcp_static_ip_list
+      loop_control:
+        var: host
+
