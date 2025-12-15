@@ -23,6 +23,13 @@
         port: 5353
         protocol: 'TCP/UDP'
         description: 'Allow LAN DNS to Unbound'
+      dnscrypt_to_outbound:
+        action: 'pass'
+        src: '*'
+        dst: 'WAN address'
+        port: 443
+        protocol: 'TCP/UDP'
+        description: 'Allow DNSCrypt-Proxy outbound (DoH/DoT)'
   tasks:
     # TODO: Setup WAN gateway
 
