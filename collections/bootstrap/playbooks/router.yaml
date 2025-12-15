@@ -3,11 +3,7 @@
 - name: Top-level router
   hosts: router
   variables:
-    dhcp_subnets:
-      - cidr: '14.88.0.0/24'
-        pool: '14.88.0.10-14.88.0.255'
-        domain: 'nekrohaven.io'
-        gateway: LAN
+    dhcp_subnets: {}
     fw_rules:
       lan_to_dns:
         action: 'pass'
@@ -31,18 +27,51 @@
         protocol: 'TCP/UDP'
         description: 'Allow DNSCrypt-Proxy outbound (DoH/DoT)'
   tasks:
-    # TODO: Setup WAN gateway
+    - name: Validate WAN interface
+      ansible.builtin.command: >
+        xmlstarlet sel -t
+        -v "/opnsense/interfaces/wan/if[text()='igc0']"
+        -o " "
+        -v "/opnsense/interfaces/wan/ipaddr[text()='dhcp']"
+        /conf/config.xml
+      register: wan_check
+      changed_when: false
+      failed_when: wan_check.stdout.strip() != "igc0 dhcp"
 
-    # TODO: Setup LAN gateway
-
-    # TODO: Ensure DHCP settings for WAN interface as client
+    - name: Validate LAN interface
+      ansible.builtin.command: >
+        xmlstarlet sel -t
+        -v "/opnsense/interfaces/lan/if[text()='igc1']"
+        -o " "
+        -v "/opnsense/interfaces/lan/ipaddr[not(text()='dhcp')]"
+        /conf/config.xml
+      register: lan_check
+      changed_when: false
+      failed_when: lan_check.stdout.strip() == ""
 
     - name: Install DNSCrypt-Proxy plugin
       oxlorg.opnsense.package:
         name: os-dnscrypt-proxy
         action: 'install'
 
-    # TODO: Configure DNSCrypt on WAN
+    - name: Set fact for presence of existing DNSCrypt-proxy config
+      ansible.builtin.stat:
+        path: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+      register: dnscrypt-proxy_config
+
+    - name: Backup existing DNSCrypt-proxy config
+      ansible.builtin.copy:
+        src: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+        dest: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml.bak
+        remote_src: true
+      when: dnscrypt-proxy_config.stat.exists
+
+    - name: Create DNSCrypt-proxy config
+      ansible.builtin.template:
+        src: dnscrypt-proxy.toml.j2
+        dest: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+        user: root
+        group: root
 
     - name: Start DNSCrypt-Proxy service
       oxlorg.opnsense.service:
