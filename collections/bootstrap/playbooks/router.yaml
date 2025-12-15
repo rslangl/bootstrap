@@ -6,6 +6,10 @@
     # TODO: Ensure DHCP settings for WAN interface
 
     # TODO: Configure DNSCrypt on WAN
+    - name: Install DNSCrypt-Proxy plugin
+      oxlorg.opnsense.package:
+        name: os-dnscrypt-proxy
+        action: 'install'
 
     # TODO: Enaable Unbound with DNSSEC and hardening on LAN
 
@@ -43,3 +47,6 @@
       loop_control:
         var: host
 
+    # TODO: Setup LAN gateway
+
+    # TODO: Firewall: Setup NAT LAN GW -> Outbound
