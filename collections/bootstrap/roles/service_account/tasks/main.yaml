@@ -1,0 +1,39 @@
+---
+- name: Ensure presence of service group
+  ansible.builtin.group:
+    name: "{{ service_account_name }}"
+    state: present
+
+- name: Ensure presence of service account
+  ansible.builtin.user:
+    name: "{{ service_account_name }}"
+    uid: "{{ service_account_uid | default(omit) }}"
+    shell: "{{ service_account_shell }}"
+    group: "{{ service_account_groups | join(',') }}"
+    append: true
+    create_home: true
+    password_lock: true
+    state: present
+
+- name: Ensure presence of SSH directory
+  ansible.builtin.file:
+    path: "/home/{{ service_account_name }}/.ssh"
+    state: directory
+    owner: "{{ service_account_name }}"
+    group: "{{ service_account_name }}"
+    mode: "0700"
+
+- name: Install authorized SSH keys
+  ansible.builtin.authorized_key:
+    user: "{{ service_account_name }}"
+    key: "{{ item }}"
+  loop: "{{ service_account_authorized_keys }}"
+
+- name: Configure sudo access
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ service_account_name }}"
+    content: |
+      {{ service_account_name }} ALL=(ALL) NOPASSWD: ALL
+    owner: root
+    group: root
+    mode: "0440"

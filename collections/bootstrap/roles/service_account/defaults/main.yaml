@@ -1,0 +1,5 @@
+---
+service_account_name: ansible
+service_account_shell: /bin/bash
+service_account_groups: []
+service_account_authorized_keys: []
