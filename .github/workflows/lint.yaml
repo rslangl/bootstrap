@@ -13,8 +13,6 @@ jobs:
     permissions:
       contents: read
       packages: read
-      issues: write
-      pull-requests: write
 
     steps:
       - name: Checkout code
