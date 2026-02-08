@@ -22,4 +22,6 @@ jobs:
 
       - name: Super-linter
         uses: super-linter/super-linter@v8.5.0
+        env:
+          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
 
