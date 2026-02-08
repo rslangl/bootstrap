@@ -1,0 +1,24 @@
+---
+router_dhcp_subnets: {}
+router_firewall_rules:
+  lan_to_dns:
+    action: 'pass'
+    src: 'LAN net'
+    dst: '(self)'
+    port: 53
+    protocol: 'TCP/UDP'
+    description: 'Allow LAN DNS to Unbound'
+  dns_to_proxy:
+    action: 'pass'
+    src: '(self)'
+    dst: '127.0.0.1/24'
+    port: 5353
+    protocol: 'TCP/UDP'
+    description: 'Allow LAN DNS to Unbound'
+  dnscrypt_to_outbound:
+    action: 'pass'
+    src: '*'
+    dst: 'WAN address'
+    port: 443
+    protocol: 'TCP/UDP'
+    description: 'Allow DNSCrypt-Proxy outbound (DoH/DoT)'

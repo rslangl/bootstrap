@@ -1,0 +1,130 @@
+---
+tasks:
+  - name: Validate WAN interface
+    ansible.builtin.command: >
+      xmlstarlet sel -t
+      -v "/opnsense/interfaces/wan/if[text()='igc0']"
+      -o " "
+      -v "/opnsense/interfaces/wan/ipaddr[text()='dhcp']"
+      /conf/config.xml
+    register: wan_check
+    changed_when: false
+    failed_when: wan_check.stdout.strip() != "igc0 dhcp"
+
+  - name: Validate LAN interface
+    ansible.builtin.command: >
+      xmlstarlet sel -t
+      -v "/opnsense/interfaces/lan/if[text()='igc1']"
+      -o " "
+      -v "/opnsense/interfaces/lan/ipaddr[not(text()='dhcp')]"
+      /conf/config.xml
+    register: lan_check
+    changed_when: false
+    failed_when: lan_check.stdout.strip() == ""
+
+  - name: Install DNSCrypt-Proxy plugin
+    oxlorg.opnsense.package:
+      name: os-dnscrypt-proxy
+      action: 'install'
+
+  - name: Set fact for presence of existing DNSCrypt-proxy config
+    ansible.builtin.stat:
+      path: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+    register: dnscrypt-proxy_config
+
+  - name: Backup existing DNSCrypt-proxy config
+    ansible.builtin.copy:
+      src: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+      dest: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml.bak
+      remote_src: true
+    when: dnscrypt-proxy_config.stat.exists
+
+  - name: Create DNSCrypt-proxy config
+    ansible.builtin.template:
+      src: dnscrypt-proxy.toml.j2
+      dest: /usr/local/etc/dnscrypt-proxy/dnscrypt-proxy.toml
+      user: root
+      group: root
+
+  - name: Start DNSCrypt-Proxy service
+    oxlorg.opnsense.service:
+      name: 'dnscrypt-proxy'
+      action: 'start'
+
+  - name: Enable Unbound DNS for LAN
+    oxlorg.opnsense.unbound_general:
+      enabled: true
+      port: 53
+      interfaces: LAN
+      dnssec: true
+      register_dhcp_static_mappings: false
+      reload: true
+
+  - name: Setup forwarding from Unbound to DNSCrypt-Proxy
+    oxlorg.opnsense.unbound_forward:
+      target: '127.0.0.1'
+      port: 5353
+      state: 'present'
+      reload: true
+      enabled: true
+      debug: false
+
+  - name: Setup DHCP range for LAN
+    oxlorg.opnsense.dhcp_general:
+      enabled: true
+      socket_type: raw
+      interfaces: lan
+      fw_rules: true
+      lifetime: 4000
+
+  - name: Setup DHCP subnets
+    oxlorg.opnsense.dhcp_subnet:
+      subnet: "{{ subnet.cidr }}"
+      pools:
+        - "{{ subnet.pool }}"
+      auto_options: false
+      gateway: "{{ subnet.gateway }}"
+      dns: ['127.0.0.1']
+      domain: "{{ subnet.domain }}"
+    loop: dhcp_subnet_list
+    loop_control:
+      var: subnet
+
+  - name: Setup static DHCP mappings for defined clients
+    oxlorg.opnsense.dhcp_reservation:
+      ip: "{{ host.ip }}"
+      subnet: "{{ host.subnet }}"
+      mac: "{{ host.mac }}"
+    loop: dhcp_static_ip_list
+    loop_control:
+      var: host
+
+  - name: Setup firewall rules
+    oxlorg.opnsense.rule:
+      description: "{{ rule_id }}"
+
+      action: "{{ rule.action | default(omit) }}"
+      interface: "{{ rule.int | default(omit) }}"
+      direction: "{{ rule.dir | default(omit) }}"
+      ip_protocol: "{{ rule.ip_proto | default(omit) }}"
+      protocol: "{{ rule.proto | default(omit) }}"
+
+      source_invert: "{{ rule.src_invert | default(omit) }}"
+      source_net: "{{ rule.src | default(omit) }}"
+      source_port: "{{ rule.src_port | default(omit) }}"
+      destination_invert: "{{ rule.dest_invert | default(omit) }}"
+      destination_net: "{{ rule.dest | default(omit) }}"
+      destination_port: "{{ rule.dest_port | default(omit) }}"
+
+      sequence: "{{ rule.seq | default(omit) }}"
+      quick: "{{ rule.quick | default(omit) }}"
+      log: "{{ rule.log | default(omit) }}"
+      gateway: "{{ rule.gw | default(omit) }}"
+      state: "{{ rule.state | default(omit) }}"
+      enabled: "{{ rule.enabled | default(true) }}"
+    vars:
+      rule: "{{ rule_item.value }}"
+      rule_id: "{{ rule_item.key }}"
+    loop_control:
+      loop_var: rule_item
+    with_dict: "{{ fw_rules }}"
