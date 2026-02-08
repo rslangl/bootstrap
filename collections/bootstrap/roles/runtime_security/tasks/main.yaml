@@ -14,3 +14,6 @@
 
 - name: Setup AppArmor
   include_tasks: apparmor.yaml
+
+- name: Setup antivirus
+  include_tasks: antivirus.yaml

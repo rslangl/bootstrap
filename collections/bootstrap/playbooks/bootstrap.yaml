@@ -1,1 +1,30 @@
 ---
+- name: Base access and identiy
+  hosts: all
+  roles:
+    - nekrohaven.bootstrap.service_account
+
+- name: Configure router
+  hosts: routers
+  roles:
+    - nekrohaven.bootstrap.router
+
+- name: Configure hypervisors
+  hosts: app_servers
+  roles:
+    - nekrohaven.bootstrap.prelude
+    - nekrohaven.bootstrap.dns_internal
+    - nekrohaven.bootstrap.runtime_security
+    - nekrohaven.bootstrap.firewall
+
+- name: Configure redzone access point
+  hosts: ap_redzone
+  roles:
+    - nekrohaven.bootstrap.prelude
+    - nekrohaven.bootstrap.ap_redzone
+
+- name: Configure greenzone access point
+  hosts: ap_greenzone
+  roles:
+    - nekrohaven.bootstrap.prelude
+    - nekrohaven.bootstrap.ap_redzone
