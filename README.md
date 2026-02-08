@@ -10,6 +10,15 @@ Bootable environment to bootstrap my infrastructure.
 
 TODO
 
+## Usage
+
+Install collection and run locally:
+
+```shell
+ansible-galaxy collection install ./collections/ansible_collections/nekrohaven/bootstrap
+ansible-playbook orchestrator/stage_1/playbook.yaml -i orchestrator/stage_1/inventory.yaml
+```
+
 ## Development
 
 Using nix, which spins up a nix-shell containing all tools required:
