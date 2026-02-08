@@ -9,7 +9,7 @@
     name: "{{ service_account_name }}"
     uid: "{{ service_account_uid | default(omit) }}"
     shell: "{{ service_account_shell }}"
-    group: "{{ service_account_groups | join(',') }}"
+    groups: "{{ service_account_groups | join(',') }}"
     append: true
     create_home: true
     password_lock: true
