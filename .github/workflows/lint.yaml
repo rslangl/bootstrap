@@ -17,43 +17,19 @@ on:
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: 1.25
+      - name: Super-linter
+        uses: super-linter/super-linter@v8.5.0
 
-      - name: Install linters
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck yamllint
-          npm install -g markdownlint-cli
-          go install kcl-lang.io/cli/cmd/kcl@latest
-
-      - name: Lint shell scripts
-        run: |
-          find . -name "*.sh" -exec shellcheck {} +
-
-      - name: Lint YAML files
-        run: |
-          yamllint .
-
-      - name: Lint Markdown files
-        run: |
-          markdownlint "**/*.md"
-
-      - name: Lint KCL files
-        run: |
-          kcl lint configs/
-
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v6
-
-      - name: Lint Terraform manifests
-        run: |
-          tflint --chdir liveOS/
