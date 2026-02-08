@@ -2,18 +2,8 @@
 name: Lint checks
 
 on:
-  push:
-    paths:
-      - '**.sh'
-      - '**.yaml'
-      - '**.yml'
-      - '**.md'
-  pull_request:
-    paths:
-      - '**.sh'
-      - '**.yaml'
-      - '**.yml'
-      - '**.md'
+  push: null
+  pull_request: null
 
 jobs:
   lint:
