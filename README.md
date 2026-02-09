@@ -15,7 +15,8 @@ TODO
 Install collection and run locally:
 
 ```shell
-ansible-galaxy collection install ./collections/ansible_collections/nekrohaven/bootstrap
+ansible-galaxy collection build
+ansible-galaxy collection install nekrohaven-bootstrap-*.tar.gz --force
 ansible-playbook orchestrator/stage_1/playbook.yaml -i orchestrator/stage_1/inventory.yaml
 ```
 

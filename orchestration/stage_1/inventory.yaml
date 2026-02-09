@@ -4,5 +4,12 @@ all:
     app_servers:
       hosts:
         hv01:
-          ansible_host: 14.88.0.1
+          ansible_host: 14.88.0.10
           ansible_user: root
+      vars:
+        service_disable_list:
+          - rpcbind
+        mac_module: apparmor
+        dns_internal_domain: nekrohaven.io
+        dns_internal_authoritative_ipv4: 14.88.0.1
+
