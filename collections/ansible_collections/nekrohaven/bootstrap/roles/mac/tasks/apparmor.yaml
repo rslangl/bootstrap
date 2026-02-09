@@ -1,4 +1,3 @@
-# security/tasks/apparmor.yaml
 ---
 - name: Ensure apparmor and apparmor-utils is present
   ansible.builtin.apt:
@@ -16,14 +15,3 @@
     enabled: true
 
 # TODO: define custom rules if necessary
-
-- name: Register aa-status output
-  ansible.builtin.shell:
-    command: aa-status --complaining
-    register: aa_status_complaining
-
-- name: Get processes in complain mode
-  ansible.builtin.debug:
-    msg: "WARNING: Some AppArmor processes are in complain mode"
-  when: aa_status_complaining.stdout > 0
-

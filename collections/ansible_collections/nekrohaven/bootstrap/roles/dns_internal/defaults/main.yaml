@@ -1,5 +1,7 @@
 # roles/dns/defaults/main.yaml
 ---
-dns_port: "{{ lookup('env', 'DNS_PORT') }}"
-dns_host_authoritative: "{{ lookup('env', 'AUTHORITATIVE_DNS') }}"
-dns_host_public: "{{ lookup('env', 'PUBLIC_DNS_1') }}"
+dns_internal_domain: ""
+dns_internal_port: "{{ lookup('env', 'DNS_PORT') }}"
+# This is the top-level authoritative DNS (usually the router)
+dns_internal_authoritative_ipv4: ""
+dns_internal_host_fqdn: "{{ ansible_hostname }}.{{ dns_internal_domain }}"

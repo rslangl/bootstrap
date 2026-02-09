@@ -1,0 +1,7 @@
+---
+- name: Setup MAC using AppArmor
+  import_tasks:
+    file: apparmor.yaml
+  when: mac_module is defined and mac_module == "apparmor"
+
+# TODO: SELinux

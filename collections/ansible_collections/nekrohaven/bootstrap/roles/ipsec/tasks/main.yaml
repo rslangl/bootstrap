@@ -1,4 +1,3 @@
-# dns/tasks/ipsec.yaml
 ---
 - name: Install strongswan
   ansible.builtin.apt:
