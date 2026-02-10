@@ -4,9 +4,9 @@
     name: "{{ item }}"
     state: present
     update_cache: true
-    with_items:
-      - apparmor
-      - apparmor-utils
+  with_items:
+    - apparmor
+    - apparmor-utils
 
 - name: Start apparmor service
   ansible.builtin.service:

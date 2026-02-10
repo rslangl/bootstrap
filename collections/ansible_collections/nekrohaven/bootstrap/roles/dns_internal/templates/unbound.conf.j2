@@ -3,9 +3,9 @@
 server:
     verbosity: 1
     interface: 0.0.0.0
-    port: {{ dns.port }}
+    port: "{{ dns_internal_port }}"
     #interface: ::0 # not used, ipv6 is disabled
-    access-control: 127.0.0.0/8 allow 
+    access-control: 127.0.0.0/8 allow
     #access-control: ::1 allow  # not used, ipv6 is disabled
     logfile: /var/log/unbound.log
 
@@ -13,9 +13,9 @@ server:
     cache-min-ttl: 3600
 
     auto-trust-anchor-file: "/var/lib/unbound/root.key"
-    local-zone: "{{ dns.authoritative }}" transparent
-    local-zone: "{{ host_fqdn }}" static
-    local-data: "{{ host_fqdn }} A {{ ansible_default_ipv4.address }}"
+    local-zone: "{{ dns_internal_authoritative_ipv4 }}" transparent
+    local-zone: "{{ dns_internal_host_fqdn }}" static
+    local-data: "{{ dns_internal_host_fqdn }} A {{ ansible_default_ipv4.address }}"
 
     # Localhost/VM DNS resolution for internal names
     #local-data: "myvm.local. IN A 192.168.1.10"
@@ -23,6 +23,4 @@ server:
 
     forward-zone:
         name: "."
-        forward-addr: {{ dns.authoritative }}@{{ dns.port }}
-        #forward-addr: {{ dns.public_dns_1 }}
-        #forward-addr: {{ dns.public_dns_2 }}
+        forward-addr: "{{ dns_internal_authoritative_ipv4 }}@{{ dns_internal_port }}"
