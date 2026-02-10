@@ -1,0 +1,17 @@
+$TTL 3600
+@   IN SOA {{ dns_authoritative_host }}. (
+        2026021001 ; serial
+        3600       ; refresh
+        900        ; retry
+        1209600    ; expire
+        3600 )     ; minimum
+
+    {% dns_host in dns_service_hosts %}
+    IN NS {{ dns_host.hostaddr }}.
+    {% endfor %}
+
+{% dns_host in dns_service_hosts %}
+{{ dns_host.hostname }} IN A    {{ dns_host.ipv4 }}
+{% endfor %}
+
+

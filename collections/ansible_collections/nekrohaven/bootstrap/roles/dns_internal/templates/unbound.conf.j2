@@ -1,26 +1,28 @@
 # Generated unbound.conf
 
 server:
+    do-ip6: no
     verbosity: 1
     interface: 0.0.0.0
     port: "{{ dns_internal_port }}"
-    #interface: ::0 # not used, ipv6 is disabled
     access-control: 127.0.0.0/8 allow
-    #access-control: ::1 allow  # not used, ipv6 is disabled
+    access-control: 10.0.0.0/8 allow
+
     logfile: /var/log/unbound.log
 
     cache-max-ttl: 86400
     cache-min-ttl: 3600
 
     auto-trust-anchor-file: "/var/lib/unbound/root.key"
-    local-zone: "{{ dns_internal_authoritative_ipv4 }}" transparent
-    local-zone: "{{ dns_internal_host_fqdn }}" static
-    local-data: "{{ dns_internal_host_fqdn }} A {{ ansible_default_ipv4.address }}"
 
-    # Localhost/VM DNS resolution for internal names
-    #local-data: "myvm.local. IN A 192.168.1.10"
-    #local-data: "anothervm.local. IN A 192.168.1.11"
+    # Internal-only zone
+    local-zone: "{{ dns_internal_domain }}" static
+    local-data: "{{ dns_internal_host_fqdn }} A {{ dns_internal_host_ipv4 }}"
 
-    forward-zone:
-        name: "."
-        forward-addr: "{{ dns_internal_authoritative_ipv4 }}@{{ dns_internal_port }}"
+    auth-zone:
+      name: "{{ dns_internal_domain }}."
+      # The top-level DNS, usually the router
+      master: "{{ dns_internal_master_ipv4 }}"
+    # forward-zone:
+    #     name: "."
+    #     forward-addr: "{{ dns_internal_authoritative_ipv4 }}@{{ dns_internal_port }}"

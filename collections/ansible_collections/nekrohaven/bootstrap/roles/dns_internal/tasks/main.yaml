@@ -16,7 +16,7 @@
   block:
     - name: Configure AppArmor for access to logfile
       ansible.builtin.lineinfile:
-        path: /etc/unbound/unbound.conf
+        path: /etc/apparmor.d/usr.sbin.unbound
         line: '  /var/log/unbound.log rw,'
         insertbefore: '}$'
         state: present
@@ -30,6 +30,14 @@
 - name: Setup trust anchor
   ansible.builtin.command: unbound-anchor -a /var/lib/unbound/root.key
 
+- name: Ensure presence of log file
+  ansible.builtin.file:
+    path: /var/log/unbound.log
+    state: touch
+    owner: unbound
+    group: unbound
+    mode: "0640"
+
 - name: Configure unbound
   ansible.builtin.template:
     src: unbound.conf.j2
@@ -38,7 +46,7 @@
 - name: Configure interface resolver
   ansible.builtin.lineinfile:
     path: /etc/network/interfaces
-    line: ' dns-nameservers 127.0.0.1'
+    line: '\tdns-nameservers 127.0.0.1'
     insertafter: '^iface vmbr0 inet static'
     state: present
 

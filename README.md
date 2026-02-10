@@ -27,3 +27,13 @@ Using nix, which spins up a nix-shell containing all tools required:
 ```shell
 nix develop .#default
 ```
+
+## TODO
+
+* DNS:
+  * Resilience: top-level DNS (router) specifies an Unbound zonefile
+    * Internal DNS fetches from master
+    * Clients should add both the hypervisor and the router as nameservers
+  * DNSSEC:
+* IPsec:
+
