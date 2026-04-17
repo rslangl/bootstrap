@@ -1,4 +1,4 @@
-FROM debian:bookworm-20250610
+FROM debian:bookworm-20260406
 
 RUN  echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list \
   && apt-get update
