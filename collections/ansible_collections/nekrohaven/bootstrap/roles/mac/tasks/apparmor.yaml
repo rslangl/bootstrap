@@ -1,0 +1,17 @@
+---
+- name: Ensure apparmor and apparmor-utils is present
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items:
+    - apparmor
+    - apparmor-utils
+
+- name: Start apparmor service
+  ansible.builtin.service:
+    name: apparmor
+    state: started
+    enabled: true
+
+# TODO: define custom rules if necessary

@@ -1,0 +1,57 @@
+# dns/tasks/unbound.yaml
+---
+- name: Get service facts
+  ansible.builtin.service_facts:
+
+- name: Install unbound
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items:
+    - unbound
+    - unbound-anchor
+
+- name: Configure AppArmor for Unbound
+  block:
+    - name: Configure AppArmor for access to logfile
+      ansible.builtin.lineinfile:
+        path: /etc/apparmor.d/usr.sbin.unbound
+        line: '  /var/log/unbound.log rw,'
+        insertbefore: '}$'
+        state: present
+      register: aa_unbound
+
+    - name: Reload AppArmor
+      ansible.builtin.command: apparmor_parser -r /etc/apparmor.d/usr.sbin.unbound
+      when: aa_unbound.changed
+  when: ansible_facts['services']['apparmor.service']['status'] | default('not-found') != 'not-found'
+
+- name: Setup trust anchor
+  ansible.builtin.command: unbound-anchor -a /var/lib/unbound/root.key
+
+- name: Ensure presence of log file
+  ansible.builtin.file:
+    path: /var/log/unbound.log
+    state: touch
+    owner: unbound
+    group: unbound
+    mode: "0640"
+
+- name: Configure unbound
+  ansible.builtin.template:
+    src: unbound.conf.j2
+    dest: /etc/unbound/unbound.conf
+
+- name: Configure interface resolver
+  ansible.builtin.lineinfile:
+    path: /etc/network/interfaces
+    line: '\tdns-nameservers 127.0.0.1'
+    insertafter: '^iface vmbr0 inet static'
+    state: present
+
+- name: Configure resolv.conf
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    backup: true

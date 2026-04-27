@@ -1,7 +1,0 @@
-# dns/tasks/main.yaml
----
-- name: Setup IPSec
-  include_tasks: ipsec.yaml
-
-- name: Setup host-level DNS
-  include_tasks: unbound.yaml

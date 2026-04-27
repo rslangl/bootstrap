@@ -1,0 +1,8 @@
+# roles/dns/defaults/main.yaml
+---
+dns_internal_domain: "{{ lookup('ansible.builtin.vars', 'internal_domain') }}"
+dns_internal_port: 53
+# This is the top-level authoritative DNS (usually the router)
+dns_internal_authoritative_ipv4: "{{ lookup('ansible.builtin.vars', 'dns_authoritative') }}"
+dns_internal_host_fqdn: "{{ ansible_facts['nodename'] }}.{{ dns_internal_domain }}"
+dns_internal_host_ipv4: "{{ ansible_facts['default_ipv4']['address'] }}"

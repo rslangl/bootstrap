@@ -1,0 +1,55 @@
+---
+# - name: Configure router
+#   hosts: routers
+#   roles:
+#     - name: Create service account
+#       import_role:
+#         name: nekrohaven.bootstrap.service_account
+#
+#     - name: Configure router
+#       import_role: nekrohaven.bootstrap.router
+
+- name: Configure hypervisors
+  hosts: app_servers
+  tasks:
+    - name: Create service account
+      import_role:
+        name: nekrohaven.bootstrap.service_account
+
+    - name: Setup base configurations
+      import_role:
+        name: nekrohaven.bootstrap.prelude
+
+    - name: Ensure specified services are disabled
+      ansible.builtin.service:
+        name: "{{ service_disable }}"
+        state: stopped
+        enabled: false
+      loop: "{{ service_disable_list }}"
+      loop_control:
+        loop_var: service_disable
+      when: service_disable_list | length > 0
+      ignore_errors: true
+
+    - name: Configure MAC module
+      import_role:
+        name: nekrohaven.bootstrap.mac
+      when: mac_module is defined
+
+    - name: Configure host-based DNS
+      import_role:
+        name: nekrohaven.bootstrap.dns_internal
+    # - nekrohaven.bootstrap.runtime_security
+    # - nekrohaven.bootstrap.firewall
+
+# - name: Configure redzone access point
+#   hosts: ap_redzone
+#   roles:
+#     - nekrohaven.bootstrap.prelude
+#     - nekrohaven.bootstrap.ap_redzone
+#
+# - name: Configure greenzone access point
+#   hosts: ap_greenzone
+#   roles:
+#     - nekrohaven.bootstrap.prelude
+#     - nekrohaven.bootstrap.ap_redzone

@@ -1,7 +1,0 @@
-# roles/dns/meta/main.yaml
----
-galaxy_info:
-  author: rslangl
-  description: DNS role
-dependencies:
-  - role: runtime_security

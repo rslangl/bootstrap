@@ -1,0 +1,5 @@
+# roles/dns/meta/main.yaml
+---
+galaxy_info:
+  author: rslangl
+  description: DNS role

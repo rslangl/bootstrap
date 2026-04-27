@@ -10,6 +10,16 @@ Bootable environment to bootstrap my infrastructure.
 
 TODO
 
+## Usage
+
+Install collection and run locally:
+
+```shell
+ansible-galaxy collection build
+ansible-galaxy collection install nekrohaven-bootstrap-*.tar.gz --force
+ansible-playbook orchestrator/stage_1/playbook.yaml -i orchestrator/stage_1/inventory.yaml
+```
+
 ## Development
 
 Using nix, which spins up a nix-shell containing all tools required:
@@ -17,3 +27,13 @@ Using nix, which spins up a nix-shell containing all tools required:
 ```shell
 nix develop .#default
 ```
+
+## TODO
+
+* DNS:
+  * Resilience: top-level DNS (router) specifies an Unbound zonefile
+    * Internal DNS fetches from master
+    * Clients should add both the hypervisor and the router as nameservers
+  * DNSSEC:
+* IPsec:
+
