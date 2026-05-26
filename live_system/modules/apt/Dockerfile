@@ -1,4 +1,4 @@
-FROM debian:trixie-20260505
+FROM debian:trixie-20260518
 
 RUN  echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list \
   && apt-get update
